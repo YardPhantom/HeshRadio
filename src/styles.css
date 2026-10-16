@@ -46,8 +46,8 @@ body {
   flex-direction: column;
   min-height: 100vh;
   min-height: 100dvh;
-  padding: 1rem;
-  gap: 1rem;
+  padding: 1.25rem;
+  gap: 1.25rem;
   max-width: 1720px;
   margin-inline: auto;
 }
@@ -58,24 +58,24 @@ body {
   flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  gap: 1rem;
-  padding: 1rem;
+  gap: 1.25rem;
+  padding: 1.25rem 1.5rem;
   background: linear-gradient(180deg, #101926 0%, #0a1018 100%);
   border: 1px solid var(--border-subtle);
-  border-radius: 0.75rem;
+  border-radius: 1rem;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
 }
 
 .brand-cluster {
   display: flex;
   align-items: center;
-  gap: 0.85rem;
+  gap: 1rem;
   min-width: 0;
 }
 
 .app-logo {
   font-family: var(--font-display);
-  font-size: 1.35rem;
+  font-size: 1.4rem;
   font-weight: 700;
   letter-spacing: 0.12em;
   color: #f8fafc;
@@ -83,20 +83,23 @@ body {
 
 .app-subtitle {
   font-family: var(--font-mono);
-  font-size: 0.68rem;
+  font-size: 0.7rem;
   color: var(--text-secondary);
   letter-spacing: 0.05em;
 }
 
 .tx-rx-beacon {
   font-family: var(--font-mono);
-  font-size: 0.72rem;
+  font-size: 0.75rem;
   font-weight: 700;
-  padding-inline: 1rem;
-  padding-block: 0.48rem;
-  border-radius: 8px;
+  padding-inline: 1.25rem;
+  padding-block: 0.55rem;
+  border-radius: 10px;
   letter-spacing: 0.06em;
   border: 1px solid transparent;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
 }
 
 .tx-rx-beacon.rx-stby {
@@ -123,20 +126,20 @@ body {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 0.65rem;
+  gap: 0.75rem;
 }
 
 .telemetry-pill {
   display: flex;
   align-items: safe center;
-  gap: 0.65rem;
+  gap: 0.75rem;
   background: var(--bg-inset);
   border: 1px solid var(--border-subtle);
-  padding-inline: 1rem;
-  padding-block: 0.48rem;
-  border-radius: 8px;
+  padding-inline: 1.15rem;
+  padding-block: 0.55rem;
+  border-radius: 10px;
   font-family: var(--font-mono);
-  font-size: 0.72rem;
+  font-size: 0.74rem;
   white-space: nowrap;
 }
 
@@ -206,8 +209,8 @@ body {
 .panel {
   background: linear-gradient(180deg, #0d1520 0%, #090e15 100%);
   border: 1px solid var(--border-subtle);
-  border-radius: 0.75rem;
-  padding: 1.25rem;
+  border-radius: 1rem;
+  padding: 1.5rem;
   box-shadow: 0 10px 28px rgba(0, 0, 0, 0.45);
 }
 
@@ -216,23 +219,23 @@ body {
   flex-wrap: wrap;
   align-items: safe center;
   justify-content: space-between;
-  gap: 0.75rem;
-  padding-block-end: 0.75rem;
-  margin-block-end: 0.85rem;
-  border-block-end: 1px solid rgba(148, 163, 184, 0.1);
-  padding-inline: 0.25rem;
+  gap: 1rem;
+  padding-block-end: 0.85rem;
+  margin-block-end: 1.1rem;
+  border-block-end: 1px solid rgba(148, 163, 184, 0.12);
+  padding-inline: 0.5rem;
 }
 
 .panel-title-group {
   display: flex;
   align-items: safe center;
-  gap: 0.5rem;
+  gap: 0.65rem;
   min-inline-size: 0;
 }
 
 .panel-title {
   font-family: var(--font-display);
-  font-size: 0.85rem;
+  font-size: 0.9rem;
   font-weight: 700;
   letter-spacing: 0.08em;
   color: #e2e8f0;
@@ -241,7 +244,7 @@ body {
 .faceplate-badges {
   display: flex;
   align-items: safe center;
-  gap: 0.45rem;
+  gap: 0.65rem;
 }
 
 .status-led {
@@ -278,17 +281,17 @@ body {
 
 .badge-mono {
   font-family: var(--font-mono);
-  font-size: 0.68rem;
+  font-size: 0.72rem;
   color: var(--accent-cyan);
-  background: rgba(34, 211, 238, 0.1);
-  border: 1px solid rgba(34, 211, 238, 0.25);
-  padding-inline: 0.85rem;
-  padding-block: 0.38rem;
-  border-radius: 6px;
+  background: rgba(34, 211, 238, 0.12);
+  border: 1px solid rgba(34, 211, 238, 0.28);
+  padding-inline: 1rem;
+  padding-block: 0.45rem;
+  border-radius: 8px;
   white-space: nowrap;
   display: inline-flex;
   align-items: center;
-  gap: 0.45rem;
+  gap: 0.5rem;
 }
 
 /* VFO & 7-SEGMENT CB FACEPLATE */
@@ -389,13 +392,14 @@ body {
 .vfo-tot-pill,
 .rx-caller-pill {
   font-family: var(--font-mono);
-  font-size: 0.68rem;
-  padding-inline: 0.85rem;
-  padding-block: 0.38rem;
-  border-radius: 6px;
+  font-size: 0.72rem;
+  padding-inline: 1rem;
+  padding-block: 0.45rem;
+  border-radius: 8px;
   white-space: nowrap;
   display: inline-flex;
   align-items: center;
+  gap: 0.5rem;
 }
 
 .vfo-mode-pill {
@@ -450,9 +454,9 @@ body {
   flex-direction: column;
   justify-content: space-between;
   background: #080d14;
-  border: 1px solid rgba(148, 163, 184, 0.18);
-  border-radius: 8px;
-  padding: 0.85rem 1rem;
+  border: 1px solid rgba(148, 163, 184, 0.22);
+  border-radius: 12px;
+  padding: 1.15rem 1.25rem;
   inline-size: 100%;
   box-sizing: border-box;
 }
@@ -461,10 +465,10 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 0.75rem;
+  gap: 1rem;
   font-family: var(--font-mono);
-  font-size: 0.64rem;
-  padding-inline: 0.35rem;
+  font-size: 0.68rem;
+  padding-inline: 0.5rem;
 }
 
 .smeter-scale-labels {
@@ -484,11 +488,11 @@ body {
 
 .rx-readout,
 .tx-readout {
-  padding-inline: 0.85rem;
-  padding-block: 0.35rem;
-  border-radius: 6px;
+  padding-inline: 1rem;
+  padding-block: 0.45rem;
+  border-radius: 8px;
   background: rgba(0, 0, 0, 0.55);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   white-space: nowrap;
   display: inline-block;
 }
@@ -631,11 +635,11 @@ body {
   background: #111b29;
   color: #cbd5e1;
   border: 1px solid rgba(148, 163, 184, 0.22);
-  border-radius: 8px;
-  padding-inline: 0.95rem;
-  padding-block: 0.48rem;
+  border-radius: 10px;
+  padding-inline: 1.15rem;
+  padding-block: 0.55rem;
   font-family: var(--font-mono);
-  font-size: 0.7rem;
+  font-size: 0.74rem;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.12s ease;
@@ -643,7 +647,7 @@ body {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.45rem;
+  gap: 0.55rem;
 }
 
 .jump-btn:hover,
@@ -1125,9 +1129,9 @@ body {
 .traffic-card {
   background: var(--bg-inset);
   border: 1px solid var(--border-subtle);
-  border-inline-start: 3px solid var(--accent-cyan);
-  border-radius: 8px;
-  padding: 0.7rem 0.85rem;
+  border-inline-start: 4px solid var(--accent-cyan);
+  border-radius: 10px;
+  padding: 0.85rem 1.15rem;
 }
 
 .traffic-card.traffic-self {
@@ -1139,10 +1143,10 @@ body {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 0.4rem;
+  gap: 0.65rem;
   font-family: var(--font-mono);
-  font-size: 0.64rem;
-  margin-block-end: 0.25rem;
+  font-size: 0.68rem;
+  margin-block-end: 0.45rem;
 }
 
 .t-handle {
@@ -1160,10 +1164,12 @@ body {
 
 .t-sig {
   color: #34d399;
-  background: rgba(16, 185, 129, 0.12);
-  padding-inline: 0.55rem;
-  padding-block: 0.2rem;
-  border-radius: 4px;
+  background: rgba(16, 185, 129, 0.14);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  padding-inline: 0.75rem;
+  padding-block: 0.28rem;
+  border-radius: 6px;
+  font-weight: 700;
 }
 
 .t-time {
@@ -1191,12 +1197,12 @@ body {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
+  gap: 0.55rem;
   font-family: var(--font-mono);
   font-size: 0.75rem;
   font-weight: 600;
   letter-spacing: 0.04em;
-  padding: 0.55rem 1rem;
+  padding: 0.65rem 1.25rem;
   border-radius: 10px;
   border: 1px solid rgba(255, 255, 255, 0.12);
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.07) 0%, rgba(255, 255, 255, 0.02) 100%), #0e1520;

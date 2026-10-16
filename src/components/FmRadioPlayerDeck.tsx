@@ -107,11 +107,21 @@ export const FmRadioPlayerDeck: React.FC<FmRadioPlayerDeckProps> = ({
     }
   };
 
+  // Cleanly Stop Playback & Terminate Audio Stream Buffer
+  const handleStop = useCallback(() => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.removeAttribute('src');
+      audioRef.current.load();
+    }
+    setIsPlaying(false);
+    setIsLoading(false);
+  }, []);
+
   // Toggle Play / Pause
   const handleTogglePlay = async () => {
     if (isPlaying) {
-      if (audioRef.current) audioRef.current.pause();
-      setIsPlaying(false);
+      handleStop();
     } else {
       await handlePlayStation(currentStation);
     }
@@ -613,10 +623,12 @@ export const FmRadioPlayerDeck: React.FC<FmRadioPlayerDeckProps> = ({
               <button
                 key={idx}
                 type="button"
-                onClick={() => handlePlayStation(station)}
-                className={`p-2.5 rounded-xl border text-left flex flex-col justify-between transition-all cursor-pointer min-h-[64px] ${
-                  isCurrent
+                onClick={() => (isCurrent && isPlaying ? handleStop() : handlePlayStation(station))}
+                className={`p-3 rounded-xl border text-left flex flex-col justify-between transition-all cursor-pointer min-h-[68px] ${
+                  isCurrent && isPlaying
                     ? 'bg-amber-500 text-black border-amber-400 font-bold shadow-md shadow-amber-500/20'
+                    : isCurrent
+                    ? 'bg-amber-500/20 text-amber-300 border-amber-500/40'
                     : 'bg-zinc-900/80 text-zinc-300 border-zinc-800 hover:border-zinc-600 hover:bg-zinc-800'
                 }`}
               >
@@ -732,18 +744,18 @@ export const FmRadioPlayerDeck: React.FC<FmRadioPlayerDeckProps> = ({
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-2 pt-2 border-t border-zinc-800/60">
+                  <div className="flex items-center gap-2 pt-2.5 border-t border-zinc-800/60">
                     <button
                       type="button"
-                      onClick={() => handlePlayStation(st)}
-                      className={`flex-1 py-1.5 px-3 rounded-lg text-xs font-bold flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
+                      onClick={() => (isCurrent ? handleStop() : handlePlayStation(st))}
+                      className={`flex-1 py-2 px-3.5 rounded-lg text-xs font-bold flex items-center justify-center gap-2 transition-all cursor-pointer ${
                         isCurrent
-                          ? 'bg-red-600 text-white shadow-md'
+                          ? 'bg-red-600 hover:bg-red-500 text-white shadow-md shadow-red-950/40'
                           : 'bg-emerald-600 hover:bg-emerald-500 text-black shadow-sm'
                       }`}
                     >
-                      {isCurrent ? <Square className="w-3 h-3 fill-current" /> : <Play className="w-3 h-3 fill-current" />}
-                      {isCurrent ? 'STOP' : 'TUNE IN'}
+                      {isCurrent ? <Square className="w-3.5 h-3.5 fill-current shrink-0" /> : <Play className="w-3.5 h-3.5 fill-current shrink-0" />}
+                      <span>{isCurrent ? 'STOP RADIO' : 'TUNE IN'}</span>
                     </button>
 
                     {onTuneTransceiverVfo && (

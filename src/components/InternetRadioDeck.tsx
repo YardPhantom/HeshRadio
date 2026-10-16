@@ -121,6 +121,8 @@ export const InternetRadioDeck: React.FC<InternetRadioDeckProps> = ({
       setStreamStatus('STOPPED');
       if (audioRef.current) {
         audioRef.current.pause();
+        audioRef.current.removeAttribute('src');
+        audioRef.current.load();
       }
       stopSynthLoop();
       return;
