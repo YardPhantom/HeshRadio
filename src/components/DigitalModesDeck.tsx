@@ -205,16 +205,14 @@ export const DigitalModesDeck: React.FC<DigitalModesDeckProps> = ({
   };
 
   return (
-    <div className="bg-[#0b1017] border border-cyan-900/40 rounded-xl p-4 shadow-2xl space-y-4">
+    <section className="panel digital-panel space-y-4" aria-label="Digital Modes Modem Suite">
       {/* 1. Header & Digital Modes Sub-Nav */}
-      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-zinc-800 pb-3">
-        <div className="flex items-center gap-2">
-          <Zap className="w-5 h-5 text-cyan-400" />
-          <span className="font-bold text-zinc-100 font-mono text-sm flex items-center gap-2">
-            DIGITAL MODES SUITE
-            <span className="text-xs px-2 py-0.5 rounded bg-cyan-500/10 text-cyan-400 border border-cyan-500/30">
-              APRS • FT8 / JS8 • SSTV
-            </span>
+      <div className="panel-header">
+        <div className="panel-title-group">
+          <span className="status-led led-purple" />
+          <h2 className="panel-title">DIGITAL MODES MODEM SUITE</h2>
+          <span className="badge-mono hidden sm:inline-block">
+            APRS • FT8 / JS8 • SSTV
           </span>
         </div>
 
@@ -547,6 +545,6 @@ export const DigitalModesDeck: React.FC<DigitalModesDeckProps> = ({
           </div>
         </div>
       )}
-    </div>
+    </section>
   );
 };

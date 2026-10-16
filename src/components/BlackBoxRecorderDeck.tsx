@@ -53,19 +53,18 @@ export const BlackBoxRecorderDeck: React.FC<BlackBoxRecorderDeckProps> = ({
   };
 
   return (
-    <div className="bg-[#0b1017] border border-zinc-800 rounded-xl p-4 font-mono space-y-4">
+    <section className="panel blackbox-panel font-mono space-y-4" aria-label="Cockpit Black Box Recorder &amp; Instant Replay">
       {/* Header */}
-      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-zinc-800 pb-3">
-        <div className="flex items-center gap-2">
-          <HardDrive className="w-5 h-5 text-amber-400" />
-          <h2 className="text-base font-bold text-zinc-100">
-            COCKPIT &ldquo;BLACK BOX&rdquo; RECORDER &amp; INSTANT REPLAY
-          </h2>
+      <div className="panel-header">
+        <div className="panel-title-group">
+          <span className="status-led led-amber" />
+          <h2 className="panel-title">COCKPIT &ldquo;BLACK BOX&rdquo; RECORDER &amp; REPLAY</h2>
+          <span className="badge-mono hidden sm:inline-block">60s RING BUFFER</span>
         </div>
 
         <button
           onClick={handleClear}
-          className="px-2.5 py-1 bg-zinc-800 hover:bg-zinc-700 text-zinc-400 hover:text-red-300 rounded text-xs flex items-center gap-1 border border-zinc-700 transition-colors"
+          className="px-2.5 py-1 bg-zinc-800 hover:bg-zinc-700 text-zinc-400 hover:text-red-300 rounded text-xs flex items-center gap-1 border border-zinc-700 transition-colors cursor-pointer"
         >
           <Trash2 className="w-3.5 h-3.5" /> CLEAR CLIPS
         </button>
@@ -169,6 +168,6 @@ export const BlackBoxRecorderDeck: React.FC<BlackBoxRecorderDeckProps> = ({
           </div>
         )}
       </div>
-    </div>
+    </section>
   );
 };

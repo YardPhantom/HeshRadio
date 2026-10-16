@@ -104,19 +104,13 @@ export const MultiBandVfoDeck: React.FC<MultiBandVfoDeckProps> = ({
   };
 
   return (
-    <div className="bg-[#0b1017]/95 border border-amber-900/40 rounded-xl p-4 shadow-2xl flex flex-col gap-4">
+    <section className="panel vfo-panel flex flex-col gap-4" aria-label="Multi-Band VFO &amp; Demodulator Deck">
       {/* 1. Header & Streamlined Band Switcher */}
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-zinc-800/80 pb-3">
-        <div className="flex items-center gap-2 min-w-0">
-          <Radio className="w-5 h-5 text-amber-400 shrink-0" />
-          <div className="flex items-center gap-2 min-w-0">
-            <span className="font-bold text-zinc-100 tracking-wider text-sm whitespace-nowrap">
-              MULTI-BAND VFO &amp; SDR
-            </span>
-            <span className="text-[10px] px-2 py-0.5 rounded bg-amber-500/10 text-amber-400 border border-amber-500/30 font-mono shrink-0 hidden sm:inline-block">
-              100 kHz – 1.75 GHz
-            </span>
-          </div>
+      <div className="panel-header">
+        <div className="panel-title-group">
+          <span className="status-led led-amber" />
+          <h2 className="panel-title">MULTI-BAND VFO &amp; SDR TRANSCEIVER</h2>
+          <span className="badge-mono hidden sm:inline-block">100 kHz – 1.75 GHz</span>
         </div>
 
         {/* Streamlined Band Selector: Quick Popular Pills + All Bands Dropdown */}
@@ -178,7 +172,7 @@ export const MultiBandVfoDeck: React.FC<MultiBandVfoDeckProps> = ({
       {/* 2. Main High-Precision Tactical Frequency Display & VFO Controls */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 items-stretch">
         {/* Left: VFO A / VFO B Switcher & Repeater Shift Controls */}
-        <div className="lg:col-span-3 flex flex-col justify-between gap-2.5 bg-black/40 p-3 rounded-xl border border-zinc-800/80">
+        <div className="lg:col-span-3 flex flex-col justify-between gap-3 bg-black/40 p-4 rounded-xl border border-zinc-800/80">
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <span className="text-xs font-mono text-zinc-400 font-bold flex items-center gap-1.5">
@@ -213,7 +207,7 @@ export const MultiBandVfoDeck: React.FC<MultiBandVfoDeckProps> = ({
                 }`}
               >
                 <div className="text-[10px] uppercase text-zinc-500 font-bold">VFO A (RX)</div>
-                <div className="truncate text-sm">{vfoAFreqMhz.toFixed(4)} MHz</div>
+                <div className="truncate text-xs font-bold">{vfoAFreqMhz.toFixed(4)} MHz</div>
               </div>
               <div
                 className={`p-2 rounded-lg border transition-all ${
@@ -223,7 +217,7 @@ export const MultiBandVfoDeck: React.FC<MultiBandVfoDeckProps> = ({
                 }`}
               >
                 <div className="text-[10px] uppercase text-zinc-500 font-bold">VFO B (TX/SPLIT)</div>
-                <div className="truncate text-sm">{vfoBFreqMhz.toFixed(4)} MHz</div>
+                <div className="truncate text-xs font-bold">{vfoBFreqMhz.toFixed(4)} MHz</div>
               </div>
             </div>
           </div>
@@ -362,7 +356,7 @@ export const MultiBandVfoDeck: React.FC<MultiBandVfoDeckProps> = ({
         </div>
 
         {/* Right: Demodulator Bank Selector & Mode Subpanels */}
-        <div className="lg:col-span-3 flex flex-col justify-between gap-2.5 bg-black/40 p-3 rounded-xl border border-zinc-800/80">
+        <div className="lg:col-span-3 flex flex-col justify-between gap-3 bg-black/40 p-4 rounded-xl border border-zinc-800/80">
           <div className="space-y-2">
             <div className="flex items-center justify-between text-xs font-mono text-zinc-400 font-bold">
               <span className="flex items-center gap-1.5">
@@ -445,7 +439,7 @@ export const MultiBandVfoDeck: React.FC<MultiBandVfoDeckProps> = ({
       {/* 3. CTCSS Sub-Audible Tone & Band Presets (Well-Spaced, Non-Overlapping) */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-2.5 border-t border-zinc-800/80">
         {/* CTCSS (PL) Tone Sub-Audible Engine */}
-        <div className="bg-black/30 p-3 rounded-xl border border-zinc-800 flex flex-col justify-between gap-2">
+        <div className="bg-black/30 p-4 rounded-xl border border-zinc-800 flex flex-col justify-between gap-3">
           <div className="flex items-center justify-between text-xs font-mono">
             <span className="font-bold text-zinc-200 flex items-center gap-1.5">
               <Activity className="w-3.5 h-3.5 text-cyan-400" />
@@ -498,7 +492,7 @@ export const MultiBandVfoDeck: React.FC<MultiBandVfoDeckProps> = ({
         </div>
 
         {/* Current Band Channel Presets */}
-        <div className="bg-black/30 p-3 rounded-xl border border-zinc-800 flex flex-col justify-between gap-2">
+        <div className="bg-black/30 p-4 rounded-xl border border-zinc-800 flex flex-col justify-between gap-3">
           <div className="flex items-center justify-between text-xs font-mono">
             <span className="font-bold text-zinc-200 flex items-center gap-1.5 truncate">
               <Compass className="w-3.5 h-3.5 text-amber-400 shrink-0" />
@@ -509,7 +503,7 @@ export const MultiBandVfoDeck: React.FC<MultiBandVfoDeckProps> = ({
             </span>
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-1.5 max-h-28 overflow-y-auto pr-1">
+          <div className="grid grid-cols-2 lg:grid-cols-3 gap-2 max-h-32 overflow-y-auto pr-1">
             {currentBand.presets.map((preset) => {
               const isActive = Math.abs(preset.frequencyMhz - frequencyMhz) < 0.001;
               return (
@@ -527,15 +521,15 @@ export const MultiBandVfoDeck: React.FC<MultiBandVfoDeckProps> = ({
                       onCtcssToneChange(preset.ctcssToneHz);
                     }
                   }}
-                  className={`text-xs px-2 py-1.5 rounded-lg font-mono transition-all text-left flex flex-col justify-center border cursor-pointer ${
+                  className={`text-xs px-2.5 py-1.5 rounded-lg font-mono transition-all text-left flex flex-col justify-center border cursor-pointer min-w-0 ${
                     isActive
                       ? 'bg-amber-500 text-black border-amber-400 font-bold shadow-md'
                       : 'bg-zinc-800/80 text-zinc-300 border-zinc-700/80 hover:bg-zinc-700 hover:text-white'
                   }`}
                   title={`${preset.name}: ${preset.description}`}
                 >
-                  <span className="font-bold truncate">{preset.name}</span>
-                  <span className={`text-[10px] ${isActive ? 'text-black/80' : 'text-zinc-400'}`}>
+                  <span className="font-bold truncate w-full">{preset.name}</span>
+                  <span className={`text-[10px] truncate ${isActive ? 'text-black/80' : 'text-zinc-400'}`}>
                     {preset.frequencyMhz.toFixed(3)} MHz
                   </span>
                 </button>
@@ -607,6 +601,6 @@ export const MultiBandVfoDeck: React.FC<MultiBandVfoDeckProps> = ({
           </div>
         </div>
       )}
-    </div>
+    </section>
   );
 };

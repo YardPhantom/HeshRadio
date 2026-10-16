@@ -737,7 +737,7 @@ export const App: React.FC = () => {
       </header>
 
       {/* 2. MODERN 2-TIER WORKSPACE NAVIGATION */}
-      <nav className="flex flex-col gap-2.5 bg-[#090e15]/95 backdrop-blur-md border border-zinc-800/80 p-4 rounded-xl shadow-xl">
+      <nav className="panel nav-panel flex flex-col gap-2.5" aria-label="Tactical Workspace Navigation">
         {/* Tier 1: 5 Clean Segmented Workspaces */}
         <div className="flex flex-wrap items-center justify-between gap-2">
           <div className="flex flex-wrap items-center gap-1.5">
@@ -1041,27 +1041,35 @@ export const App: React.FC = () => {
               </div>
 
               <div className="lg:col-span-4 flex flex-col gap-4">
-                <div className="bg-[#0b1119] border border-zinc-800 rounded-xl p-4 flex flex-col items-center justify-center">
+                <section className="panel smeter-panel flex flex-col justify-between" aria-label="IARU S-Meter and Signal Telemetry">
+                  <div className="panel-header">
+                    <div className="panel-title-group">
+                      <span className="status-led led-amber" />
+                      <h2 className="panel-title">IARU S-METER &amp; RF TELEMETRY</h2>
+                    </div>
+                    <span className="badge-mono">{frequencyMhz > 30 ? '-93 dBm S9' : '-73 dBm S9'}</span>
+                  </div>
                   <SMeterDisplay
                     reading={sMeter}
                     pttActive={pttActive}
                     squelchOpen={squelchOpen}
                     mode={mode as ModulationMode}
                   />
-                </div>
+                </section>
 
                 {/* Tactical PTT Action Deck */}
-                <div className="bg-[#0b1119] border border-zinc-800 rounded-xl p-4 space-y-3">
-                  <div className="flex items-center justify-between text-xs font-mono">
-                    <span className="font-bold text-zinc-300 flex items-center gap-1">
-                      <Mic className="w-3.5 h-3.5 text-amber-400" /> TRANSMIT (PTT)
-                    </span>
-                    <span className="text-zinc-500">TOT: {totRemainingSec}s</span>
+                <section className="panel ptt-panel space-y-3" aria-label="Tactical PTT Action Deck">
+                  <div className="panel-header">
+                    <div className="panel-title-group">
+                      <span className={`status-led ${pttActive ? 'led-red' : 'led-emerald'}`} />
+                      <h2 className="panel-title">TRANSMIT &amp; PTT ENGINE</h2>
+                    </div>
+                    <span className="badge-mono">TOT: {totRemainingSec}s</span>
                   </div>
 
                   <button
                     type="button"
-                    className={`w-full py-4 rounded-xl font-mono font-bold text-sm border-2 transition-all flex flex-col items-center justify-center shadow-lg ${
+                    className={`w-full py-4 rounded-xl font-mono font-bold text-sm border-2 transition-all flex flex-col items-center justify-center shadow-lg cursor-pointer ${
                       pttActive
                         ? 'bg-red-600 border-red-400 text-white shadow-red-600/40 animate-pulse'
                         : 'bg-gradient-to-b from-zinc-800 to-zinc-900 hover:from-amber-500/20 hover:to-zinc-800 text-amber-300 border-zinc-700 hover:border-amber-400'
@@ -1084,10 +1092,10 @@ export const App: React.FC = () => {
                     <button
                       type="button"
                       onClick={() => setTalkbackEnabled((v) => !v)}
-                      className={`py-1.5 px-2 rounded border text-center ${
+                      className={`py-1.5 px-2 rounded border text-center font-bold cursor-pointer transition-colors ${
                         talkbackEnabled
                           ? 'bg-amber-500/20 text-amber-300 border-amber-500/40'
-                          : 'bg-zinc-800 text-zinc-400 border-zinc-700'
+                          : 'bg-zinc-800 text-zinc-400 border-zinc-700 hover:text-zinc-200'
                       }`}
                     >
                       TALKBACK: {talkbackEnabled ? 'ON' : 'OFF'}
@@ -1095,16 +1103,16 @@ export const App: React.FC = () => {
                     <button
                       type="button"
                       onClick={() => setAnlEnabled((v) => !v)}
-                      className={`py-1.5 px-2 rounded border text-center ${
+                      className={`py-1.5 px-2 rounded border text-center font-bold cursor-pointer transition-colors ${
                         anlEnabled
                           ? 'bg-cyan-500/20 text-cyan-300 border-cyan-500/40'
-                          : 'bg-zinc-800 text-zinc-400 border-zinc-700'
+                          : 'bg-zinc-800 text-zinc-400 border-zinc-700 hover:text-zinc-200'
                       }`}
                     >
                       ANL LIMITER: {anlEnabled ? 'ON' : 'OFF'}
                     </button>
                   </div>
-                </div>
+                </section>
               </div>
             </div>
           </div>
@@ -1188,31 +1196,35 @@ export const App: React.FC = () => {
             />
 
             {/* Hardware Interface Reference Diagram */}
-            <div className="bg-[#0b1017] border border-zinc-800 rounded-xl p-4 font-mono text-xs text-zinc-300 space-y-2">
-              <div className="text-amber-400 font-bold flex items-center gap-1.5">
-                <Cable className="w-4 h-4" /> PLUG-AND-PLAY HARDWARE WIRING REFERENCE
+            <section className="panel hardware-ref-panel font-mono text-xs text-zinc-300 space-y-2" aria-label="Hardware Wiring Reference">
+              <div className="panel-header">
+                <div className="panel-title-group">
+                  <span className="status-led led-cyan" />
+                  <h2 className="panel-title">PLUG-AND-PLAY HARDWARE WIRING REFERENCE</h2>
+                </div>
+                <span className="badge-mono">WINDOWS &amp; ANDROID USB-OTG</span>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-[11px] text-zinc-400 pt-1">
-                <div className="p-2.5 bg-black/40 rounded border border-zinc-800/80">
+                <div className="p-3 bg-black/40 rounded-xl border border-zinc-800/80">
                   <div className="text-zinc-200 font-bold mb-1">RTL-SDR V4 / V3 Dongle</div>
                   <div>• Windows: Plug into any USB 2.0/3.0 port (Direct WebUSB pairing in Chrome/Edge).</div>
                   <div>• Android (Samsung S26 Ultra): USB-C OTG cable; direct device descriptor.</div>
                   <div>• Sample Rate: 2.048 MS/s zero-drop baseband.</div>
                 </div>
-                <div className="p-2.5 bg-black/40 rounded border border-zinc-800/80">
+                <div className="p-3 bg-black/40 rounded-xl border border-zinc-800/80">
                   <div className="text-zinc-200 font-bold mb-1">Digirig Mobile &amp; SignaLink</div>
                   <div>• PTT Keying: Serial RTS pin high on TX, low on RX.</div>
                   <div>• Audio: 300–3000 Hz USB soundcard with 4:1 soft-knee Dynamike compressor.</div>
                   <div>• CM108 GPIO3: Hardware pin 13 bit 2 toggle for zero-VOX latency.</div>
                 </div>
-                <div className="p-2.5 bg-black/40 rounded border border-zinc-800/80">
+                <div className="p-3 bg-black/40 rounded-xl border border-zinc-800/80">
                   <div className="text-zinc-200 font-bold mb-1">Hamlib rigctld &amp; CAT</div>
                   <div>• Default rigctld TCP: 127.0.0.1:4532 via embedded bridge.</div>
                   <div>• Kenwood/Elecraft/Xiegu: 38400 baud, 8N1 ASCII FA;/MD;/TX;.</div>
                   <div>• Icom CI-V: Packed Little-Endian BCD 0xFE 0xFE &lt;Addr&gt; 0xE0 ... 0xFD.</div>
                 </div>
               </div>
-            </div>
+            </section>
           </div>
         )}
 
@@ -1228,9 +1240,13 @@ export const App: React.FC = () => {
                 currentFreqMhz={frequencyMhz}
               />
             </div>
-            <div className="lg:col-span-4 bg-[#0b1017] border border-zinc-800 rounded-xl p-4 space-y-3 font-mono text-xs">
-              <div className="text-emerald-400 font-bold flex items-center gap-1.5">
-                <Music className="w-4 h-4" /> AUTO-DUCKING SIDECHAIN SPECS
+            <section className="panel sidechain-panel lg:col-span-4 space-y-3 font-mono text-xs" aria-label="Auto-Ducking Sidechain Specs">
+              <div className="panel-header">
+                <div className="panel-title-group">
+                  <span className="status-led led-emerald" />
+                  <h2 className="panel-title">AUTO-DUCKING SIDECHAIN SPECS</h2>
+                </div>
+                <span className="badge-mono">-18 dB RF PRIORITY</span>
               </div>
               <p className="text-zinc-400 text-[11px] leading-relaxed">
                 When active RF voice is detected (carrier squelch breaks threshold or PTT is held),
@@ -1241,19 +1257,19 @@ export const App: React.FC = () => {
                 After transmission ceases, audio holds for 600 ms to absorb speech pauses, then smoothly
                 restores to 100% volume over 400 ms.
               </p>
-              <div className="p-2.5 bg-black/50 rounded border border-zinc-800">
+              <div className="p-3 bg-black/50 rounded-xl border border-zinc-800">
                 <div className="flex justify-between text-[11px]">
                   <span>Current Ducker Multiplier:</span>
                   <span className="text-amber-300 font-bold">{(duckGain * 100).toFixed(0)}%</span>
                 </div>
-                <div className="w-full bg-zinc-800 h-1.5 rounded-full mt-1 overflow-hidden">
+                <div className="w-full bg-zinc-800 h-1.5 rounded-full mt-1.5 overflow-hidden">
                   <div
                     className="bg-emerald-400 h-full transition-all duration-75"
                     style={{ width: `${duckGain * 100}%` }}
                   />
                 </div>
               </div>
-            </div>
+            </section>
           </div>
         )}
 
@@ -1342,81 +1358,90 @@ export const App: React.FC = () => {
         )}
 
         {/* 4. FRONT-PANEL ANALOG CONTROLS (Always visible at bottom) */}
-        <div className="knobs-grid bg-[#0a0f17]/95 p-4 rounded-xl border border-zinc-800/80 shadow-xl">
-          <div className="knob-card">
-            <div className="knob-header">
-              <label htmlFor="vol-range">AF VOLUME</label>
-              <span className="knob-val">{Math.round(masterVolume * 100)}%</span>
+        <section className="panel knobs-panel" aria-label="Front-Panel Analog Audio and RF Controls">
+          <div className="panel-header">
+            <div className="panel-title-group">
+              <span className="status-led led-cyan" />
+              <h2 className="panel-title">FRONT-PANEL ANALOG &amp; DSP CONTROLS</h2>
             </div>
-            <input
-              id="vol-range"
-              type="range"
-              min={0}
-              max={1}
-              step={0.02}
-              value={masterVolume}
-              onChange={(e) => setMasterVolume(parseFloat(e.target.value))}
-              className="tactical-slider"
-            />
-            <span className="knob-sub">Master Receiver Audio</span>
+            <span className="badge-mono">4-CHANNEL ANALOG POTENTIOMETERS</span>
           </div>
+          <div className="knobs-grid">
+            <div className="knob-card">
+              <div className="knob-header">
+                <label htmlFor="vol-range">AF VOLUME</label>
+                <span className="knob-val">{Math.round(masterVolume * 100)}%</span>
+              </div>
+              <input
+                id="vol-range"
+                type="range"
+                min={0}
+                max={1}
+                step={0.02}
+                value={masterVolume}
+                onChange={(e) => setMasterVolume(parseFloat(e.target.value))}
+                className="tactical-slider"
+              />
+              <span className="knob-sub">Master Receiver Audio</span>
+            </div>
 
-          <div className="knob-card">
-            <div className="knob-header">
-              <label htmlFor="sql-range">SQUELCH (3dB HYST)</label>
-              <span className="knob-val">{squelchDbm} dBm</span>
+            <div className="knob-card">
+              <div className="knob-header">
+                <label htmlFor="sql-range">SQUELCH (3dB HYST)</label>
+                <span className="knob-val">{squelchDbm} dBm</span>
+              </div>
+              <input
+                id="sql-range"
+                type="range"
+                min={-125}
+                max={-55}
+                step={1}
+                value={squelchDbm}
+                onChange={(e) => setSquelchDbm(parseInt(e.target.value, 10))}
+                className="tactical-slider"
+              />
+              <span className="knob-sub">
+                {squelchDbm <= -114 ? 'OPEN (HEAR RF STATIC)' : 'GATED CARRIER THRESHOLD'}
+              </span>
             </div>
-            <input
-              id="sql-range"
-              type="range"
-              min={-125}
-              max={-55}
-              step={1}
-              value={squelchDbm}
-              onChange={(e) => setSquelchDbm(parseInt(e.target.value, 10))}
-              className="tactical-slider"
-            />
-            <span className="knob-sub">
-              {squelchDbm <= -114 ? 'OPEN (HEAR RF STATIC)' : 'GATED CARRIER THRESHOLD'}
-            </span>
-          </div>
 
-          <div className="knob-card">
-            <div className="knob-header">
-              <label htmlFor="rfg-range">RF GAIN</label>
-              <span className="knob-val">{rfGainPct}%</span>
+            <div className="knob-card">
+              <div className="knob-header">
+                <label htmlFor="rfg-range">RF GAIN</label>
+                <span className="knob-val">{rfGainPct}%</span>
+              </div>
+              <input
+                id="rfg-range"
+                type="range"
+                min={20}
+                max={100}
+                step={2}
+                value={rfGainPct}
+                onChange={(e) => setRfGainPct(parseInt(e.target.value, 10))}
+                className="tactical-slider"
+              />
+              <span className="knob-sub">Front-End LNA Attenuator</span>
             </div>
-            <input
-              id="rfg-range"
-              type="range"
-              min={20}
-              max={100}
-              step={2}
-              value={rfGainPct}
-              onChange={(e) => setRfGainPct(parseInt(e.target.value, 10))}
-              className="tactical-slider"
-            />
-            <span className="knob-sub">Front-End LNA Attenuator</span>
-          </div>
 
-          <div className="knob-card">
-            <div className="knob-header">
-              <label htmlFor="dyn-range">DYNAMIKE (4:1 COMP)</label>
-              <span className="knob-val">{dynamikePct}%</span>
+            <div className="knob-card">
+              <div className="knob-header">
+                <label htmlFor="dyn-range">DYNAMIKE (4:1 COMP)</label>
+                <span className="knob-val">{dynamikePct}%</span>
+              </div>
+              <input
+                id="dyn-range"
+                type="range"
+                min={20}
+                max={100}
+                step={5}
+                value={dynamikePct}
+                onChange={(e) => setDynamikePct(parseInt(e.target.value, 10))}
+                className="tactical-slider"
+              />
+              <span className="knob-sub">Speech Compressor &amp; Limiter</span>
             </div>
-            <input
-              id="dyn-range"
-              type="range"
-              min={20}
-              max={100}
-              step={5}
-              value={dynamikePct}
-              onChange={(e) => setDynamikePct(parseInt(e.target.value, 10))}
-              className="tactical-slider"
-            />
-            <span className="knob-sub">Speech Compressor &amp; Limiter</span>
           </div>
-        </div>
+        </section>
       </main>
 
       {/* 5. SAMSUNG GALAXY S26 ULTRA MOBILE TACTICAL COCKPIT & OVERSIZED THUMB PTT */}

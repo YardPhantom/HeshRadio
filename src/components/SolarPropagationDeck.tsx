@@ -167,16 +167,14 @@ export const SolarPropagationDeck: React.FC<SolarPropagationDeckProps> = ({
   }, [fromGrid, toGrid]);
 
   return (
-    <div className="bg-[#0b1017] border border-amber-900/40 rounded-xl p-4 shadow-2xl space-y-4">
+    <section className="panel solar-panel space-y-4" aria-label="Space Weather, Ionospheric Skip &amp; Geodesy">
       {/* Header */}
-      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-zinc-800 pb-3">
-        <div className="flex items-center gap-2">
-          <Sun className="w-5 h-5 text-amber-400" />
-          <span className="font-bold text-zinc-100 font-mono text-sm flex items-center gap-2">
-            SPACE WEATHER, IONOSPHERIC SKIP &amp; GEODESY
-            <span className="text-xs px-2 py-0.5 rounded bg-amber-500/10 text-amber-400 border border-amber-500/30">
-              NOAA SWPC LIVE TELEMETRY
-            </span>
+      <div className="panel-header">
+        <div className="panel-title-group">
+          <span className="status-led led-amber" />
+          <h2 className="panel-title">SPACE WEATHER, IONOSPHERIC SKIP &amp; GEODESY</h2>
+          <span className="badge-mono hidden sm:inline-block">
+            NOAA SWPC LIVE TELEMETRY
           </span>
         </div>
 
@@ -313,6 +311,6 @@ export const SolarPropagationDeck: React.FC<SolarPropagationDeckProps> = ({
           </div>
         </div>
       </div>
-    </div>
+    </section>
   );
 };

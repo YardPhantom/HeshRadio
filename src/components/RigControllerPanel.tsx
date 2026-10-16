@@ -79,22 +79,18 @@ export const RigControllerPanel: React.FC<RigControllerPanelProps> = ({
   };
 
   return (
-    <div className="bg-[#0b1017] border border-red-900/40 rounded-xl p-4 shadow-xl space-y-3">
+    <section className="panel rig-panel space-y-3 font-mono" aria-label="CAT Transceiver Rig Controller &amp; Hardware PTT">
       {/* Header */}
-      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-zinc-800 pb-2">
-        <div className="flex items-center gap-2">
-          <Cable className="w-5 h-5 text-red-400" />
-          <span className="font-bold text-zinc-100 text-sm font-mono flex items-center gap-2">
-            TRANSCEIVER CAT RIG CONTROL & HARDWARE PTT
-            <span
-              className={`text-xs px-2 py-0.5 rounded font-bold border ${
-                rigStatus.connected
-                  ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30'
-                  : 'bg-zinc-800 text-zinc-400 border-zinc-700'
-              }`}
-            >
-              {rigStatus.connected ? 'RIG ONLINE' : 'DIRECT SDR MODE'}
-            </span>
+      <div className="panel-header">
+        <div className="panel-title-group">
+          <span className={`status-led ${rigStatus.connected ? 'led-emerald' : 'led-red'}`} />
+          <h2 className="panel-title">TRANSCEIVER CAT RIG CONTROL &amp; HARDWARE PTT</h2>
+          <span
+            className={`badge-mono font-bold ${
+              rigStatus.connected ? 'text-emerald-400' : 'text-zinc-400'
+            }`}
+          >
+            {rigStatus.connected ? 'RIG ONLINE' : 'DIRECT SDR MODE'}
           </span>
         </div>
 
@@ -246,6 +242,6 @@ export const RigControllerPanel: React.FC<RigControllerPanelProps> = ({
         </span>
         <span className="text-zinc-500 truncate max-w-sm">{rigStatus.statusMessage}</span>
       </div>
-    </div>
+    </section>
   );
 };

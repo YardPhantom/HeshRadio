@@ -48,28 +48,26 @@ export const RtlSdrControlPanel: React.FC<RtlSdrControlPanelProps> = ({
   };
 
   return (
-    <div className="bg-[#0b1017] border border-cyan-900/40 rounded-xl p-4 shadow-xl space-y-3">
+    <section className="panel sdr-panel space-y-3 font-mono" aria-label="RTL-SDR V4 Hardware Configuration">
       {/* Header */}
-      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-zinc-800 pb-2">
-        <div className="flex items-center gap-2">
-          <Cpu className="w-5 h-5 text-cyan-400" />
-          <span className="font-bold text-zinc-100 text-sm font-mono flex items-center gap-2">
-            RTL-SDR HARDWARE BRIDGE
-            <span
-              className={`text-xs px-2 py-0.5 rounded font-bold border ${
-                sdrStatus.mode === 'WEBUSB'
-                  ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30'
-                  : sdrStatus.mode === 'RTL_TCP'
-                  ? 'bg-cyan-500/10 text-cyan-400 border-cyan-500/30'
-                  : 'bg-amber-500/10 text-amber-400 border-amber-500/30'
-              }`}
-            >
-              {sdrStatus.mode === 'WEBUSB'
-                ? 'HW USB DONGLE'
+      <div className="panel-header">
+        <div className="panel-title-group">
+          <span className={`status-led ${sdrStatus.connected ? 'led-emerald' : 'led-amber'}`} />
+          <h2 className="panel-title">RTL-SDR HARDWARE BRIDGE</h2>
+          <span
+            className={`badge-mono font-bold ${
+              sdrStatus.mode === 'WEBUSB'
+                ? 'text-emerald-400'
                 : sdrStatus.mode === 'RTL_TCP'
-                ? 'RTL_TCP NETWORK'
-                : 'SIMULATED / WebSDR'}
-            </span>
+                ? 'text-cyan-400'
+                : 'text-amber-400'
+            }`}
+          >
+            {sdrStatus.mode === 'WEBUSB'
+              ? 'HW USB DONGLE'
+              : sdrStatus.mode === 'RTL_TCP'
+              ? 'RTL_TCP NETWORK'
+              : 'SIMULATED / WebSDR'}
           </span>
         </div>
 
@@ -195,6 +193,6 @@ export const RtlSdrControlPanel: React.FC<RtlSdrControlPanelProps> = ({
           <span className="truncate">{sdrStatus.statusMessage}</span>
         </div>
       </div>
-    </div>
+    </section>
   );
 };

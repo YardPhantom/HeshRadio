@@ -134,16 +134,14 @@ export const AdifQsoLogDeck: React.FC<AdifQsoLogDeckProps> = ({
   });
 
   return (
-    <div className="bg-[#0b1017] border border-emerald-900/40 rounded-xl p-4 shadow-2xl space-y-4">
+    <section className="panel adif-panel space-y-4" aria-label="ADIF 3.1.4 Electronic QSO Logbook">
       {/* Header */}
-      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-zinc-800 pb-3">
-        <div className="flex items-center gap-2">
-          <BookOpen className="w-5 h-5 text-emerald-400" />
-          <span className="font-bold text-zinc-100 font-mono text-sm flex items-center gap-2">
-            ADIF 3.1.4 ELECTRONIC QSO LOGBOOK
-            <span className="text-xs px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
-              {records.length} TOTAL QSOS
-            </span>
+      <div className="panel-header">
+        <div className="panel-title-group">
+          <span className="status-led led-emerald" />
+          <h2 className="panel-title">ADIF 3.1.4 ELECTRONIC QSO LOGBOOK</h2>
+          <span className="badge-mono hidden sm:inline-block">
+            {records.length} TOTAL QSOS
           </span>
         </div>
 
@@ -346,6 +344,6 @@ export const AdifQsoLogDeck: React.FC<AdifQsoLogDeckProps> = ({
           </tbody>
         </table>
       </div>
-    </div>
+    </section>
   );
 };

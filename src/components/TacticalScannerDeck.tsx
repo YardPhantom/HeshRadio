@@ -120,27 +120,26 @@ export const TacticalScannerDeck: React.FC<TacticalScannerDeckProps> = ({
   };
 
   return (
-    <div className="bg-[#0b1017] border border-zinc-800 rounded-xl p-4 font-mono space-y-4">
+    <section className="panel scanner-panel font-mono space-y-4" aria-label="Tactical High-Speed Scanner">
       {/* Header */}
-      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-zinc-800 pb-3">
-        <div className="flex items-center gap-2">
-          <FastForward className="w-5 h-5 text-amber-400" />
-          <h2 className="text-base font-bold text-zinc-100">
-            TACTICAL HIGH-SPEED SCANNER &amp; MEMORY BANKS
-          </h2>
+      <div className="panel-header">
+        <div className="panel-title-group">
+          <span className="status-led led-emerald" />
+          <h2 className="panel-title">TACTICAL HIGH-SPEED SCANNER &amp; MEMORY BANKS</h2>
+          <span className="badge-mono hidden sm:inline-block">100 CH/SEC</span>
         </div>
 
         <div className="flex items-center gap-2">
           <button
             onClick={handleExportJson}
-            className="px-2.5 py-1 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 rounded text-xs flex items-center gap-1 border border-zinc-700"
+            className="px-2.5 py-1 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 rounded text-xs flex items-center gap-1 border border-zinc-700 cursor-pointer transition-colors"
             title="Export Memory Banks to JSON"
           >
             <Download className="w-3.5 h-3.5" /> EXPORT JSON
           </button>
           <button
             onClick={() => setShowAddModal(true)}
-            className="px-2.5 py-1 bg-amber-500 hover:bg-amber-400 text-black font-bold rounded text-xs flex items-center gap-1"
+            className="px-2.5 py-1 bg-amber-500 hover:bg-amber-400 text-black font-bold rounded text-xs flex items-center gap-1 cursor-pointer transition-colors shadow-sm"
           >
             <Plus className="w-3.5 h-3.5" /> ADD CHANNEL
           </button>
@@ -418,6 +417,6 @@ export const TacticalScannerDeck: React.FC<TacticalScannerDeckProps> = ({
           </form>
         </div>
       )}
-    </div>
+    </section>
   );
 };

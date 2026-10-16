@@ -54,17 +54,15 @@ export const LaboratorySignalDeck: React.FC<LaboratorySignalDeckProps> = ({
   };
 
   return (
-    <div className="bg-[#0b1017] border border-zinc-800 rounded-xl p-4 font-mono space-y-4">
+    <section className="panel lab-panel font-mono space-y-4" aria-label="RF &amp; Audio Laboratory Calibration Suite">
       {/* Header */}
-      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-zinc-800 pb-3">
-        <div className="flex items-center gap-2">
-          <Wrench className="w-5 h-5 text-amber-400" />
-          <h2 className="text-base font-bold text-zinc-100">
-            RF &amp; AUDIO LABORATORY CALIBRATION SUITE
-          </h2>
+      <div className="panel-header">
+        <div className="panel-title-group">
+          <span className="status-led led-cyan" />
+          <h2 className="panel-title">RF &amp; AUDIO LABORATORY CALIBRATION SUITE</h2>
         </div>
-        <span className="text-xs text-zinc-500">
-          DETERMINISTIC TEST GENERATORS &bull; IARU &amp; FCC PART 95 ALIGNMENT
+        <span className="badge-mono hidden sm:inline-block">
+          DETERMINISTIC TEST GENERATORS &bull; IARU &amp; FCC PART 95
         </span>
       </div>
 
@@ -237,6 +235,6 @@ export const LaboratorySignalDeck: React.FC<LaboratorySignalDeckProps> = ({
           </button>
         </div>
       </div>
-    </div>
+    </section>
   );
 };

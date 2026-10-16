@@ -76,20 +76,19 @@ export const NoaaEmergencyDeck: React.FC<NoaaEmergencyDeckProps> = ({
   };
 
   return (
-    <div className="bg-[#0b1017] border border-zinc-800 rounded-xl p-4 font-mono space-y-4">
+    <section className="panel noaa-panel font-mono space-y-4" aria-label="NOAA Weather Radio All-Hazards &amp; EAS SAME Decoder">
       {/* Header */}
-      <div className="flex flex-wrap items-center justify-between gap-2 border-b border-zinc-800 pb-3">
-        <div className="flex items-center gap-2">
-          <ShieldAlert className="w-5 h-5 text-red-500 animate-pulse" />
-          <h2 className="text-base font-bold text-zinc-100">
-            NOAA WEATHER RADIO ALL-HAZARDS &amp; EAS SAME DECODER
-          </h2>
+      <div className="panel-header">
+        <div className="panel-title-group">
+          <span className="status-led led-red" />
+          <h2 className="panel-title">NOAA WEATHER RADIO ALL-HAZARDS &amp; EAS SAME DECODER</h2>
+          <span className="badge-mono hidden sm:inline-block">1050 Hz / AFSK</span>
         </div>
 
         <button
           onClick={handleSimulateAlert}
           disabled={simulating}
-          className="px-3 py-1.5 bg-red-600 hover:bg-red-500 disabled:opacity-50 text-white font-bold rounded text-xs flex items-center gap-1.5 shadow-lg shadow-red-600/30 transition-all"
+          className="px-3 py-1.5 bg-red-600 hover:bg-red-500 disabled:opacity-50 text-white font-bold rounded text-xs flex items-center gap-1.5 shadow-lg shadow-red-600/30 transition-all cursor-pointer"
         >
           <Zap className="w-3.5 h-3.5" />
           {simulating ? 'RUNNING EMERGENCY TEST...' : 'SIMULATE NWS 1050Hz & SAME ALERT'}
@@ -241,6 +240,6 @@ export const NoaaEmergencyDeck: React.FC<NoaaEmergencyDeckProps> = ({
           </table>
         </div>
       </div>
-    </div>
+    </section>
   );
 };
