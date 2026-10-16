@@ -3,30 +3,43 @@ import react from '@vitejs/plugin-react';
 import { WebSocketServer, WebSocket } from 'ws';
 import type { IncomingMessage } from 'http';
 import type { Duplex } from 'stream';
+import net from 'net';
 
 /**
- * Embedded Multi-Peer CB PTT & Tactical Telemetry Relay Server.
- * Allows Windows Desktop and Samsung S26 Ultra on the same LAN to communicate
- * live over Virtual CB Channels 1-40 (voice frames, PTT key-ups, and text/traffic spots).
+ * Embedded Multi-Peer CB PTT & Tactical Telemetry Relay Server
+ * + Local TCP Bridge for rtl_tcp (127.0.0.1:1234) and Hamlib rigctld (127.0.0.1:4532).
  */
 function heshRadioPttRelayPlugin(): Plugin {
   return {
     name: 'heshradio-ptt-relay',
     configureServer(server) {
-      const wss = new WebSocketServer({ noServer: true });
+      const cbWss = new WebSocketServer({ noServer: true });
+      const rtlTcpWss = new WebSocketServer({ noServer: true });
+      const rigctldWss = new WebSocketServer({ noServer: true });
       const clients = new Set<WebSocket>();
 
       server.httpServer?.on('upgrade', (req: IncomingMessage, socket: Duplex, head: Buffer) => {
-        if (req.url === '/ws-cb') {
-          wss.handleUpgrade(req, socket, head, (ws) => {
-            wss.emit('connection', ws, req);
+        const urlObj = new URL(req.url || '/', `http://${req.headers.host || 'localhost'}`);
+        const pathname = urlObj.pathname;
+
+        if (pathname === '/ws-cb') {
+          cbWss.handleUpgrade(req, socket, head, (ws) => {
+            cbWss.emit('connection', ws, req);
+          });
+        } else if (pathname === '/ws-rtltcp') {
+          rtlTcpWss.handleUpgrade(req, socket, head, (ws) => {
+            rtlTcpWss.emit('connection', ws, req);
+          });
+        } else if (pathname === '/ws-rigctld') {
+          rigctldWss.handleUpgrade(req, socket, head, (ws) => {
+            rigctldWss.emit('connection', ws, req);
           });
         }
       });
 
-      wss.on('connection', (ws: WebSocket) => {
+      // 1. Virtual CB Corridor & LAN Audio/Traffic Relay
+      cbWss.on('connection', (ws: WebSocket) => {
         clients.add(ws);
-        // Broadcast updated peer count
         const peerMsg = JSON.stringify({ type: 'PEER_COUNT', count: clients.size });
         for (const c of clients) {
           if (c.readyState === WebSocket.OPEN) c.send(peerMsg);
@@ -46,6 +59,76 @@ function heshRadioPttRelayPlugin(): Plugin {
           for (const c of clients) {
             if (c.readyState === WebSocket.OPEN) c.send(closeMsg);
           }
+        });
+      });
+
+      // 2. rtl_tcp TCP Socket Bridge (default 127.0.0.1:1234)
+      rtlTcpWss.on('connection', (ws: WebSocket, req: IncomingMessage) => {
+        const urlObj = new URL(req.url || '/', 'http://localhost');
+        const target = urlObj.searchParams.get('target') || '127.0.0.1:1234';
+        const [host, portStr] = target.split(':');
+        const port = parseInt(portStr, 10) || 1234;
+
+        const tcpSocket = net.createConnection({ host, port }, () => {
+          console.log(`[RTL_TCP Bridge] Connected to TCP rtl_tcp daemon at ${host}:${port}`);
+        });
+
+        tcpSocket.on('data', (chunk) => {
+          if (ws.readyState === WebSocket.OPEN) {
+            ws.send(chunk);
+          }
+        });
+
+        tcpSocket.on('error', (err) => {
+          console.warn(`[RTL_TCP Bridge] TCP socket error: ${err.message}`);
+          ws.close();
+        });
+
+        tcpSocket.on('close', () => {
+          ws.close();
+        });
+
+        ws.on('message', (msg: Buffer) => {
+          tcpSocket.write(msg);
+        });
+
+        ws.on('close', () => {
+          tcpSocket.end();
+        });
+      });
+
+      // 3. Hamlib rigctld TCP Socket Bridge (default 127.0.0.1:4532)
+      rigctldWss.on('connection', (ws: WebSocket, req: IncomingMessage) => {
+        const urlObj = new URL(req.url || '/', 'http://localhost');
+        const target = urlObj.searchParams.get('target') || '127.0.0.1:4532';
+        const [host, portStr] = target.split(':');
+        const port = parseInt(portStr, 10) || 4532;
+
+        const tcpSocket = net.createConnection({ host, port }, () => {
+          console.log(`[Rigctld Bridge] Connected to TCP Hamlib rigctld daemon at ${host}:${port}`);
+        });
+
+        tcpSocket.on('data', (chunk) => {
+          if (ws.readyState === WebSocket.OPEN) {
+            ws.send(chunk.toString('utf-8'));
+          }
+        });
+
+        tcpSocket.on('error', (err) => {
+          console.warn(`[Rigctld Bridge] TCP socket error: ${err.message}`);
+          ws.close();
+        });
+
+        tcpSocket.on('close', () => {
+          ws.close();
+        });
+
+        ws.on('message', (msg: string | Buffer) => {
+          tcpSocket.write(msg.toString());
+        });
+
+        ws.on('close', () => {
+          tcpSocket.end();
         });
       });
     },

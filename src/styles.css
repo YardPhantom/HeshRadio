@@ -1,3 +1,5 @@
+@import "tailwindcss";
+
 :root {
   --bg-void: #05080c;
   --bg-panel: #0b1119;
@@ -1124,4 +1126,96 @@ body {
   font-size: 0.76rem;
   line-height: 1.38;
   color: #cbd5e1;
+}
+
+/* MODERN TACTICAL UI & GLASSMORPHISM */
+.tactical-glass-card {
+  background: linear-gradient(180deg, rgba(16, 25, 38, 0.75) 0%, rgba(9, 14, 22, 0.90) 100%);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.48), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  border-radius: 14px;
+}
+
+.tactical-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  padding: 0.55rem 1rem;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.07) 0%, rgba(255, 255, 255, 0.02) 100%), #0e1520;
+  color: #cbd5e1;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  cursor: pointer;
+  transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+  user-select: none;
+}
+
+.tactical-btn:hover {
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.25);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0.04) 100%), #141e2e;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.tactical-btn:active {
+  transform: translateY(1px) scale(0.98);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.4), inset 0 2px 4px rgba(0, 0, 0, 0.4);
+}
+
+.tactical-btn.active-amber {
+  background: linear-gradient(180deg, #f59e0b 0%, #d97706 100%);
+  color: #000000;
+  font-weight: 700;
+  border-color: #fbbf24;
+  box-shadow: 0 0 16px rgba(245, 158, 11, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+
+.tactical-btn.active-cyan {
+  background: linear-gradient(180deg, #22d3ee 0%, #0891b2 100%);
+  color: #000000;
+  font-weight: 700;
+  border-color: #67e8f9;
+  box-shadow: 0 0 16px rgba(34, 211, 238, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+
+.tactical-btn.active-emerald {
+  background: linear-gradient(180deg, #10b981 0%, #059669 100%);
+  color: #000000;
+  font-weight: 700;
+  border-color: #34d399;
+  box-shadow: 0 0 16px rgba(16, 185, 129, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+
+.tactical-btn.active-purple {
+  background: linear-gradient(180deg, #a855f7 0%, #7e22ce 100%);
+  color: #ffffff;
+  font-weight: 700;
+  border-color: #c084fc;
+  box-shadow: 0 0 16px rgba(168, 85, 247, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+
+.tactical-btn.active-red {
+  background: linear-gradient(180deg, #ef4444 0%, #dc2626 100%);
+  color: #ffffff;
+  font-weight: 700;
+  border-color: #f87171;
+  box-shadow: 0 0 16px rgba(239, 68, 68, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+
+/* TACTICAL MONOCHROMATIC RED NIGHT VISION (S26 Ultra & Desktop) */
+html.tactical-night-vision {
+  filter: grayscale(100%) brightness(85%) sepia(100%) hue-rotate(-50deg) saturate(650%);
+  background-color: #080000 !important;
+}
+html.tactical-night-vision body {
+  background-color: #080000 !important;
 }

@@ -52,7 +52,12 @@ pub const CB_CHANNEL_FREQS_HZ: [u64; 40] = [
 pub struct RadioRigState {
     pub channel: u8,
     pub frequency_hz: u64,
-    pub mode: String, // "AM", "FM", "USB", "LSB"
+    pub vfo_a_hz: u64,
+    pub vfo_b_hz: u64,
+    pub active_vfo: String, // "VFO_A" or "VFO_B"
+    pub mode: String,       // "AM", "NFM", "WFM", "USB", "LSB", "CW"
+    pub repeater_offset_hz: i64,
+    pub ctcss_tone_hz: Option<f32>,
     pub ptt_active: bool,
     pub squelch_dbm: f32,
     pub rf_gain_db: f32,
@@ -66,7 +71,12 @@ impl Default for RadioRigState {
         Self {
             channel: 19,
             frequency_hz: CB_CHANNEL_FREQS_HZ[18],
+            vfo_a_hz: CB_CHANNEL_FREQS_HZ[18],
+            vfo_b_hz: CB_CHANNEL_FREQS_HZ[18],
+            active_vfo: "VFO_A".to_string(),
             mode: "AM".to_string(),
+            repeater_offset_hz: 0,
+            ctcss_tone_hz: None,
             ptt_active: false,
             squelch_dbm: -105.0,
             rf_gain_db: 100.0,
@@ -79,14 +89,20 @@ impl Default for RadioRigState {
 
 pub struct AppState(pub Mutex<RadioRigState>);
 
-/// Calibrates received power (dBm) to IARU Region 1 / HF Standard S-Units:
-/// S9 = -73.0 dBm, 6.0 dB per S-unit below S9.
+/// Calibrates received power (dBm) to IARU Region 1 Standard S-Units:
+/// HF (< 30 MHz): S9 = -73.0 dBm, 6.0 dB per S-unit below S9.
+/// VHF/UHF (> 30 MHz): S9 = -93.0 dBm, 6.0 dB per S-unit below S9.
 #[tauri::command]
-pub fn calculate_s_meter(power_dbm: f32) -> (u8, f32) {
-    if power_dbm >= -73.0 {
-        (9, (power_dbm - (-73.0)).min(60.0))
+pub fn calculate_s_meter(power_dbm: f32, freq_hz: Option<u64>) -> (u8, f32) {
+    let s9_ref = match freq_hz {
+        Some(f) if f > 30_000_000 => -93.0,
+        _ => -73.0,
+    };
+
+    if power_dbm >= s9_ref {
+        (9, (power_dbm - s9_ref).min(60.0))
     } else {
-        let s_float = 9.0 + (power_dbm - (-73.0)) / 6.0;
+        let s_float = 9.0 + (power_dbm - s9_ref) / 6.0;
         let s_unit = s_float.clamp(0.0, 9.0).floor() as u8;
         (s_unit, 0.0)
     }
@@ -100,9 +116,33 @@ pub fn set_cb_channel(state: State<'_, AppState>, channel: u8) -> Result<RadioRi
     let mut rig = state.0.lock().map_err(|e| e.to_string())?;
     rig.channel = channel;
     rig.frequency_hz = CB_CHANNEL_FREQS_HZ[(channel - 1) as usize];
+    rig.vfo_a_hz = rig.frequency_hz;
     if channel == 38 && rig.mode == "AM" {
         rig.mode = "LSB".to_string();
     }
+    Ok(rig.clone())
+}
+
+#[tauri::command]
+pub fn set_vfo_frequency(state: State<'_, AppState>, freq_hz: u64, vfo: Option<String>) -> Result<RadioRigState, String> {
+    if freq_hz < 100_000 || freq_hz > 1_750_000_000 {
+        return Err("Frequency must be between 100 kHz and 1.75 GHz".into());
+    }
+    let mut rig = state.0.lock().map_err(|e| e.to_string())?;
+    let target_vfo = vfo.unwrap_or_else(|| rig.active_vfo.clone());
+    if target_vfo == "VFO_B" {
+        rig.vfo_b_hz = freq_hz;
+    } else {
+        rig.vfo_a_hz = freq_hz;
+    }
+    rig.frequency_hz = freq_hz;
+    Ok(rig.clone())
+}
+
+#[tauri::command]
+pub fn set_modulation_mode(state: State<'_, AppState>, mode: String) -> Result<RadioRigState, String> {
+    let mut rig = state.0.lock().map_err(|e| e.to_string())?;
+    rig.mode = mode;
     Ok(rig.clone())
 }
 
@@ -116,6 +156,14 @@ pub fn set_ptt_state(state: State<'_, AppState>, active: bool) -> Result<RadioRi
     Ok(rig.clone())
 }
 
+#[tauri::command]
+pub fn panic_unkey(state: State<'_, AppState>) -> Result<RadioRigState, String> {
+    let mut rig = state.0.lock().map_err(|e| e.to_string())?;
+    rig.ptt_active = false;
+    rig.tot_remaining_sec = 180;
+    Ok(rig.clone())
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
@@ -123,7 +171,10 @@ pub fn run() {
         .invoke_handler(tauri::generate_handler![
             calculate_s_meter,
             set_cb_channel,
-            set_ptt_state
+            set_vfo_frequency,
+            set_modulation_mode,
+            set_ptt_state,
+            panic_unkey
         ])
         .run(tauri::generate_context!())
         .expect("error while running HeshRadio Tauri application");

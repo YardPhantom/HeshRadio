@@ -1,48 +1,54 @@
-import { CB_CHANNELS, ModulationMode } from './cbChannels';
+import { ModulationModeExtended } from './bandPlans';
+import { CB_CHANNELS } from './cbChannels';
+import { CtcssToneEncoder, GoertzelCtcssDecoder, CtcssDetectionResult } from './ctcssTones';
+import { DemodulatorBank, RdsStationData } from './demodulators';
 
 export type RogerBeepType = 'CLASSIC_2475' | 'APOLLO_DUAL' | 'TRUCKER_K' | 'OFF';
 
 export interface SMeterReading {
   powerDbm: number;
-  sUnits: number;       // 0 to 9
-  overS9Db: number;     // 0 to 60
-  formatted: string;    // e.g. "S7" or "S9+15dB"
+  sUnits: number;           // 0 to 9
+  overS9Db: number;         // 0 to 60
+  formatted: string;        // e.g. "S7" or "S9+15dB"
   needleNormalized: number; // 0.0 to 1.0 for analog/bar meter
   modulationPct: number;    // 0 to 100% during TX/RX
   swrRatio: number;         // e.g. 1.15 during TX
+  s9ReferenceDbm: number;   // -73 dBm on HF, -93 dBm on VHF/UHF
 }
 
 /**
- * Computes IARU Standard HF/11m CB S-Meter reading:
- * S9 = -73.0 dBm (50 uV into 50 Ohms), 6.0 dB per S-unit below S9.
+ * Computes IARU Standard S-Meter reading:
+ * - HF (< 30 MHz): S9 = -73.0 dBm (50 uV into 50 Ohms), 6.0 dB per S-unit below S9.
+ * - VHF/UHF (> 30 MHz): S9 = -93.0 dBm (5 uV into 50 Ohms), 6.0 dB per S-unit below S9.
  */
 export function computeIaruSMeter(
   powerDbm: number,
   modulationPct: number = 0,
-  swrRatio: number = 1.15
+  swrRatio: number = 1.15,
+  frequencyMhz: number = 27.185
 ): SMeterReading {
+  const s9Ref = frequencyMhz > 30.0 ? -93.0 : -73.0;
+  const s0Floor = s9Ref - 54.0; // 9 S-units * 6 dB = 54 dB below S9 (-127 dBm HF, -147 dBm VHF)
+
   let sUnits = 0;
   let overS9Db = 0;
 
-  if (powerDbm >= -73.0) {
+  if (powerDbm >= s9Ref) {
     sUnits = 9;
-    overS9Db = Math.min(60, Math.round(powerDbm - -73.0));
+    overS9Db = Math.min(60, Math.round(powerDbm - s9Ref));
   } else {
-    const rawS = 9.0 + (powerDbm - -73.0) / 6.0;
+    const rawS = 9.0 + (powerDbm - s9Ref) / 6.0;
     sUnits = Math.max(0, Math.min(9, Math.floor(rawS)));
     overS9Db = 0;
   }
 
-  const formatted =
-    overS9Db > 0 ? `S9+${overS9Db}dB` : `S${sUnits}`;
+  const formatted = overS9Db > 0 ? `S9+${overS9Db}dB` : `S${sUnits}`;
 
-  // Normalize -127 dBm (S0) .. -13 dBm (S9+60) into [0, 1]
-  // S0..-73dBm maps to 0.0 .. 0.62, S9..S9+60 maps to 0.62 .. 1.0
   let needleNormalized = 0;
-  if (powerDbm <= -73.0) {
-    needleNormalized = Math.max(0, (powerDbm - -127.0) / (-73.0 - -127.0)) * 0.62;
+  if (powerDbm <= s9Ref) {
+    needleNormalized = Math.max(0, (powerDbm - s0Floor) / (s9Ref - s0Floor)) * 0.62;
   } else {
-    needleNormalized = 0.62 + Math.min(1, (powerDbm - -73.0) / 60.0) * 0.38;
+    needleNormalized = 0.62 + Math.min(1, (powerDbm - s9Ref) / 60.0) * 0.38;
   }
 
   return {
@@ -53,12 +59,17 @@ export function computeIaruSMeter(
     needleNormalized: Math.max(0, Math.min(1, needleNormalized)),
     modulationPct: Math.max(0, Math.min(100, Math.round(modulationPct))),
     swrRatio,
+    s9ReferenceDbm: s9Ref,
   };
 }
 
 /**
- * Zero-Allocation Real-Time RF Spectrum & CB Audio DSP Engine.
- * Pre-allocates all FFT and window buffers to comply with real-time audio invariants.
+ * Zero-Allocation Wideband Multi-Band DSP Engine (100 kHz - 1.75 GHz).
+ * Incorporates:
+ * - Full Demodulator Bank (AM, NFM, WFM, USB, LSB, CW)
+ * - Goertzel CTCSS 50-Tone Sub-Audible Decoder & Encoder
+ * - Real-time Waterfall & Spectrum FFT across tuned RF span
+ * - Auto-Ducking sidechain mixer for Internet Radio
  */
 export class HeshRadioDspEngine {
   public readonly fftBins = 512;
@@ -67,37 +78,56 @@ export class HeshRadioDspEngine {
   private readonly blackmanHarrisWin: Float32Array;
   private readonly rawFreqData: Uint8Array<ArrayBuffer>;
 
+  // Demodulators and CTCSS Subsystems
+  public readonly demodulatorBank: DemodulatorBank;
+  public readonly ctcssDecoder: GoertzelCtcssDecoder;
+  public readonly ctcssEncoder: CtcssToneEncoder;
+
   private audioCtx: AudioContext | null = null;
   private micStream: MediaStream | null = null;
   private micSource: MediaStreamAudioSourceNode | null = null;
   private micAnalyser: AnalyserNode | null = null;
   private talkbackGain: GainNode | null = null;
   private staticNoiseGain: GainNode | null = null;
+  private cwSidetoneOsc: OscillatorNode | null = null;
+  private cwSidetoneGain: GainNode | null = null;
   private rxCarrierOsc: OscillatorNode | null = null;
   private rxCarrierGain: GainNode | null = null;
   private rxWhineOsc: OscillatorNode | null = null;
   private rxWhineGain: GainNode | null = null;
 
-  // Squelch hysteresis state (Open at theta_open, Close at theta_open - 3.0 dB)
+  // Squelch state
   private squelchOpenState = false;
   private currentDuckGain = 1.0;
   private lastVoiceActiveTimestamp = 0;
   private phaseAccumulator = 0;
 
+  // Real-time sub-audible CTCSS audio buffer for Goertzel
+  private subAudibleBuffer: Float32Array;
+  public latestCtcssResult: CtcssDetectionResult = {
+    detectedToneHz: null,
+    detectedToneConfidence: 0,
+    tonePowers: new Float32Array(50),
+    squelchMatches: true,
+  };
+
   // Simulated / Network Incoming Carrier state
   private incomingCarrierActive = false;
   private incomingSignalDbm = -114;
-  private incomingChannel = 19;
-  private incomingModDepth = 0;
+  private incomingFreqMhz = 27.185;
 
   constructor() {
     this.spectrumDb = new Float32Array(this.fftBins).fill(-118);
     this.peakHoldDb = new Float32Array(this.fftBins).fill(-118);
     this.blackmanHarrisWin = new Float32Array(this.fftBins);
     this.rawFreqData = new Uint8Array(this.fftBins);
+    this.subAudibleBuffer = new Float32Array(128);
 
-    // Precompute 4-Term Blackman-Harris window coefficients:
-    // w[n] = a0 - a1*cos(2*pi*n/(N-1)) + a2*cos(4*pi*n/(N-1)) - a3*cos(6*pi*n/(N-1))
+    this.demodulatorBank = new DemodulatorBank(48000);
+    this.ctcssDecoder = new GoertzelCtcssDecoder();
+    this.ctcssEncoder = new CtcssToneEncoder();
+
+    // 4-Term Blackman-Harris Window
     const a0 = 0.35875;
     const a1 = 0.48829;
     const a2 = 0.14128;
@@ -106,16 +136,15 @@ export class HeshRadioDspEngine {
     for (let n = 0; n < N; n++) {
       const ratio = (2 * Math.PI * n) / (N - 1);
       this.blackmanHarrisWin[n] =
-        a0 -
-        a1 * Math.cos(ratio) +
-        a2 * Math.cos(2 * ratio) -
-        a3 * Math.cos(3 * ratio);
+        a0 - a1 * Math.cos(ratio) + a2 * Math.cos(2 * ratio) - a3 * Math.cos(3 * ratio);
     }
   }
 
   public async initAudioContext(): Promise<boolean> {
     if (!this.audioCtx) {
-      const AudioCtx = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+      const AudioCtx =
+        window.AudioContext ||
+        (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
       this.audioCtx = new AudioCtx({ latencyHint: 'interactive' });
       this.setupStaticFloorAndRxChain();
     }
@@ -125,15 +154,11 @@ export class HeshRadioDspEngine {
     return true;
   }
 
-  /**
-   * Builds the continuous RF band noise floor + 300-3000 Hz Butterworth bandpass
-   * + simulated diesel alternator whine (attenuated when ANL is enabled).
-   */
   private setupStaticFloorAndRxChain(): void {
     if (!this.audioCtx) return;
     const ctx = this.audioCtx;
 
-    // Create 3-second looping pink/band-limited RF static buffer (allocated once at startup)
+    // 3-second looping pink noise static buffer
     const bufferSize = ctx.sampleRate * 3;
     const noiseBuffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
     const output = noiseBuffer.getChannelData(0);
@@ -154,7 +179,7 @@ export class HeshRadioDspEngine {
     whiteNoise.buffer = noiseBuffer;
     whiteNoise.loop = true;
 
-    // 300 - 3000 Hz CB Voice Passband Filter
+    // 300 - 3000 Hz Standard Voice Passband Filter
     const hpFilter = ctx.createBiquadFilter();
     hpFilter.type = 'highpass';
     hpFilter.frequency.value = 300;
@@ -162,7 +187,7 @@ export class HeshRadioDspEngine {
 
     const lpFilter = ctx.createBiquadFilter();
     lpFilter.type = 'lowpass';
-    lpFilter.frequency.value = 3000;
+    lpFilter.frequency.value = 3200;
     lpFilter.Q.value = 0.707;
 
     this.staticNoiseGain = ctx.createGain();
@@ -174,7 +199,7 @@ export class HeshRadioDspEngine {
     this.staticNoiseGain.connect(ctx.destination);
     whiteNoise.start(0);
 
-    // Subtle carrier heterodyne / alternator whine oscillator for realistic AM CB character
+    // Subtle carrier heterodyne oscillator
     this.rxCarrierOsc = ctx.createOscillator();
     this.rxCarrierOsc.type = 'triangle';
     this.rxCarrierOsc.frequency.value = 185;
@@ -183,7 +208,7 @@ export class HeshRadioDspEngine {
     this.rxCarrierOsc.connect(lpFilter);
     this.rxCarrierOsc.start(0);
 
-    // Diesel ignition / alternator whine (1150 Hz) that ANL suppresses
+    // Alternator whine (suppressed by ANL)
     this.rxWhineOsc = ctx.createOscillator();
     this.rxWhineOsc.type = 'sawtooth';
     this.rxWhineOsc.frequency.value = 1180;
@@ -191,13 +216,18 @@ export class HeshRadioDspEngine {
     this.rxWhineGain.gain.value = 0;
     this.rxWhineOsc.connect(lpFilter);
     this.rxWhineOsc.start(0);
+
+    // CW Sidetone Pitch Oscillator (BFO)
+    this.cwSidetoneOsc = ctx.createOscillator();
+    this.cwSidetoneOsc.type = 'sine';
+    this.cwSidetoneOsc.frequency.value = this.demodulatorBank.bfoPitchHz;
+    this.cwSidetoneGain = ctx.createGain();
+    this.cwSidetoneGain.gain.value = 0.0;
+    this.cwSidetoneOsc.connect(this.cwSidetoneGain);
+    this.cwSidetoneGain.connect(ctx.destination);
+    this.cwSidetoneOsc.start(0);
   }
 
-  /**
-   * Connects real Windows / Android S26 Ultra microphone through the authentic CB TX Chain:
-   * High-Pass (300 Hz) -> Pre-Emphasis (+6 dB @ 2.1 kHz) -> Low-Pass (3000 Hz)
-   * -> Soft-Knee "Dynamike" 4:1 Compressor -> Analyser & Talkback Monitor.
-   */
   public async enableMicrophone(talkbackEnabled: boolean): Promise<boolean> {
     await this.initAudioContext();
     if (!this.audioCtx) return false;
@@ -217,20 +247,16 @@ export class HeshRadioDspEngine {
         const hp300 = ctx.createBiquadFilter();
         hp300.type = 'highpass';
         hp300.frequency.value = 300;
-        hp300.Q.value = 0.707;
 
         const presenceBoost = ctx.createBiquadFilter();
         presenceBoost.type = 'peaking';
         presenceBoost.frequency.value = 2100;
-        presenceBoost.Q.value = 1.2;
-        presenceBoost.gain.value = 6.5;
+        presenceBoost.gain.value = 6.0;
 
         const lp3000 = ctx.createBiquadFilter();
         lp3000.type = 'lowpass';
         lp3000.frequency.value = 3000;
-        lp3000.Q.value = 0.707;
 
-        // Soft-Knee 4:1 "Dynamike" CB Speech Compressor
         const compressor = ctx.createDynamicsCompressor();
         compressor.threshold.value = -20;
         compressor.knee.value = 8;
@@ -254,7 +280,6 @@ export class HeshRadioDspEngine {
         this.talkbackGain.connect(ctx.destination);
         return true;
       } catch {
-        // Graceful fallback if mic permission denied or no physical mic plugged in
         return false;
       }
     } else if (this.talkbackGain && this.audioCtx) {
@@ -278,9 +303,34 @@ export class HeshRadioDspEngine {
     }
   }
 
-  /**
-   * Triggers authentic CB Microphone Key-Down Click.
-   */
+  public setCwSidetone(active: boolean, pitchHz?: number): void {
+    if (pitchHz && this.cwSidetoneOsc && this.audioCtx) {
+      this.cwSidetoneOsc.frequency.setTargetAtTime(pitchHz, this.audioCtx.currentTime, 0.01);
+      this.demodulatorBank.setBfoPitch(pitchHz);
+    }
+    if (this.cwSidetoneGain && this.audioCtx) {
+      this.cwSidetoneGain.gain.setTargetAtTime(
+        active ? 0.18 : 0.0,
+        this.audioCtx.currentTime,
+        0.005
+      );
+    }
+  }
+
+  public playPcmBuffer(samples: Float32Array, sampleRate: number = 48000, gainLevel: number = 0.5): void {
+    if (!this.audioCtx) return;
+    const ctx = this.audioCtx;
+    const buffer = ctx.createBuffer(1, samples.length, sampleRate);
+    buffer.getChannelData(0).set(samples);
+    const source = ctx.createBufferSource();
+    source.buffer = buffer;
+    const gainNode = ctx.createGain();
+    gainNode.gain.value = gainLevel;
+    source.connect(gainNode);
+    gainNode.connect(ctx.destination);
+    source.start(0);
+  }
+
   public playMicClick(): void {
     if (!this.audioCtx) return;
     const ctx = this.audioCtx;
@@ -300,9 +350,6 @@ export class HeshRadioDspEngine {
     osc.stop(now + 0.022);
   }
 
-  /**
-   * Synthesizes End-of-Transmission Roger Beep + 110ms Band-Limited Squelch Tail.
-   */
   public playRogerBeepAndSquelchTail(beepType: RogerBeepType, masterVolume: number = 0.8): void {
     if (!this.audioCtx) return;
     const ctx = this.audioCtx;
@@ -310,7 +357,6 @@ export class HeshRadioDspEngine {
     let tailStartOffset = 0.01;
 
     if (beepType === 'CLASSIC_2475') {
-      // Classic Cobra / President 2475 Hz single tone (115 ms)
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
       osc.type = 'sine';
@@ -324,7 +370,6 @@ export class HeshRadioDspEngine {
       osc.stop(now + 0.125);
       tailStartOffset = 0.125;
     } else if (beepType === 'APOLLO_DUAL') {
-      // NASA Quindar / Dual-Tone 2525 Hz -> 2475 Hz
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
       osc.type = 'sine';
@@ -339,7 +384,6 @@ export class HeshRadioDspEngine {
       osc.stop(now + 0.185);
       tailStartOffset = 0.185;
     } else if (beepType === 'TRUCKER_K') {
-      // Morse 'K' (- . -) at 1950 Hz
       const segments: [number, number][] = [
         [0.0, 0.09],
         [0.12, 0.16],
@@ -360,7 +404,6 @@ export class HeshRadioDspEngine {
       tailStartOffset = 0.29;
     }
 
-    // Authentic 115ms Band-Limited Squelch Tail Burst ("Kssshht!")
     if (this.staticNoiseGain) {
       const t0 = now + tailStartOffset;
       this.staticNoiseGain.gain.cancelScheduledValues(t0);
@@ -370,9 +413,6 @@ export class HeshRadioDspEngine {
     }
   }
 
-  /**
-   * Plays NOAA 1050 Hz S.A.M.E. Weather Alert Test Tone.
-   */
   public playNoaaAlertTone(masterVolume: number = 0.7): void {
     if (!this.audioCtx) return;
     const ctx = this.audioCtx;
@@ -390,26 +430,44 @@ export class HeshRadioDspEngine {
     osc.stop(now + 0.75);
   }
 
-  /**
-   * Sets simulated / incoming network RF carrier state and articulates CB speech
-   * through Web Speech API + bandpass RF carrier heterodyne.
-   */
   public triggerIncomingTransmission(
-    channel: number,
+    freqMhzOrChannel: number,
     signalDbm: number,
     spokenText: string,
     pitchHz: number,
     masterVolume: number,
     anlEnabled: boolean,
     rogerBeep: RogerBeepType,
+    ctcssToneHzOrOnComplete?: number | null | (() => void),
     onComplete?: () => void
   ): void {
-    this.incomingCarrierActive = true;
-    this.incomingChannel = channel;
-    this.incomingSignalDbm = signalDbm;
-    this.incomingModDepth = 78;
+    let ctcssToneHz: number | null = null;
+    let finishCb = onComplete;
+    if (typeof ctcssToneHzOrOnComplete === 'function') {
+      finishCb = ctcssToneHzOrOnComplete;
+    } else if (typeof ctcssToneHzOrOnComplete === 'number') {
+      ctcssToneHz = ctcssToneHzOrOnComplete;
+    }
 
-    // Speak through browser speech synthesizer if available
+    // Determine freq in MHz (if <= 40, treat as CB channel index)
+    const freqMhz =
+      freqMhzOrChannel <= 40
+        ? (CB_CHANNELS[freqMhzOrChannel - 1] || CB_CHANNELS[18]).frequencyMhz
+        : freqMhzOrChannel;
+
+    this.incomingCarrierActive = true;
+    this.incomingFreqMhz = freqMhz;
+    this.incomingSignalDbm = signalDbm;
+
+    // Simulate CTCSS tone presence in sub-audible path
+    if (ctcssToneHz) {
+      for (let i = 0; i < this.subAudibleBuffer.length; i++) {
+        this.subAudibleBuffer[i] =
+          Math.sin((2 * Math.PI * ctcssToneHz * i) / GoertzelCtcssDecoder.SAMPLE_RATE_HZ) * 0.45;
+      }
+      this.latestCtcssResult = this.ctcssDecoder.processSamples(this.subAudibleBuffer, ctcssToneHz);
+    }
+
     if ('speechSynthesis' in window && masterVolume > 0.02) {
       window.speechSynthesis.cancel();
       const utter = new SpeechSynthesisUtterance(spokenText);
@@ -419,11 +477,11 @@ export class HeshRadioDspEngine {
       utter.onend = () => {
         this.incomingCarrierActive = false;
         this.playRogerBeepAndSquelchTail(rogerBeep, masterVolume);
-        if (onComplete) onComplete();
+        if (finishCb) finishCb();
       };
       utter.onerror = () => {
         this.incomingCarrierActive = false;
-        if (onComplete) onComplete();
+        if (finishCb) finishCb();
       };
       window.speechSynthesis.speak(utter);
     } else {
@@ -431,11 +489,10 @@ export class HeshRadioDspEngine {
       setTimeout(() => {
         this.incomingCarrierActive = false;
         this.playRogerBeepAndSquelchTail(rogerBeep, masterVolume);
-        if (onComplete) onComplete();
+        if (finishCb) finishCb();
       }, durationMs);
     }
 
-    // Add subtle RF static / alternator whine under incoming carrier
     if (this.audioCtx && this.staticNoiseGain && this.rxWhineGain) {
       const now = this.audioCtx.currentTime;
       this.staticNoiseGain.gain.setTargetAtTime(0.11 * masterVolume, now, 0.02);
@@ -460,17 +517,13 @@ export class HeshRadioDspEngine {
   }
 
   /**
-   * High-frequency DSP frame tick (called at 60-120 Hz from requestAnimationFrame).
-   * Zero heap allocations inside this method!
-   * Updates:
-   * 1. Spectrum & Peak-Hold FFT arrays across the 26.950 - 27.420 MHz 11m CB band
-   * 2. Squelch gate with 3.0 dB hysteresis
-   * 3. Calibrated IARU S-Meter reading (S9 = -73 dBm)
-   * 4. Sidechain Auto-Ducker envelope for Internet Radio
+   * Real-Time DSP Frame Engine (Called at 60-120 Hz)
    */
   public stepDspFrame(params: {
-    currentChannel: number;
-    mode: ModulationMode;
+    currentFreqMhz?: number;
+    currentChannel?: number;
+    spanMhz?: number;
+    mode: ModulationModeExtended | 'FM';
     pttActive: boolean;
     squelchThresholdDbm: number;
     rfGainPct: number;
@@ -478,27 +531,37 @@ export class HeshRadioDspEngine {
     anlEnabled: boolean;
     masterVolume: number;
     autoDuckEnabled: boolean;
+    ctcssToneHz?: number | null;
+    ctcssSquelchEnabled?: boolean;
+    cwBfoPitchHz?: number;
+    rawIqData?: { i: Float32Array; q: Float32Array } | null;
   }): {
     sMeter: SMeterReading;
     squelchOpen: boolean;
     duckGain: number;
+    rdsData: RdsStationData;
+    ctcssResult: CtcssDetectionResult;
   } {
     this.phaseAccumulator += 0.08;
-    const rfGainOffsetDb = ((params.rfGainPct - 100) / 100) * 30.0; // -30 to +0 dB
+    const rfGainOffsetDb = ((params.rfGainPct - 100) / 100) * 30.0;
+    const centerFreqMhz =
+      params.currentFreqMhz ??
+      (params.currentChannel
+        ? (CB_CHANNELS[params.currentChannel - 1] || CB_CHANNELS[18]).frequencyMhz
+        : 27.185);
+    const spanMhz = Math.max(0.05, params.spanMhz || 0.470);
+    const spanStartMhz = centerFreqMhz - spanMhz / 2;
 
-    // 1. Measure real mic modulation if PTT is active
+    // 1. Microphone Modulation during PTT
     let txModPct = 0;
     if (params.pttActive) {
       if (this.micAnalyser) {
         this.micAnalyser.getByteFrequencyData(this.rawFreqData);
         let sum = 0;
-        for (let i = 4; i < 68; i++) {
-          sum += this.rawFreqData[i];
-        }
+        for (let i = 4; i < 68; i++) sum += this.rawFreqData[i];
         const avg = sum / 64;
         txModPct = Math.min(100, (avg / 145) * (params.dynamikePct / 80) * 100);
       }
-      // Synthetic voice modulation floor if user hasn't spoken yet while holding PTT
       if (txModPct < 12) {
         txModPct =
           28 +
@@ -507,132 +570,116 @@ export class HeshRadioDspEngine {
       }
     }
 
-    // 2. Compute atmospheric & ignition noise floor across the 512 FFT bins
-    // Span: 26.950 MHz (bin 0) to 27.420 MHz (bin 511) -> 470 kHz total span (~918 Hz/bin)
-    const spanStartMhz = 26.950;
-    const spanWidthMhz = 0.470;
-    const baseNoiseDbm = (params.anlEnabled ? -115.5 : -107.0) + rfGainOffsetDb * 0.4;
+    // 2. Base Thermal and Atmospheric RF Noise Floor
+    // VHF/UHF (> 30 MHz) has significantly lower atmospheric noise floor than HF
+    const baseNoiseDbm =
+      (centerFreqMhz > 30.0 ? -122.0 : (params.anlEnabled ? -115.5 : -107.0)) +
+      rfGainOffsetDb * 0.4;
 
     for (let k = 0; k < this.fftBins; k++) {
-      // Deterministic pseudo-gaussian thermal noise + QRN atmospheric static
       const thermalJitter =
-        Math.sin(k * 12.9898 + this.phaseAccumulator * 19.7) * 2.4 +
-        Math.cos(k * 78.233 - this.phaseAccumulator * 11.3) * 1.9;
+        Math.sin(k * 12.9898 + this.phaseAccumulator * 19.7) * 2.2 +
+        Math.cos(k * 78.233 - this.phaseAccumulator * 11.3) * 1.8;
       const ignitionSpike =
-        !params.anlEnabled && ((k * 31 + Math.floor(this.phaseAccumulator * 10)) % 97 === 0)
+        !params.anlEnabled && centerFreqMhz < 30.0 && ((k * 31 + Math.floor(this.phaseAccumulator * 10)) % 97 === 0)
           ? 14.0
           : 0.0;
 
       let binTargetDb = baseNoiseDbm + thermalJitter + ignitionSpike;
+      const binFreqMhz = spanStartMhz + (k / this.fftBins) * spanMhz;
 
-      // Ambient distant background signals on key CB channels:
-      // Ch 6 Superbowl (27.025 MHz), Ch 19 Highway (27.185 MHz), Ch 38 LSB (27.385 MHz)
-      const binFreqMhz = spanStartMhz + (k / this.fftBins) * spanWidthMhz;
-
-      // Ch 6 Superbowl distant skip carrier (27.025 MHz)
-      const distCh6 = Math.abs(binFreqMhz - 27.025);
-      if (distCh6 < 0.0045) {
-        const env6 = -84.0 + 9.0 * Math.sin(this.phaseAccumulator * 1.7) + rfGainOffsetDb;
-        const shape6 = Math.exp(-(distCh6 * distCh6) / 0.000003);
-        binTargetDb = Math.max(binTargetDb, baseNoiseDbm + (env6 - baseNoiseDbm) * shape6);
-      }
-
-      // Ch 38 LSB distant DX skip (27.382 - 27.385 MHz lower sideband energy)
-      const distCh38 = binFreqMhz - 27.3835;
-      if (Math.abs(distCh38) < 0.0022) {
-        const env38 = -88.0 + 11.0 * Math.abs(Math.sin(this.phaseAccumulator * 2.9)) + rfGainOffsetDb;
-        const shape38 = Math.exp(-(distCh38 * distCh38) / 0.0000012);
-        binTargetDb = Math.max(binTargetDb, baseNoiseDbm + (env38 - baseNoiseDbm) * shape38);
-      }
-
-      // Active Incoming Transmission on incomingChannel
+      // Active Incoming Transmission
       if (this.incomingCarrierActive) {
-        const chObj = CB_CHANNELS[this.incomingChannel - 1] || CB_CHANNELS[18];
-        const df = binFreqMhz - chObj.frequencyMhz;
-        if (Math.abs(df) < 0.0055) {
-          // Carrier + Dual AM Sidebands (or LSB single sideband)
+        const df = binFreqMhz - this.incomingFreqMhz;
+        if (Math.abs(df) < spanMhz * 0.035) {
           const carrierPeak =
-            Math.abs(df) < 0.0009
+            Math.abs(df) < spanMhz * 0.005
               ? this.incomingSignalDbm + rfGainOffsetDb
               : this.incomingSignalDbm -
-                10 +
+                12 +
                 8 * Math.abs(Math.sin(this.phaseAccumulator * 6.5 + k * 0.7)) +
                 rfGainOffsetDb;
-          const passbandShape = Math.exp(-(df * df) / 0.000006);
-          binTargetDb = Math.max(
-            binTargetDb,
-            baseNoiseDbm + (carrierPeak - baseNoiseDbm) * passbandShape
-          );
+          const passbandShape = Math.exp(-(df * df) / ((spanMhz * 0.015) ** 2));
+          binTargetDb = Math.max(binTargetDb, baseNoiseDbm + (carrierPeak - baseNoiseDbm) * passbandShape);
         }
       }
 
-      // Active User PTT Transmit Carrier on currentChannel
+      // User Local Transmit Carrier
       if (params.pttActive) {
-        const txChObj = CB_CHANNELS[params.currentChannel - 1] || CB_CHANNELS[18];
-        const dfTx = binFreqMhz - txChObj.frequencyMhz;
-        if (Math.abs(dfTx) < 0.0065) {
-          const txPowerDbm = -22.0 + (txModPct / 100) * 8.0; // S9+51dB local TX indication
-          const txShape = Math.exp(-(dfTx * dfTx) / 0.000007);
-          binTargetDb = Math.max(
-            binTargetDb,
-            baseNoiseDbm + (txPowerDbm - baseNoiseDbm) * txShape
-          );
+        const dfTx = binFreqMhz - centerFreqMhz;
+        if (Math.abs(dfTx) < spanMhz * 0.04) {
+          const txPowerDbm = -20.0 + (txModPct / 100) * 8.0;
+          const txShape = Math.exp(-(dfTx * dfTx) / ((spanMhz * 0.012) ** 2));
+          binTargetDb = Math.max(binTargetDb, baseNoiseDbm + (txPowerDbm - baseNoiseDbm) * txShape);
         }
       }
 
-      // Apply asymmetric Exponential Moving Average (EMA):
-      // Fast attack (0.62) for transient voice peaks, slow decay (0.16)
+      // Smooth with Exponential Moving Average (EMA)
       const prev = this.spectrumDb[k];
       const alpha = binTargetDb > prev ? 0.62 : 0.16;
       const smoothed = prev + alpha * (binTargetDb - prev);
       this.spectrumDb[k] = smoothed;
 
-      // Update Peak-Hold trace with slow 0.12 dB/frame decay
+      // Peak-Hold trace
       if (smoothed >= this.peakHoldDb[k]) {
         this.peakHoldDb[k] = smoothed;
       } else {
-        this.peakHoldDb[k] = Math.max(-120, this.peakHoldDb[k] - 0.12);
+        this.peakHoldDb[k] = Math.max(-135, this.peakHoldDb[k] - 0.12);
       }
     }
 
-    // 3. Measure Channel Power at Tuned Frequency & Evaluate Hysteresis Squelch
-    const tunedChObj = CB_CHANNELS[params.currentChannel - 1] || CB_CHANNELS[18];
-    const centerBin = Math.min(
-      this.fftBins - 1,
-      Math.max(
-        0,
-        Math.round(((tunedChObj.frequencyMhz - spanStartMhz) / spanWidthMhz) * this.fftBins)
-      )
-    );
-
-    let channelPeakDbm = -120;
+    // 3. Channel Power at Tuned Frequency Center
+    const centerBin = Math.floor(this.fftBins / 2);
+    let channelPeakDbm = -135;
     for (let b = Math.max(0, centerBin - 3); b <= Math.min(this.fftBins - 1, centerBin + 3); b++) {
       if (this.spectrumDb[b] > channelPeakDbm) {
         channelPeakDbm = this.spectrumDb[b];
       }
     }
 
-    // Hysteresis Squelch Gate:
-    // Opens at squelchThresholdDbm, closes at (squelchThresholdDbm - 3.0 dB)
-    if (!params.pttActive) {
-      if (!this.squelchOpenState && channelPeakDbm >= params.squelchThresholdDbm) {
-        this.squelchOpenState = true;
-      } else if (this.squelchOpenState && channelPeakDbm < params.squelchThresholdDbm - 3.0) {
-        this.squelchOpenState = false;
-      }
-    } else {
-      this.squelchOpenState = true;
+    // 4. CTCSS Sub-Audible Detection & Tone Squelch
+    if (params.ctcssToneHz && this.incomingCarrierActive) {
+      // Simulate real-time tone decoder response
+      this.latestCtcssResult = {
+        detectedToneHz: params.ctcssToneHz,
+        detectedToneConfidence: 0.94,
+        tonePowers: this.latestCtcssResult.tonePowers,
+        squelchMatches: true,
+      };
+    } else if (!this.incomingCarrierActive) {
+      this.latestCtcssResult = {
+        detectedToneHz: null,
+        detectedToneConfidence: 0,
+        tonePowers: this.latestCtcssResult.tonePowers,
+        squelchMatches: !params.ctcssSquelchEnabled,
+      };
     }
 
-    // If user pulls squelch knob open below noise floor, let them hear authentic CB static
+    // 5. Evaluate Hysteresis Squelch Gate (RF Squelch + Optional CTCSS Tone Match)
+    let rfSquelchPassed = false;
+    if (!params.pttActive) {
+      if (!this.squelchOpenState && channelPeakDbm >= params.squelchThresholdDbm) {
+        rfSquelchPassed = true;
+      } else if (this.squelchOpenState && channelPeakDbm >= params.squelchThresholdDbm - 3.0) {
+        rfSquelchPassed = true;
+      }
+    } else {
+      rfSquelchPassed = true;
+    }
+
+    const ctcssPassed =
+      !params.ctcssSquelchEnabled ||
+      params.pttActive ||
+      this.latestCtcssResult.squelchMatches;
+
+    this.squelchOpenState = rfSquelchPassed && ctcssPassed;
+
     if (this.audioCtx && this.staticNoiseGain && !this.incomingCarrierActive && !params.pttActive) {
       const targetStatic = this.squelchOpenState ? 0.09 * params.masterVolume : 0.0;
       this.staticNoiseGain.gain.setTargetAtTime(targetStatic, this.audioCtx.currentTime, 0.03);
     }
 
-    // 4. Sidechain Auto-Ducker for Internet Radio:
-    // Attenuate music stream by -18 dB (gain = 0.125) within 15 ms when squelch opens or PTT is pressed.
-    // Hold for 600 ms after squelch closes, then smoothly restore to 1.0.
+    // 6. Sidechain Auto-Ducker for Internet Radio
     const nowMs = performance.now();
     const voiceOrPttActive =
       params.pttActive ||
@@ -646,25 +693,26 @@ export class HeshRadioDspEngine {
     const targetDuck =
       params.autoDuckEnabled && (voiceOrPttActive || withinHoldWindow) ? 0.125 : 1.0;
 
-    // Fast 15ms attack, smooth 400ms release
     const duckAlpha = targetDuck < this.currentDuckGain ? 0.45 : 0.06;
     this.currentDuckGain += duckAlpha * (targetDuck - this.currentDuckGain);
 
-    // 5. Calculate Calibrated IARU S-Meter Reading
+    // 7. Calibrated IARU S-Meter Reading (Passes Center Frequency to select HF vs VHF S9)
     const modPct = params.pttActive
       ? txModPct
-      : this.incomingCarrierActive && this.incomingChannel === params.currentChannel
+      : this.incomingCarrierActive
       ? 62 + 28 * Math.abs(Math.sin(this.phaseAccumulator * 4.8))
       : this.squelchOpenState
       ? 14
       : 0;
 
-    const sMeter = computeIaruSMeter(channelPeakDbm, modPct, 1.15);
+    const sMeter = computeIaruSMeter(channelPeakDbm, modPct, 1.15, centerFreqMhz);
 
     return {
       sMeter,
       squelchOpen: this.squelchOpenState,
       duckGain: this.currentDuckGain,
+      rdsData: this.demodulatorBank.rdsData,
+      ctcssResult: this.latestCtcssResult,
     };
   }
 }
