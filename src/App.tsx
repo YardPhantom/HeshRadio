@@ -737,7 +737,7 @@ export const App: React.FC = () => {
       </header>
 
       {/* 2. MODERN 2-TIER WORKSPACE NAVIGATION */}
-      <nav className="flex flex-col gap-1.5 bg-[#090e15]/95 backdrop-blur-md border border-zinc-800/80 p-2 rounded-xl shadow-xl">
+      <nav className="flex flex-col gap-2.5 bg-[#090e15]/95 backdrop-blur-md border border-zinc-800/80 p-4 rounded-xl shadow-xl">
         {/* Tier 1: 5 Clean Segmented Workspaces */}
         <div className="flex flex-wrap items-center justify-between gap-2">
           <div className="flex flex-wrap items-center gap-1.5">
@@ -988,10 +988,10 @@ export const App: React.FC = () => {
       </nav>
 
       {/* 3. MAIN WORKSPACE CONTENT */}
-      <main className="space-y-4">
+      <main className="flex flex-col gap-4">
         {/* TAB 1: MULTI-BAND VFO & SDR RECEIVER */}
         {activeTab === 'VFO_SDR' && (
-          <div className="space-y-4">
+          <div className="flex flex-col gap-4">
             <MultiBandVfoDeck
               currentBand={currentBand}
               frequencyMhz={frequencyMhz}
@@ -1173,7 +1173,7 @@ export const App: React.FC = () => {
 
         {/* TAB 2: HARDWARE RTL-SDR & RIG CONTROLLER */}
         {activeTab === 'HARDWARE_RIG' && (
-          <div className="space-y-4">
+          <div className="flex flex-col gap-4">
             <RtlSdrControlPanel
               sdrBridge={sdrBridgeRef.current!}
               sdrStatus={sdrStatus}
@@ -1342,7 +1342,7 @@ export const App: React.FC = () => {
         )}
 
         {/* 4. FRONT-PANEL ANALOG CONTROLS (Always visible at bottom) */}
-        <div className="knobs-grid bg-[#0a0f17] p-3 rounded-xl border border-zinc-800">
+        <div className="knobs-grid bg-[#0a0f17]/95 p-4 rounded-xl border border-zinc-800/80 shadow-xl">
           <div className="knob-card">
             <div className="knob-header">
               <label htmlFor="vol-range">AF VOLUME</label>

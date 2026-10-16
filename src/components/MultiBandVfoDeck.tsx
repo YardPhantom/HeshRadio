@@ -104,9 +104,9 @@ export const MultiBandVfoDeck: React.FC<MultiBandVfoDeckProps> = ({
   };
 
   return (
-    <div className="bg-[#0b1017]/95 border border-amber-900/40 rounded-xl p-3.5 shadow-2xl space-y-3.5">
+    <div className="bg-[#0b1017]/95 border border-amber-900/40 rounded-xl p-4 shadow-2xl flex flex-col gap-4">
       {/* 1. Header & Streamlined Band Switcher */}
-      <div className="flex flex-wrap items-center justify-between gap-2.5 border-b border-zinc-800/80 pb-2.5">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-zinc-800/80 pb-3">
         <div className="flex items-center gap-2 min-w-0">
           <Radio className="w-5 h-5 text-amber-400 shrink-0" />
           <div className="flex items-center gap-2 min-w-0">
