@@ -37,6 +37,7 @@ import { MobileTacticalCockpit } from './components/MobileTacticalCockpit';
 import { AdifLogger } from './radio/adifLogger';
 import { ScanEngine, MemoryChannel } from './radio/scanEngine';
 import { BlackBoxRecorder } from './radio/blackBoxRecorder';
+import { CURRENT_VERSION } from './version';
 import {
   Radio,
   Cpu,
@@ -667,7 +668,12 @@ export const App: React.FC = () => {
             {pttActive ? 'TX ON AIR' : squelchOpen ? (activeRxHandle ? `RX: ${activeRxHandle}` : 'RX SQUELCH OPEN') : 'RX GUARD'}
           </div>
           <div>
-            <h1 className="app-logo">HESHRADIO</h1>
+            <div className="flex items-center gap-2">
+              <h1 className="app-logo">HESHRADIO</h1>
+              <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40 tracking-wider shadow-sm">
+                {CURRENT_VERSION}
+              </span>
+            </div>
             <div className="app-subtitle">
               WIDEBAND SDR (100kHz–1.75GHz) • RTL-SDR USB BRIDGE • CAT RIG CONTROLLER • AUTO-DUCKING
             </div>

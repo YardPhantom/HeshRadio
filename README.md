@@ -1,6 +1,6 @@
 # HeshRadio // Tactical Multi-Band SDR Transceiver, CAT Rig Controller & Digital Modes Station
 
-![HeshRadio Banner](https://img.shields.io/badge/HeshRadio-v2.0-amber?style=for-the-badge&logo=radio)
+![Version](https://img.shields.io/badge/Version-v0.00.1-amber?style=for-the-badge&logo=semver)
 ![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20Android%20(Samsung%20S26%20Ultra)-cyan?style=for-the-badge)
 ![RF Range](https://img.shields.io/badge/Frequency-100%20kHz%20--%201.75%20GHz-emerald?style=for-the-badge)
 ![License](https://img.shields.io/badge/License-MIT-purple?style=for-the-badge)
@@ -108,6 +108,26 @@ npm run tauri dev
 * **DSP & Audio:** Web Audio API, `Float32Array` lock-free ring buffers, Goertzel tone filters, 4th-order Butterworth IIR filters
 * **Desktop Core:** Tauri v2, Rust
 * **RF Protocols:** FCC Part 95 & Part 97 tables, IARU S-Meter Calibration, AX.25, SAME EAS, FT8 Costas, Robot36, ADIF 3.1.4
+
+---
+
+## 🏷️ Versioning Protocol (`vX.YY.Z`)
+
+HeshRadio adheres to a strict non-decimal overflow versioning protocol:
+* **Format:** `vX.YY.Z` (starts at `v0.00.1` up to maximum `v9.99.9`).
+* **Starting Baseline:** `v0.00.1`
+* **Maximum Version:** `v9.99.9`
+* **Rollover Invariant:** No position or individual digit ever reaches `10`.
+  * **Patch ($Z$):** Range $0\text{--}9$ (starts at $1$). When patch increments past $9$, it rolls over to $0$ and triggers a minor version increment.
+  * **Minor ($YY$):** Two-digit zero-padded range $00\text{--}99$. When minor increments past $99$, it rolls over to $00$ and triggers a major version increment.
+  * **Major ($X$):** Range $0\text{--}9$. Hard-capped at $9$ (never reaches $10$).
+
+### Automated Version Bumping
+```powershell
+npm run bump:patch   # e.g., v0.00.1 -> v0.00.2 (rolls v0.00.9 -> v0.01.0)
+npm run bump:minor   # e.g., v0.00.1 -> v0.01.0 (rolls v0.99.0 -> v1.00.0)
+npm run bump:major   # e.g., v0.00.1 -> v1.00.0 (capped at v9.99.9)
+```
 
 ---
 
