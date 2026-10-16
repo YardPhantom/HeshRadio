@@ -1,7 +1,7 @@
 {
   "name": "heshradio",
   "private": true,
-  "version": "0.00.1",
+  "version": "0.00.2",
   "description": "HeshRadio - Tactical 40-Ch Trucker CB, SDR Waterfall & Internet Radio Transceiver (Windows & Android S26 Ultra)",
   "type": "module",
   "scripts": {

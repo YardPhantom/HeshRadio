@@ -10,7 +10,7 @@
  *   - Major X: 0–9 (caps at 9; maximum absolute version is v9.99.9)
  */
 
-export const CURRENT_VERSION = 'v0.00.1';
+export const CURRENT_VERSION = 'v0.00.2';
 export const MAX_VERSION = 'v9.99.9';
 export const MIN_VERSION = 'v0.00.1';
 

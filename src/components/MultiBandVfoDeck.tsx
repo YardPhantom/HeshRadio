@@ -170,54 +170,70 @@ export const MultiBandVfoDeck: React.FC<MultiBandVfoDeckProps> = ({
       </div>
 
       {/* 2. Main High-Precision Tactical Frequency Display & VFO Controls */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 items-stretch">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-3.5 items-stretch">
         {/* Left: VFO A / VFO B Switcher & Repeater Shift Controls */}
-        <div className="lg:col-span-3 flex flex-col justify-between gap-3 bg-black/40 p-4 rounded-xl border border-zinc-800/80">
-          <div className="space-y-2.5">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-mono text-zinc-400 font-bold flex items-center gap-1.5">
-                <Split className="w-3.5 h-3.5 text-amber-400" /> VFO SYSTEM
+        <div className="lg:col-span-4 flex flex-col justify-between gap-3.5 bg-black/40 p-4 rounded-xl border border-zinc-800/80">
+          <div className="space-y-3">
+            <div className="flex flex-wrap items-center justify-between gap-2 px-1">
+              <span className="text-xs font-mono text-zinc-300 font-bold flex items-center gap-2">
+                <span className="p-1 rounded bg-amber-500/10 border border-amber-500/30 flex items-center justify-center">
+                  <Split className="w-3.5 h-3.5 text-amber-400" />
+                </span>
+                <span className="tracking-wider">VFO SYSTEM</span>
               </span>
-              <div className="flex gap-2">
+              <div className="flex items-center gap-2">
                 <button
                   type="button"
                   onClick={onVfoSwitch}
-                  className="text-xs px-3 py-1.5 bg-zinc-800 hover:bg-amber-500/20 text-amber-300 rounded-md border border-zinc-700 flex items-center gap-1.5 font-mono font-bold cursor-pointer transition-colors"
+                  className="text-xs px-3 py-1.5 bg-zinc-800 hover:bg-amber-500/20 text-amber-300 rounded-md border border-zinc-700 flex items-center gap-1.5 font-mono font-bold cursor-pointer transition-colors shadow-sm"
                   title="Swap VFO A and VFO B"
                 >
-                  <ArrowRightLeft className="w-3 h-3 text-amber-400" /> A / B
+                  <ArrowRightLeft className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                  <span>A / B</span>
                 </button>
                 <button
                   type="button"
                   onClick={onVfoCopy}
-                  className="text-xs px-3 py-1.5 bg-zinc-800 hover:bg-amber-500/20 text-zinc-300 rounded-md border border-zinc-700 flex items-center gap-1.5 font-mono font-bold cursor-pointer transition-colors"
+                  className="text-xs px-3 py-1.5 bg-zinc-800 hover:bg-amber-500/20 text-zinc-300 hover:text-white rounded-md border border-zinc-700 flex items-center gap-1.5 font-mono font-bold cursor-pointer transition-colors shadow-sm"
                   title="Copy Active VFO to Inactive VFO (A = B)"
                 >
-                  <Copy className="w-3 h-3" /> A=B
+                  <Copy className="w-3.5 h-3.5 text-zinc-400 shrink-0" />
+                  <span>A=B</span>
                 </button>
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-2 text-xs font-mono">
+            <div className="grid grid-cols-2 gap-2.5 text-xs font-mono">
               <div
-                className={`p-2.5 px-3 rounded-lg border transition-all ${
+                className={`p-3 px-3.5 rounded-lg border transition-all flex flex-col justify-center min-w-0 ${
                   activeVfo === 'VFO_A'
-                    ? 'border-amber-500/60 bg-amber-500/10 text-amber-300 font-bold shadow-sm'
+                    ? 'border-amber-500/70 bg-gradient-to-b from-amber-500/15 to-amber-500/5 text-amber-300 font-bold shadow-md shadow-amber-500/10'
                     : 'border-zinc-800/80 bg-zinc-900/50 text-zinc-400'
                 }`}
               >
-                <div className="text-[10px] uppercase text-zinc-500 font-bold">VFO A (RX)</div>
-                <div className="truncate text-xs font-bold pt-0.5">{vfoAFreqMhz.toFixed(4)} MHz</div>
+                <div className="flex items-center justify-between gap-1 text-[10px] uppercase font-bold text-zinc-400">
+                  <span className="tracking-wider">VFO A</span>
+                  <span className="text-[9px] px-1.5 py-0.5 rounded bg-zinc-800/90 text-amber-400 border border-zinc-700 font-bold">RX</span>
+                </div>
+                <div className="text-sm font-bold font-mono tracking-tight text-amber-300 pt-1.5 truncate">
+                  {vfoAFreqMhz.toFixed(4)} <span className="text-[11px] text-zinc-500 font-normal">MHz</span>
+                </div>
               </div>
+
               <div
-                className={`p-2.5 px-3 rounded-lg border transition-all ${
+                className={`p-3 px-3.5 rounded-lg border transition-all flex flex-col justify-center min-w-0 ${
                   activeVfo === 'VFO_B'
-                    ? 'border-amber-500/60 bg-amber-500/10 text-amber-300 font-bold shadow-sm'
+                    ? 'border-amber-500/70 bg-gradient-to-b from-amber-500/15 to-amber-500/5 text-amber-300 font-bold shadow-md shadow-amber-500/10'
                     : 'border-zinc-800/80 bg-zinc-900/50 text-zinc-400'
                 }`}
               >
-                <div className="text-[10px] uppercase text-zinc-500 font-bold">VFO B (TX/SPLIT)</div>
-                <div className="truncate text-xs font-bold pt-0.5">{vfoBFreqMhz.toFixed(4)} MHz</div>
+                <div className="flex items-center justify-between gap-1 text-[10px] uppercase font-bold text-zinc-400">
+                  <span className="tracking-wider">VFO B</span>
+                  <span className="text-[9px] px-1.5 py-0.5 rounded bg-zinc-800/90 text-zinc-300 border border-zinc-700 font-bold">TX/SPLIT</span>
+                </div>
+                <div className="text-sm font-bold font-mono tracking-tight text-amber-300 pt-1.5 truncate">
+                  {vfoBFreqMhz.toFixed(4)} <span className="text-[11px] text-zinc-500 font-normal">MHz</span>
+                </div>
               </div>
             </div>
           </div>
@@ -271,7 +287,7 @@ export const MultiBandVfoDeck: React.FC<MultiBandVfoDeckProps> = ({
         </div>
 
         {/* Center: Large Tactical LED Frequency Display & Quick Step Controls (Guaranteed ZERO OVERLAY) */}
-        <div className="lg:col-span-6 bg-black p-4 rounded-xl border-2 border-amber-500/40 shadow-inner flex flex-col justify-between items-center min-h-[175px]">
+        <div className="lg:col-span-5 bg-black p-4 rounded-xl border-2 border-amber-500/40 shadow-inner flex flex-col justify-between items-center min-h-[175px]">
           {/* Top Info Bar (Guaranteed No Overlay with Band Name or Direct Tune button) */}
           <div className="w-full flex items-center justify-between text-xs font-mono pb-2 border-b border-zinc-900 gap-2">
             <div className="flex items-center gap-2 min-w-0">
