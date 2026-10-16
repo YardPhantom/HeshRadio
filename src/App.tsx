@@ -737,27 +737,22 @@ export const App: React.FC = () => {
       </header>
 
       {/* 2. MODERN 2-TIER WORKSPACE NAVIGATION */}
-      <nav className="flex flex-col gap-2 bg-[#090e15]/90 backdrop-blur-md border border-zinc-800/80 p-2 rounded-xl shadow-xl">
-        {/* Tier 1: 5 Primary Workspaces */}
+      <nav className="flex flex-col gap-1.5 bg-[#090e15]/95 backdrop-blur-md border border-zinc-800/80 p-2 rounded-xl shadow-xl">
+        {/* Tier 1: 5 Clean Segmented Workspaces */}
         <div className="flex flex-wrap items-center justify-between gap-2">
           <div className="flex flex-wrap items-center gap-1.5">
             {/* 1. TRANSCEIVER */}
             <button
               type="button"
               onClick={() => setActiveTab('VFO_SDR')}
-              className={`px-3.5 py-2 rounded-lg text-xs font-mono font-bold flex items-center gap-2 transition-all duration-150 cursor-pointer select-none border active:scale-[0.98] ${
+              className={`px-3 py-1.5 rounded-lg text-xs font-mono font-bold flex items-center gap-1.5 transition-all duration-150 cursor-pointer select-none border active:scale-[0.98] ${
                 activeCategory === 'TRANSCEIVER'
                   ? 'bg-gradient-to-b from-amber-500/25 to-amber-600/10 text-amber-300 border-amber-500/60 shadow-lg shadow-amber-500/15'
                   : 'bg-zinc-900/60 text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/70 border-zinc-800/80'
               }`}
             >
-              <Radio className={`w-4 h-4 ${activeCategory === 'TRANSCEIVER' ? 'text-amber-400 animate-pulse' : 'text-zinc-500'}`} />
+              <Radio className={`w-3.5 h-3.5 ${activeCategory === 'TRANSCEIVER' ? 'text-amber-400 animate-pulse' : 'text-zinc-500'}`} />
               <span>TRANSCEIVER</span>
-              <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-mono ${
-                activeCategory === 'TRANSCEIVER' ? 'bg-amber-400/20 text-amber-300 border border-amber-400/30' : 'bg-zinc-800 text-zinc-500'
-              }`}>
-                VFO &amp; SDR
-              </span>
             </button>
 
             {/* 2. SCAN & ALERTS */}
@@ -768,22 +763,17 @@ export const App: React.FC = () => {
                   setActiveTab('SCANNER');
                 }
               }}
-              className={`px-3.5 py-2 rounded-lg text-xs font-mono font-bold flex items-center gap-2 transition-all duration-150 cursor-pointer select-none border active:scale-[0.98] ${
+              className={`px-3 py-1.5 rounded-lg text-xs font-mono font-bold flex items-center gap-1.5 transition-all duration-150 cursor-pointer select-none border active:scale-[0.98] ${
                 activeCategory === 'SCAN_ALERTS'
                   ? 'bg-gradient-to-b from-emerald-500/25 to-emerald-600/10 text-emerald-300 border-emerald-500/60 shadow-lg shadow-emerald-500/15'
                   : 'bg-zinc-900/60 text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/70 border-zinc-800/80'
               }`}
             >
-              <FastForward className={`w-4 h-4 ${activeCategory === 'SCAN_ALERTS' ? 'text-emerald-400' : 'text-zinc-500'}`} />
+              <FastForward className={`w-3.5 h-3.5 ${activeCategory === 'SCAN_ALERTS' ? 'text-emerald-400' : 'text-zinc-500'}`} />
               <span>SCAN &amp; ALERTS</span>
-              <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-mono ${
-                activeCategory === 'SCAN_ALERTS' ? 'bg-emerald-400/20 text-emerald-300 border border-emerald-400/30' : 'bg-zinc-800 text-zinc-500'
-              }`}>
-                2 MODES
-              </span>
             </button>
 
-            {/* 3. VOICE & AUDIO */}
+            {/* 3. AUDIO & SPOTS */}
             <button
               type="button"
               onClick={() => {
@@ -791,22 +781,17 @@ export const App: React.FC = () => {
                   setActiveTab('BLACK_BOX');
                 }
               }}
-              className={`px-3.5 py-2 rounded-lg text-xs font-mono font-bold flex items-center gap-2 transition-all duration-150 cursor-pointer select-none border active:scale-[0.98] ${
+              className={`px-3 py-1.5 rounded-lg text-xs font-mono font-bold flex items-center gap-1.5 transition-all duration-150 cursor-pointer select-none border active:scale-[0.98] ${
                 activeCategory === 'VOICE_AUDIO'
                   ? 'bg-gradient-to-b from-orange-500/25 to-orange-600/10 text-orange-300 border-orange-500/60 shadow-lg shadow-orange-500/15'
                   : 'bg-zinc-900/60 text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/70 border-zinc-800/80'
               }`}
             >
-              <HardDrive className={`w-4 h-4 ${activeCategory === 'VOICE_AUDIO' ? 'text-orange-400' : 'text-zinc-500'}`} />
-              <span>VOICE &amp; AUDIO</span>
-              <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-mono ${
-                activeCategory === 'VOICE_AUDIO' ? 'bg-orange-400/20 text-orange-300 border border-orange-400/30' : 'bg-zinc-800 text-zinc-500'
-              }`}>
-                3 TOOLS
-              </span>
+              <HardDrive className={`w-3.5 h-3.5 ${activeCategory === 'VOICE_AUDIO' ? 'text-orange-400' : 'text-zinc-500'}`} />
+              <span>AUDIO &amp; SPOTS</span>
             </button>
 
-            {/* 4. DIGITAL & PROPAGATION */}
+            {/* 4. DIGITAL MODES */}
             <button
               type="button"
               onClick={() => {
@@ -814,22 +799,17 @@ export const App: React.FC = () => {
                   setActiveTab('DIGITAL_MODES');
                 }
               }}
-              className={`px-3.5 py-2 rounded-lg text-xs font-mono font-bold flex items-center gap-2 transition-all duration-150 cursor-pointer select-none border active:scale-[0.98] ${
+              className={`px-3 py-1.5 rounded-lg text-xs font-mono font-bold flex items-center gap-1.5 transition-all duration-150 cursor-pointer select-none border active:scale-[0.98] ${
                 activeCategory === 'DIGITAL_WX'
                   ? 'bg-gradient-to-b from-purple-500/25 to-purple-600/10 text-purple-300 border-purple-500/60 shadow-lg shadow-purple-500/15'
                   : 'bg-zinc-900/60 text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/70 border-zinc-800/80'
               }`}
             >
-              <Activity className={`w-4 h-4 ${activeCategory === 'DIGITAL_WX' ? 'text-purple-400' : 'text-zinc-500'}`} />
-              <span>DIGITAL &amp; PROPAGATION</span>
-              <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-mono ${
-                activeCategory === 'DIGITAL_WX' ? 'bg-purple-400/20 text-purple-300 border border-purple-400/30' : 'bg-zinc-800 text-zinc-500'
-              }`}>
-                APRS / FT8
-              </span>
+              <Activity className={`w-3.5 h-3.5 ${activeCategory === 'DIGITAL_WX' ? 'text-purple-400' : 'text-zinc-500'}`} />
+              <span>DIGITAL MODES</span>
             </button>
 
-            {/* 5. HARDWARE & LAB */}
+            {/* 5. RIG & LAB */}
             <button
               type="button"
               onClick={() => {
@@ -837,23 +817,18 @@ export const App: React.FC = () => {
                   setActiveTab('HARDWARE_RIG');
                 }
               }}
-              className={`px-3.5 py-2 rounded-lg text-xs font-mono font-bold flex items-center gap-2 transition-all duration-150 cursor-pointer select-none border active:scale-[0.98] ${
+              className={`px-3 py-1.5 rounded-lg text-xs font-mono font-bold flex items-center gap-1.5 transition-all duration-150 cursor-pointer select-none border active:scale-[0.98] ${
                 activeCategory === 'HARDWARE_LAB'
                   ? 'bg-gradient-to-b from-cyan-500/25 to-cyan-600/10 text-cyan-300 border-cyan-500/60 shadow-lg shadow-cyan-500/15'
                   : 'bg-zinc-900/60 text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/70 border-zinc-800/80'
               }`}
             >
-              <Cpu className={`w-4 h-4 ${activeCategory === 'HARDWARE_LAB' ? 'text-cyan-400' : 'text-zinc-500'}`} />
-              <span>HARDWARE &amp; LAB</span>
-              <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-mono ${
-                activeCategory === 'HARDWARE_LAB' ? 'bg-cyan-400/20 text-cyan-300 border border-cyan-400/30' : 'bg-zinc-800 text-zinc-500'
-              }`}>
-                RTL-SDR / CAT
-              </span>
+              <Cpu className={`w-3.5 h-3.5 ${activeCategory === 'HARDWARE_LAB' ? 'text-cyan-400' : 'text-zinc-500'}`} />
+              <span>RIG &amp; LAB</span>
             </button>
           </div>
 
-          <div className="flex items-center gap-2 pr-2 text-xs font-mono text-zinc-400">
+          <div className="flex items-center gap-2 text-xs font-mono text-zinc-400">
             <span className="text-zinc-500">IARU S9 REF:</span>
             <span className="text-amber-400 font-bold bg-amber-950/40 border border-amber-800/40 px-2 py-0.5 rounded">
               {frequencyMhz > 30 ? '-93 dBm (VHF/UHF)' : '-73 dBm (HF)'}
@@ -861,21 +836,21 @@ export const App: React.FC = () => {
           </div>
         </div>
 
-        {/* Tier 2: Sleek Contextual Sub-Tab Pills */}
-        <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-zinc-800/60">
+        {/* Tier 2: Sleek Sub-Tabs (Clean, Concise, No Overlay) */}
+        <div className="flex flex-wrap items-center gap-1.5 pt-1.5 border-t border-zinc-800/60">
           {activeCategory === 'TRANSCEIVER' && (
-            <div className="flex items-center gap-2 text-xs font-mono">
-              <span className="px-3 py-1 rounded-full bg-amber-500 text-black font-bold flex items-center gap-1.5 shadow-md shadow-amber-500/30">
-                <Radio className="w-3 h-3" /> MULTI-BAND VFO &amp; 120Hz WATERFALL
+            <div className="flex flex-wrap items-center gap-2 text-xs font-mono">
+              <span className="px-3 py-1 rounded-full bg-amber-500 text-black font-bold flex items-center gap-1.5 shadow-sm">
+                <Radio className="w-3 h-3" /> VFO &amp; 120Hz WATERFALL
               </span>
-              <span className="text-zinc-500 text-[11px]">
-                Tuned: <strong className="text-zinc-300">{frequencyMhz.toFixed(4)} MHz</strong> ({mode}) • Band: <strong className="text-zinc-300">{currentBand.name}</strong>
+              <span className="text-zinc-400 text-xs">
+                Tuned: <strong className="text-amber-300">{frequencyMhz.toFixed(4)} MHz</strong> ({mode}) • <span className="text-zinc-300">{currentBand.name}</span>
               </span>
             </div>
           )}
 
           {activeCategory === 'SCAN_ALERTS' && (
-            <div className="flex items-center gap-2 text-xs font-mono">
+            <div className="flex flex-wrap items-center gap-1.5 text-xs font-mono">
               <button
                 type="button"
                 onClick={() => setActiveTab('SCANNER')}
@@ -885,7 +860,7 @@ export const App: React.FC = () => {
                     : 'bg-zinc-800/90 text-zinc-400 hover:text-zinc-200 border-zinc-700 hover:bg-zinc-700'
                 }`}
               >
-                <FastForward className="w-3.5 h-3.5" /> 100 CH/SEC TACTICAL SCANNER
+                <FastForward className="w-3.5 h-3.5" /> TACTICAL SCANNER (100 ch/s)
               </button>
 
               <button
@@ -897,13 +872,13 @@ export const App: React.FC = () => {
                     : 'bg-zinc-800/90 text-zinc-400 hover:text-zinc-200 border-zinc-700 hover:bg-zinc-700'
                 }`}
               >
-                <ShieldAlert className="w-3.5 h-3.5" /> NOAA ALL-HAZARDS &amp; EAS SAME
+                <ShieldAlert className="w-3.5 h-3.5" /> NOAA EAS SAME ALERTS
               </button>
             </div>
           )}
 
           {activeCategory === 'VOICE_AUDIO' && (
-            <div className="flex items-center gap-2 text-xs font-mono">
+            <div className="flex flex-wrap items-center gap-1.5 text-xs font-mono">
               <button
                 type="button"
                 onClick={() => setActiveTab('BLACK_BOX')}
@@ -913,7 +888,7 @@ export const App: React.FC = () => {
                     : 'bg-zinc-800/90 text-zinc-400 hover:text-zinc-200 border-zinc-700 hover:bg-zinc-700'
                 }`}
               >
-                <HardDrive className="w-3.5 h-3.5" /> 60s COCKPIT BLACK BOX &amp; REPLAY
+                <HardDrive className="w-3.5 h-3.5" /> 60s BLACK BOX REPLAY
               </button>
 
               <button
@@ -925,7 +900,7 @@ export const App: React.FC = () => {
                     : 'bg-zinc-800/90 text-zinc-400 hover:text-zinc-200 border-zinc-700 hover:bg-zinc-700'
                 }`}
               >
-                <Music className="w-3.5 h-3.5" /> INTERNET RADIO SIDECHAIN DUCKER
+                <Music className="w-3.5 h-3.5" /> INTERNET RADIO AUTO-DUCKER
               </button>
 
               <button
@@ -937,13 +912,13 @@ export const App: React.FC = () => {
                     : 'bg-zinc-800/90 text-zinc-400 hover:text-zinc-200 border-zinc-700 hover:bg-zinc-700'
                 }`}
               >
-                <ListFilter className="w-3.5 h-3.5" /> HIGHWAY SPOTS LOG ({trafficLog.length})
+                <ListFilter className="w-3.5 h-3.5" /> HIGHWAY SPOTS ({trafficLog.length})
               </button>
             </div>
           )}
 
           {activeCategory === 'DIGITAL_WX' && (
-            <div className="flex items-center gap-2 text-xs font-mono">
+            <div className="flex flex-wrap items-center gap-1.5 text-xs font-mono">
               <button
                 type="button"
                 onClick={() => setActiveTab('DIGITAL_MODES')}
@@ -953,7 +928,7 @@ export const App: React.FC = () => {
                     : 'bg-zinc-800/90 text-zinc-400 hover:text-zinc-200 border-zinc-700 hover:bg-zinc-700'
                 }`}
               >
-                <Activity className="w-3.5 h-3.5" /> DIGITAL MODES (APRS / FT8 / SSTV)
+                <Activity className="w-3.5 h-3.5" /> APRS / FT8 / SSTV
               </button>
 
               <button
@@ -965,7 +940,7 @@ export const App: React.FC = () => {
                     : 'bg-zinc-800/90 text-zinc-400 hover:text-zinc-200 border-zinc-700 hover:bg-zinc-700'
                 }`}
               >
-                <Sun className="w-3.5 h-3.5" /> SOLAR WX &amp; IONOSPHERIC GREYLINE
+                <Sun className="w-3.5 h-3.5" /> SOLAR WX &amp; GREYLINE
               </button>
 
               <button
@@ -977,13 +952,13 @@ export const App: React.FC = () => {
                     : 'bg-zinc-800/90 text-zinc-400 hover:text-zinc-200 border-zinc-700 hover:bg-zinc-700'
                 }`}
               >
-                <BookOpen className="w-3.5 h-3.5" /> ADIF 3.1.4 QSO LOGBOOK
+                <BookOpen className="w-3.5 h-3.5" /> ADIF 3.1.4 LOGBOOK
               </button>
             </div>
           )}
 
           {activeCategory === 'HARDWARE_LAB' && (
-            <div className="flex items-center gap-2 text-xs font-mono">
+            <div className="flex flex-wrap items-center gap-1.5 text-xs font-mono">
               <button
                 type="button"
                 onClick={() => setActiveTab('HARDWARE_RIG')}
@@ -993,7 +968,7 @@ export const App: React.FC = () => {
                     : 'bg-zinc-800/90 text-zinc-400 hover:text-zinc-200 border-zinc-700 hover:bg-zinc-700'
                 }`}
               >
-                <Cpu className="w-3.5 h-3.5" /> RTL-SDR DONGLE &amp; CAT RIG CONTROLLER
+                <Cpu className="w-3.5 h-3.5" /> RTL-SDR &amp; CAT RIG CONTROLLER
               </button>
 
               <button
@@ -1005,7 +980,7 @@ export const App: React.FC = () => {
                     : 'bg-zinc-800/90 text-zinc-400 hover:text-zinc-200 border-zinc-700 hover:bg-zinc-700'
                 }`}
               >
-                <Wrench className="w-3.5 h-3.5" /> RF SIGNAL GENERATOR &amp; CALIBRATION LAB
+                <Wrench className="w-3.5 h-3.5" /> CALIBRATION &amp; SIGNAL LAB
               </button>
             </div>
           )}
