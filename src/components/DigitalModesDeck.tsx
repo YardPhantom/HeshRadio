@@ -217,10 +217,10 @@ export const DigitalModesDeck: React.FC<DigitalModesDeckProps> = ({
         </div>
 
         {/* Submode Switcher Tabs */}
-        <div className="flex gap-1.5 font-mono text-xs font-bold">
+        <div className="flex gap-2 font-mono text-xs font-bold">
           <button
             onClick={() => setActiveSubMode('APRS')}
-            className={`px-3 py-1.5 rounded transition-all flex items-center gap-1.5 ${
+            className={`px-3.5 py-2 rounded-lg transition-all flex items-center gap-2 cursor-pointer ${
               activeSubMode === 'APRS'
                 ? 'bg-cyan-500 text-black shadow-lg shadow-cyan-500/20'
                 : 'bg-zinc-800 text-zinc-400 hover:text-zinc-200'
@@ -230,7 +230,7 @@ export const DigitalModesDeck: React.FC<DigitalModesDeckProps> = ({
           </button>
           <button
             onClick={() => setActiveSubMode('FT8')}
-            className={`px-3 py-1.5 rounded transition-all flex items-center gap-1.5 ${
+            className={`px-3.5 py-2 rounded-lg transition-all flex items-center gap-2 cursor-pointer ${
               activeSubMode === 'FT8'
                 ? 'bg-amber-500 text-black shadow-lg shadow-amber-500/20'
                 : 'bg-zinc-800 text-zinc-400 hover:text-zinc-200'
@@ -240,7 +240,7 @@ export const DigitalModesDeck: React.FC<DigitalModesDeckProps> = ({
           </button>
           <button
             onClick={() => setActiveSubMode('SSTV')}
-            className={`px-3 py-1.5 rounded transition-all flex items-center gap-1.5 ${
+            className={`px-3.5 py-2 rounded-lg transition-all flex items-center gap-2 cursor-pointer ${
               activeSubMode === 'SSTV'
                 ? 'bg-emerald-500 text-black shadow-lg shadow-emerald-500/20'
                 : 'bg-zinc-800 text-zinc-400 hover:text-zinc-200'
@@ -277,17 +277,17 @@ export const DigitalModesDeck: React.FC<DigitalModesDeckProps> = ({
           </div>
 
           {/* APRS Beacon Transmitter Form */}
-          <div className="flex flex-wrap items-center gap-2 bg-black/40 p-3 rounded-lg border border-zinc-800 text-xs font-mono">
+          <div className="flex flex-wrap items-center gap-2.5 bg-black/40 p-3.5 rounded-lg border border-zinc-800 text-xs font-mono">
             <span className="text-zinc-400 font-bold">BEACON COMMENT:</span>
             <input
               type="text"
               value={aprsBeaconText}
               onChange={(e) => setAprsBeaconText(e.target.value)}
-              className="flex-1 bg-zinc-900 border border-zinc-700 text-zinc-100 px-3 py-1.5 rounded focus:outline-none"
+              className="flex-1 bg-zinc-900 border border-zinc-700 text-zinc-100 px-3.5 py-2 rounded-lg focus:outline-none"
             />
             <button
               onClick={handleSendAprsBeacon}
-              className="px-4 py-1.5 bg-cyan-600 hover:bg-cyan-500 text-black font-bold rounded flex items-center gap-1.5 shadow-md transition-all"
+              className="px-4 py-2 bg-cyan-600 hover:bg-cyan-500 text-black font-bold rounded-lg flex items-center gap-2 shadow-md transition-all cursor-pointer"
             >
               <Send className="w-3.5 h-3.5" /> TRANSMIT 1200 BAUD BEACON
             </button>
@@ -304,13 +304,13 @@ export const DigitalModesDeck: React.FC<DigitalModesDeckProps> = ({
               {aprsPackets.map((pkt) => (
                 <div
                   key={pkt.id}
-                  className="bg-black/60 p-2.5 rounded border border-zinc-800 text-xs font-mono space-y-1"
+                  className="bg-black/60 p-3 rounded-lg border border-zinc-800 text-xs font-mono space-y-1"
                 >
                   <div className="flex flex-wrap items-center justify-between text-[11px]">
                     <div className="flex items-center gap-2">
                       <span className="font-bold text-cyan-400">{pkt.sourceCall}</span>
                       <span className="text-zinc-500">▶ {pkt.destCall}</span>
-                      <span className="px-1.5 py-0.2 rounded bg-zinc-800 text-zinc-300 text-[10px]">
+                      <span className="px-2.5 py-0.5 rounded-md bg-zinc-800 text-zinc-300 text-[10px] font-bold">
                         {pkt.payloadType}
                       </span>
                     </div>
@@ -348,7 +348,7 @@ export const DigitalModesDeck: React.FC<DigitalModesDeckProps> = ({
               </span>
               <div className="flex items-center gap-3">
                 <span
-                  className={`px-2 py-0.5 rounded text-[10px] font-bold ${
+                  className={`px-3 py-1 rounded-md text-[10px] font-bold ${
                     ft8Cycle.isTxWindow
                       ? 'bg-red-500/20 text-red-400 border border-red-500/40 animate-pulse'
                       : 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40'
@@ -373,7 +373,7 @@ export const DigitalModesDeck: React.FC<DigitalModesDeckProps> = ({
 
           {/* Quick Controls & Waterfall Pitch */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-            <div className="bg-black/40 p-2.5 rounded border border-zinc-800 space-y-1">
+            <div className="bg-black/40 p-3 rounded-lg border border-zinc-800 space-y-1">
               <div className="text-[10px] text-zinc-500 uppercase">Audio Offset (Pitch)</div>
               <div className="flex items-center justify-between">
                 <span className="text-amber-300 font-bold">{ft8AudioOffsetHz} Hz</span>
@@ -389,20 +389,20 @@ export const DigitalModesDeck: React.FC<DigitalModesDeckProps> = ({
               </div>
             </div>
 
-            <div className="bg-black/40 p-2.5 rounded border border-zinc-800 space-y-1">
+            <div className="bg-black/40 p-3 rounded-lg border border-zinc-800 space-y-1">
               <div className="text-[10px] text-zinc-500 uppercase">Target Station</div>
               <input
                 type="text"
                 value={ft8SelectedTarget}
                 onChange={(e) => setFt8SelectedTarget(e.target.value.toUpperCase())}
-                className="w-full bg-zinc-900 border border-zinc-700 text-amber-300 px-2 py-0.5 rounded font-bold"
+                className="w-full bg-zinc-900 border border-zinc-700 text-amber-300 px-3 py-1.5 rounded-md font-bold focus:outline-none"
               />
             </div>
 
-            <div className="bg-black/40 p-2.5 rounded border border-zinc-800 flex items-center justify-center gap-2">
+            <div className="bg-black/40 p-3 rounded-lg border border-zinc-800 flex items-center justify-center gap-2">
               <button
                 onClick={() => handleTransmitFt8Message(`CQ ${myCallsign} ${myGridSquare.slice(0, 4)}`)}
-                className="flex-1 py-2 bg-amber-500 hover:bg-amber-400 text-black font-bold rounded shadow-md transition-all text-center"
+                className="flex-1 py-2 px-3 bg-amber-500 hover:bg-amber-400 text-black font-bold rounded-lg shadow-md transition-all text-center cursor-pointer"
               >
                 CALL CQ
               </button>
@@ -410,7 +410,7 @@ export const DigitalModesDeck: React.FC<DigitalModesDeckProps> = ({
                 onClick={() =>
                   handleTransmitFt8Message(`${ft8SelectedTarget} ${myCallsign} -08`)
                 }
-                className="flex-1 py-2 bg-zinc-800 hover:bg-zinc-700 text-amber-300 border border-zinc-700 font-bold rounded text-center"
+                className="flex-1 py-2 px-3 bg-zinc-800 hover:bg-zinc-700 text-amber-300 border border-zinc-700 font-bold rounded-lg text-center cursor-pointer"
               >
                 SEND -08
               </button>
@@ -424,7 +424,7 @@ export const DigitalModesDeck: React.FC<DigitalModesDeckProps> = ({
               {ft8Messages.map((msg) => (
                 <div
                   key={msg.id}
-                  className={`p-2 rounded border flex items-center justify-between text-xs ${
+                  className={`p-2.5 px-3 rounded-lg border flex items-center justify-between text-xs ${
                     msg.isTx
                       ? 'bg-amber-500/10 border-amber-500/40 text-amber-300 font-bold'
                       : 'bg-black/60 border-zinc-800 text-zinc-200'
@@ -433,7 +433,7 @@ export const DigitalModesDeck: React.FC<DigitalModesDeckProps> = ({
                   <div className="flex items-center gap-3">
                     <span className="text-zinc-500">{msg.utcTime}</span>
                     <span
-                      className={`px-1.5 py-0.2 rounded text-[10px] ${
+                      className={`px-2.5 py-0.5 rounded-md text-[10px] font-bold ${
                         msg.snrDb >= 0 ? 'bg-emerald-950 text-emerald-400' : 'bg-zinc-800 text-zinc-400'
                       }`}
                     >
@@ -449,7 +449,7 @@ export const DigitalModesDeck: React.FC<DigitalModesDeckProps> = ({
                         const parts = msg.message.split(' ');
                         if (parts[1]) setFt8SelectedTarget(parts[1]);
                       }}
-                      className="text-[10px] px-2 py-0.5 bg-zinc-800 hover:bg-amber-500/20 text-zinc-300 hover:text-amber-300 rounded border border-zinc-700"
+                      className="text-[10px] px-3 py-1 bg-zinc-800 hover:bg-amber-500/20 text-zinc-300 hover:text-amber-300 rounded-md border border-zinc-700 font-bold cursor-pointer transition-colors"
                     >
                       ANSWER
                     </button>
@@ -465,7 +465,7 @@ export const DigitalModesDeck: React.FC<DigitalModesDeckProps> = ({
       {activeSubMode === 'SSTV' && (
         <div className="grid grid-cols-1 md:grid-cols-12 gap-4 font-mono text-xs">
           {/* Left Canvas Preview */}
-          <div className="md:col-span-7 flex flex-col items-center gap-2 bg-black/60 p-3 rounded-lg border border-zinc-800">
+          <div className="md:col-span-7 flex flex-col items-center gap-2 bg-black/60 p-3.5 rounded-xl border border-zinc-800">
             <div className="flex justify-between w-full text-zinc-400 text-xs">
               <span className="font-bold flex items-center gap-1.5">
                 <ImageIcon className="w-3.5 h-3.5 text-emerald-400" /> SSTV SCANLINE MONITOR
@@ -477,7 +477,7 @@ export const DigitalModesDeck: React.FC<DigitalModesDeckProps> = ({
               ref={sstvCanvasRef}
               width={320}
               height={240}
-              className="rounded border border-zinc-700 max-w-full shadow-inner"
+              className="rounded-lg border border-zinc-700 max-w-full shadow-inner"
             />
 
             {sstvTransmitting && (
@@ -497,7 +497,7 @@ export const DigitalModesDeck: React.FC<DigitalModesDeckProps> = ({
           </div>
 
           {/* Right Controls */}
-          <div className="md:col-span-5 flex flex-col gap-3 bg-black/40 p-3 rounded-lg border border-zinc-800">
+          <div className="md:col-span-5 flex flex-col gap-3 bg-black/40 p-3.5 rounded-xl border border-zinc-800">
             <div>
               <label className="text-zinc-400 text-[11px] block mb-1">SELECT SSTV PROTOCOL:</label>
               <div className="space-y-1.5">
@@ -508,7 +508,7 @@ export const DigitalModesDeck: React.FC<DigitalModesDeckProps> = ({
                     <button
                       key={modeKey}
                       onClick={() => setSstvMode(modeKey)}
-                      className={`w-full text-left p-2 rounded border transition-all ${
+                      className={`w-full text-left p-2.5 px-3 rounded-lg border transition-all cursor-pointer ${
                         active
                           ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/60 font-bold'
                           : 'bg-zinc-900 text-zinc-400 border-zinc-800 hover:text-zinc-200'
@@ -531,7 +531,7 @@ export const DigitalModesDeck: React.FC<DigitalModesDeckProps> = ({
               <button
                 onClick={handleTransmitSstv}
                 disabled={sstvTransmitting}
-                className="w-full py-2.5 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 text-black font-bold rounded flex items-center justify-center gap-2 shadow-lg transition-all"
+                className="w-full py-2.5 px-4 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 text-black font-bold rounded-lg flex items-center justify-center gap-2 shadow-lg transition-all cursor-pointer"
               >
                 <Play className="w-4 h-4" />
                 {sstvTransmitting ? 'TRANSMITTING SSTV...' : 'TRANSMIT SSTV IMAGE'}

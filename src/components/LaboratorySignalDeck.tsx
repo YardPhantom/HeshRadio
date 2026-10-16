@@ -173,14 +173,14 @@ export const LaboratorySignalDeck: React.FC<LaboratorySignalDeckProps> = ({
         </div>
 
         {/* Signal 5: CTCSS Sub-Audible Tone */}
-        <div className="bg-black/40 border border-zinc-800 rounded-lg p-3 space-y-2 flex flex-col justify-between">
+        <div className="bg-black/40 border border-zinc-800 rounded-xl p-3.5 space-y-2 flex flex-col justify-between">
           <div>
             <div className="text-purple-400 font-bold text-xs flex items-center justify-between">
               <span>CTCSS SUB-AUDIBLE TONE</span>
               <select
                 value={ctcssFreqHz}
                 onChange={(e) => setCtcssFreqHz(parseFloat(e.target.value))}
-                className="bg-[#121924] border border-zinc-700 rounded px-1.5 py-0.5 text-[10px] text-purple-300"
+                className="bg-[#121924] border border-zinc-700 rounded-md px-2.5 py-1 text-[10px] text-purple-300 font-bold focus:outline-none cursor-pointer"
               >
                 <option value={67.0}>67.0 Hz (XZ)</option>
                 <option value={88.5}>88.5 Hz (YB)</option>
@@ -198,7 +198,7 @@ export const LaboratorySignalDeck: React.FC<LaboratorySignalDeckProps> = ({
           <button
             onClick={() => handlePlaySignal('CTCSS_SUB_AUDIBLE')}
             disabled={activeSignal !== null}
-            className={`w-full py-2 rounded text-xs font-bold flex items-center justify-center gap-1.5 transition-all ${
+            className={`w-full py-2.5 px-4 rounded-lg text-xs font-bold flex items-center justify-center gap-2 transition-all cursor-pointer ${
               activeSignal === 'CTCSS_SUB_AUDIBLE'
                 ? 'bg-purple-400 text-black animate-pulse'
                 : 'bg-zinc-800 hover:bg-zinc-700 text-zinc-200'
@@ -210,7 +210,7 @@ export const LaboratorySignalDeck: React.FC<LaboratorySignalDeckProps> = ({
         </div>
 
         {/* Signal 6: 115ms Pink Noise Squelch Tail */}
-        <div className="bg-black/40 border border-zinc-800 rounded-lg p-3 space-y-2 flex flex-col justify-between">
+        <div className="bg-black/40 border border-zinc-800 rounded-xl p-3.5 space-y-2 flex flex-col justify-between">
           <div>
             <div className="text-zinc-300 font-bold text-xs flex items-center justify-between">
               <span>PINK NOISE SQUELCH TAIL</span>
@@ -224,7 +224,7 @@ export const LaboratorySignalDeck: React.FC<LaboratorySignalDeckProps> = ({
           <button
             onClick={() => handlePlaySignal('PINK_NOISE_SQUELCH_TAIL')}
             disabled={activeSignal !== null}
-            className={`w-full py-2 rounded text-xs font-bold flex items-center justify-center gap-1.5 transition-all ${
+            className={`w-full py-2.5 px-4 rounded-lg text-xs font-bold flex items-center justify-center gap-2 transition-all cursor-pointer ${
               activeSignal === 'PINK_NOISE_SQUELCH_TAIL'
                 ? 'bg-zinc-200 text-black animate-pulse'
                 : 'bg-zinc-800 hover:bg-zinc-700 text-zinc-200'

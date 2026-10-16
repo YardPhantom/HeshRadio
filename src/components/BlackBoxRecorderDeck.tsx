@@ -64,7 +64,7 @@ export const BlackBoxRecorderDeck: React.FC<BlackBoxRecorderDeckProps> = ({
 
         <button
           onClick={handleClear}
-          className="px-2.5 py-1 bg-zinc-800 hover:bg-zinc-700 text-zinc-400 hover:text-red-300 rounded text-xs flex items-center gap-1 border border-zinc-700 transition-colors cursor-pointer"
+          className="px-3.5 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-400 hover:text-red-300 rounded-md text-xs flex items-center gap-1.5 border border-zinc-700 transition-colors cursor-pointer font-bold"
         >
           <Trash2 className="w-3.5 h-3.5" /> CLEAR CLIPS
         </button>
@@ -86,7 +86,7 @@ export const BlackBoxRecorderDeck: React.FC<BlackBoxRecorderDeckProps> = ({
         <button
           onClick={handleReplayLast30Seconds}
           disabled={isPlayingReplay}
-          className={`px-6 py-3 rounded-xl font-bold text-xs flex items-center gap-2 shadow-lg transition-all shrink-0 ${
+          className={`px-6 py-3 rounded-xl font-bold text-xs flex items-center gap-2 shadow-lg transition-all shrink-0 cursor-pointer ${
             isPlayingReplay
               ? 'bg-amber-400 text-black animate-pulse'
               : 'bg-amber-500 hover:bg-amber-400 text-black shadow-amber-500/20'
@@ -114,13 +114,13 @@ export const BlackBoxRecorderDeck: React.FC<BlackBoxRecorderDeckProps> = ({
             <table className="w-full text-left text-xs border-collapse">
               <thead>
                 <tr className="border-b border-zinc-800 text-zinc-500 text-[11px]">
-                  <th className="py-2 px-2">TIME (UTC)</th>
-                  <th className="py-2 px-2">CHANNEL</th>
-                  <th className="py-2 px-2">FREQUENCY</th>
-                  <th className="py-2 px-2">MODE</th>
-                  <th className="py-2 px-2">DURATION</th>
-                  <th className="py-2 px-2">PEAK SIGNAL</th>
-                  <th className="py-2 px-2 text-right">ACTIONS</th>
+                  <th className="py-2.5 px-3.5">TIME (UTC)</th>
+                  <th className="py-2.5 px-3.5">CHANNEL</th>
+                  <th className="py-2.5 px-3.5">FREQUENCY</th>
+                  <th className="py-2.5 px-3.5">MODE</th>
+                  <th className="py-2.5 px-3.5">DURATION</th>
+                  <th className="py-2.5 px-3.5">PEAK SIGNAL</th>
+                  <th className="py-2.5 px-3.5 text-right">ACTIONS</th>
                 </tr>
               </thead>
               <tbody>
@@ -131,30 +131,30 @@ export const BlackBoxRecorderDeck: React.FC<BlackBoxRecorderDeckProps> = ({
                       key={clip.id}
                       className="border-b border-zinc-800/40 hover:bg-zinc-900/50 text-zinc-300"
                     >
-                      <td className="py-2 px-2 font-mono text-zinc-400">{clip.utcTimestamp}</td>
-                      <td className="py-2 px-2 font-bold text-amber-300">{clip.channelLabel}</td>
-                      <td className="py-2 px-2 font-mono text-zinc-300">
+                      <td className="py-2.5 px-3.5 font-mono text-zinc-400">{clip.utcTimestamp}</td>
+                      <td className="py-2.5 px-3.5 font-bold text-amber-300">{clip.channelLabel}</td>
+                      <td className="py-2.5 px-3.5 font-mono text-zinc-300">
                         {clip.frequencyMhz.toFixed(4)} MHz
                       </td>
-                      <td className="py-2 px-2">
-                        <span className="px-1.5 py-0.5 rounded bg-zinc-800 text-[10px] text-zinc-300">
+                      <td className="py-2.5 px-3.5">
+                        <span className="px-2.5 py-1 rounded-md bg-zinc-800 text-[10px] text-zinc-300 font-bold inline-block">
                           {clip.mode}
                         </span>
                       </td>
-                      <td className="py-2 px-2 font-mono">{clip.durationSeconds}s</td>
-                      <td className="py-2 px-2 font-mono text-emerald-400">{clip.peakDbm} dBm</td>
-                      <td className="py-2 px-2 text-right space-x-2">
+                      <td className="py-2.5 px-3.5 font-mono">{clip.durationSeconds}s</td>
+                      <td className="py-2.5 px-3.5 font-mono text-emerald-400">{clip.peakDbm} dBm</td>
+                      <td className="py-2.5 px-3.5 text-right space-x-2">
                         <button
                           onClick={() => handlePlayClip(clip)}
                           disabled={isPlaying}
-                          className="px-2.5 py-1 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 rounded text-xs inline-flex items-center gap-1"
+                          className="px-3 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 rounded-md text-xs inline-flex items-center gap-1.5 font-bold cursor-pointer transition-colors"
                         >
                           <Play className="w-3 h-3 fill-current" />
                           {isPlaying ? 'PLAYING' : 'PLAY'}
                         </button>
                         <button
                           onClick={() => handleDownload(clip)}
-                          className="px-2.5 py-1 bg-emerald-600/30 hover:bg-emerald-600/50 text-emerald-300 border border-emerald-500/30 rounded text-xs inline-flex items-center gap-1"
+                          className="px-3 py-1.5 bg-emerald-600/30 hover:bg-emerald-600/50 text-emerald-300 border border-emerald-500/30 rounded-md text-xs inline-flex items-center gap-1.5 font-bold cursor-pointer transition-colors"
                           title="Download 16-bit WAV"
                         >
                           <Download className="w-3 h-3" /> WAV

@@ -114,9 +114,9 @@ export const MultiBandVfoDeck: React.FC<MultiBandVfoDeckProps> = ({
         </div>
 
         {/* Streamlined Band Selector: Quick Popular Pills + All Bands Dropdown */}
-        <div className="flex flex-wrap items-center gap-1.5">
+        <div className="flex flex-wrap items-center gap-2">
           {/* Popular Band Quick Pills */}
-          <div className="flex flex-wrap items-center gap-1">
+          <div className="flex flex-wrap items-center gap-1.5">
             {MASTER_BAND_PLANS.filter((b) => POPULAR_BAND_IDS.includes(b.id)).map((b) => {
               const isSelected = b.id === currentBand.id;
               const shortName = b.name.split(' ')[0];
@@ -125,7 +125,7 @@ export const MultiBandVfoDeck: React.FC<MultiBandVfoDeckProps> = ({
                   key={b.id}
                   type="button"
                   onClick={() => onSelectBand(b)}
-                  className={`text-xs px-2.5 py-1 rounded font-mono font-bold transition-all cursor-pointer border ${
+                  className={`text-xs px-3 py-1.5 rounded-md font-mono font-bold transition-all cursor-pointer border ${
                     isSelected
                       ? 'bg-amber-500 text-black border-amber-400 shadow-md shadow-amber-500/20'
                       : 'bg-zinc-800/80 text-zinc-300 border-zinc-700/80 hover:bg-zinc-700 hover:text-amber-300'
@@ -139,7 +139,7 @@ export const MultiBandVfoDeck: React.FC<MultiBandVfoDeckProps> = ({
           </div>
 
           {/* All Bands Dropdown (eliminates clutter of 18 separate buttons) */}
-          <div className="flex items-center gap-1 bg-zinc-900 border border-zinc-700/90 rounded px-2 py-1">
+          <div className="flex items-center gap-2 bg-zinc-900 border border-zinc-700/90 rounded-md px-3 py-1.5">
             <span className="text-[10px] font-mono text-zinc-500 uppercase font-bold">ALL BANDS:</span>
             <select
               value={currentBand.id}
@@ -147,7 +147,7 @@ export const MultiBandVfoDeck: React.FC<MultiBandVfoDeckProps> = ({
                 const found = MASTER_BAND_PLANS.find((b) => b.id === e.target.value);
                 if (found) onSelectBand(found);
               }}
-              className="bg-transparent text-amber-300 text-xs font-mono font-bold focus:outline-none cursor-pointer"
+              className="bg-transparent text-amber-300 text-xs font-mono font-bold focus:outline-none cursor-pointer pr-1"
               aria-label="Select RF Band"
             >
               <optgroup label="HF & 11-Meter CB" className="bg-zinc-900 text-zinc-300">
@@ -173,16 +173,16 @@ export const MultiBandVfoDeck: React.FC<MultiBandVfoDeckProps> = ({
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 items-stretch">
         {/* Left: VFO A / VFO B Switcher & Repeater Shift Controls */}
         <div className="lg:col-span-3 flex flex-col justify-between gap-3 bg-black/40 p-4 rounded-xl border border-zinc-800/80">
-          <div className="space-y-2">
+          <div className="space-y-2.5">
             <div className="flex items-center justify-between">
               <span className="text-xs font-mono text-zinc-400 font-bold flex items-center gap-1.5">
                 <Split className="w-3.5 h-3.5 text-amber-400" /> VFO SYSTEM
               </span>
-              <div className="flex gap-1.5">
+              <div className="flex gap-2">
                 <button
                   type="button"
                   onClick={onVfoSwitch}
-                  className="text-xs px-2.5 py-1 bg-zinc-800 hover:bg-amber-500/20 text-amber-300 rounded border border-zinc-700 flex items-center gap-1 font-mono font-bold cursor-pointer transition-colors"
+                  className="text-xs px-3 py-1.5 bg-zinc-800 hover:bg-amber-500/20 text-amber-300 rounded-md border border-zinc-700 flex items-center gap-1.5 font-mono font-bold cursor-pointer transition-colors"
                   title="Swap VFO A and VFO B"
                 >
                   <ArrowRightLeft className="w-3 h-3 text-amber-400" /> A / B
@@ -190,7 +190,7 @@ export const MultiBandVfoDeck: React.FC<MultiBandVfoDeckProps> = ({
                 <button
                   type="button"
                   onClick={onVfoCopy}
-                  className="text-xs px-2.5 py-1 bg-zinc-800 hover:bg-amber-500/20 text-zinc-300 rounded border border-zinc-700 flex items-center gap-1 font-mono font-bold cursor-pointer transition-colors"
+                  className="text-xs px-3 py-1.5 bg-zinc-800 hover:bg-amber-500/20 text-zinc-300 rounded-md border border-zinc-700 flex items-center gap-1.5 font-mono font-bold cursor-pointer transition-colors"
                   title="Copy Active VFO to Inactive VFO (A = B)"
                 >
                   <Copy className="w-3 h-3" /> A=B
@@ -200,35 +200,35 @@ export const MultiBandVfoDeck: React.FC<MultiBandVfoDeckProps> = ({
 
             <div className="grid grid-cols-2 gap-2 text-xs font-mono">
               <div
-                className={`p-2 rounded-lg border transition-all ${
+                className={`p-2.5 px-3 rounded-lg border transition-all ${
                   activeVfo === 'VFO_A'
                     ? 'border-amber-500/60 bg-amber-500/10 text-amber-300 font-bold shadow-sm'
                     : 'border-zinc-800/80 bg-zinc-900/50 text-zinc-400'
                 }`}
               >
                 <div className="text-[10px] uppercase text-zinc-500 font-bold">VFO A (RX)</div>
-                <div className="truncate text-xs font-bold">{vfoAFreqMhz.toFixed(4)} MHz</div>
+                <div className="truncate text-xs font-bold pt-0.5">{vfoAFreqMhz.toFixed(4)} MHz</div>
               </div>
               <div
-                className={`p-2 rounded-lg border transition-all ${
+                className={`p-2.5 px-3 rounded-lg border transition-all ${
                   activeVfo === 'VFO_B'
                     ? 'border-amber-500/60 bg-amber-500/10 text-amber-300 font-bold shadow-sm'
                     : 'border-zinc-800/80 bg-zinc-900/50 text-zinc-400'
                 }`}
               >
                 <div className="text-[10px] uppercase text-zinc-500 font-bold">VFO B (TX/SPLIT)</div>
-                <div className="truncate text-xs font-bold">{vfoBFreqMhz.toFixed(4)} MHz</div>
+                <div className="truncate text-xs font-bold pt-0.5">{vfoBFreqMhz.toFixed(4)} MHz</div>
               </div>
             </div>
           </div>
 
           {/* Repeater Offset Selector (Clean 2x2 layout with proper breathing room) */}
-          <div className="pt-2 border-t border-zinc-800/60 space-y-1.5">
-            <div className="flex items-center justify-between text-[11px] font-mono text-zinc-400">
+          <div className="pt-2.5 border-t border-zinc-800/60 space-y-2">
+            <div className="flex items-center justify-between text-xs font-mono text-zinc-400 px-0.5">
               <span className="font-bold">REPEATER SHIFT:</span>
               <span className="text-amber-400 font-bold">{repeaterOffsetMode}</span>
             </div>
-            <div className="grid grid-cols-2 gap-1.5 text-xs font-mono">
+            <div className="grid grid-cols-2 gap-2 text-xs font-mono">
               {(
                 [
                   { id: 'SIMPLEX', label: 'SIMPLEX' },
@@ -241,7 +241,7 @@ export const MultiBandVfoDeck: React.FC<MultiBandVfoDeckProps> = ({
                   key={id}
                   type="button"
                   onClick={() => onRepeaterOffsetModeChange(id)}
-                  className={`py-1.5 px-2 text-center rounded border font-bold transition-all cursor-pointer ${
+                  className={`py-2 px-3 text-center rounded-md border font-bold transition-all cursor-pointer ${
                     repeaterOffsetMode === id
                       ? 'bg-amber-500 text-black border-amber-400 shadow-md shadow-amber-500/20'
                       : 'bg-zinc-800/80 text-zinc-300 border-zinc-700/80 hover:bg-zinc-700 hover:text-white'
@@ -253,15 +253,15 @@ export const MultiBandVfoDeck: React.FC<MultiBandVfoDeckProps> = ({
             </div>
 
             {repeaterOffsetMode !== 'SIMPLEX' && repeaterOffsetMode !== 'SPLIT' && (
-              <div className="mt-1.5 flex items-center justify-between text-xs font-mono text-zinc-400 bg-zinc-900/90 px-2.5 py-1.5 rounded border border-zinc-800">
+              <div className="mt-2 flex items-center justify-between text-xs font-mono text-zinc-400 bg-zinc-900/90 px-3 py-1.5 rounded-md border border-zinc-800">
                 <span className="font-bold">OFFSET:</span>
-                <div className="flex items-center gap-1">
+                <div className="flex items-center gap-1.5">
                   <input
                     type="number"
                     step="0.05"
                     value={repeaterOffsetMhz}
                     onChange={(e) => onRepeaterOffsetMhzChange(parseFloat(e.target.value) || 0)}
-                    className="w-20 bg-black text-right text-amber-300 px-1.5 py-0.5 rounded border border-zinc-700 focus:outline-none font-bold"
+                    className="w-20 bg-black text-right text-amber-300 px-2 py-1 rounded border border-zinc-700 focus:outline-none font-bold"
                   />
                   <span className="text-zinc-500">MHz</span>
                 </div>
@@ -278,14 +278,14 @@ export const MultiBandVfoDeck: React.FC<MultiBandVfoDeckProps> = ({
               <span className="text-[11px] text-amber-400 font-bold uppercase truncate max-w-[240px] sm:max-w-xs" title={currentBand.name}>
                 {currentBand.name}
               </span>
-              <span className="px-2 py-0.5 rounded text-[10px] bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 font-bold shrink-0">
+              <span className="px-2.5 py-1 rounded-md text-[10px] bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 font-bold shrink-0">
                 {activeVfo} ACTIVE
               </span>
             </div>
             <button
               type="button"
               onClick={() => setShowKeypad(true)}
-              className="text-xs bg-zinc-900 hover:bg-amber-500/20 text-zinc-300 hover:text-amber-300 px-2.5 py-1 rounded border border-zinc-800 font-mono flex items-center gap-1.5 shrink-0 transition-colors cursor-pointer"
+              className="text-xs bg-zinc-900 hover:bg-amber-500/20 text-zinc-300 hover:text-amber-300 px-3 py-1.5 rounded-md border border-zinc-800 font-mono flex items-center gap-1.5 shrink-0 transition-colors cursor-pointer"
               title="Direct Frequency Keypad"
             >
               <Hash className="w-3.5 h-3.5 text-amber-400" /> DIRECT TUNE
@@ -301,28 +301,28 @@ export const MultiBandVfoDeck: React.FC<MultiBandVfoDeckProps> = ({
             <span className="text-xs sm:text-sm text-zinc-400 ml-2.5 font-sans font-bold">MHz</span>
           </div>
 
-          {/* Step Tuning Controls (Cleanly Aligned with proper symbols) */}
+          {/* Step Tuning Controls (Cleanly Aligned with proper symbols and uniform padding) */}
           <div className="w-full flex flex-wrap items-center justify-center gap-2 pt-2 border-t border-zinc-900">
             <button
               type="button"
               onClick={() => handleStepTune(-10)}
-              className="text-xs px-2.5 py-1 bg-zinc-900 hover:bg-zinc-800 text-zinc-300 rounded font-mono font-bold border border-zinc-800 cursor-pointer"
+              className="text-xs px-3.5 py-1.5 bg-zinc-900 hover:bg-zinc-800 text-zinc-300 rounded-md font-mono font-bold border border-zinc-800 cursor-pointer"
             >
               -10x
             </button>
             <button
               type="button"
               onClick={() => handleStepTune(-1)}
-              className="text-xs px-3 py-1 bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 rounded font-mono font-bold border border-amber-500/40 flex items-center gap-1 cursor-pointer"
+              className="text-xs px-3.5 py-1.5 bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 rounded-md font-mono font-bold border border-amber-500/40 flex items-center gap-1.5 cursor-pointer"
             >
               <ChevronDown className="w-3.5 h-3.5" /> STEP DN
             </button>
-            <div className="flex items-center gap-1.5 bg-zinc-900 px-2.5 py-1 rounded border border-zinc-800 text-xs font-mono text-zinc-300">
+            <div className="flex items-center gap-2 bg-zinc-900 px-3 py-1.5 rounded-md border border-zinc-800 text-xs font-mono text-zinc-300">
               <span className="text-[10px] text-zinc-500 font-bold">STEP:</span>
               <select
                 value={stepHz}
                 onChange={(e) => onStepChange(parseInt(e.target.value, 10))}
-                className="bg-transparent text-amber-300 font-bold focus:outline-none cursor-pointer"
+                className="bg-transparent text-amber-300 font-bold focus:outline-none cursor-pointer pr-1"
                 aria-label="Tuning Step"
               >
                 <option value={100} className="bg-zinc-900">100 Hz</option>
@@ -341,14 +341,14 @@ export const MultiBandVfoDeck: React.FC<MultiBandVfoDeckProps> = ({
             <button
               type="button"
               onClick={() => handleStepTune(1)}
-              className="text-xs px-3 py-1 bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 rounded font-mono font-bold border border-amber-500/40 flex items-center gap-1 cursor-pointer"
+              className="text-xs px-3.5 py-1.5 bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 rounded-md font-mono font-bold border border-amber-500/40 flex items-center gap-1.5 cursor-pointer"
             >
               STEP UP <ChevronUp className="w-3.5 h-3.5" />
             </button>
             <button
               type="button"
               onClick={() => handleStepTune(10)}
-              className="text-xs px-2.5 py-1 bg-zinc-900 hover:bg-zinc-800 text-zinc-300 rounded font-mono font-bold border border-zinc-800 cursor-pointer"
+              className="text-xs px-3.5 py-1.5 bg-zinc-900 hover:bg-zinc-800 text-zinc-300 rounded-md font-mono font-bold border border-zinc-800 cursor-pointer"
             >
               +10x
             </button>
@@ -373,7 +373,7 @@ export const MultiBandVfoDeck: React.FC<MultiBandVfoDeckProps> = ({
                     key={m}
                     type="button"
                     onClick={() => onModeChange(m)}
-                    className={`py-2 text-center rounded-lg border transition-all cursor-pointer ${
+                    className={`px-3 py-2 text-center rounded-lg border transition-all cursor-pointer font-bold ${
                       active
                         ? 'bg-amber-500 text-black border-amber-400 shadow-md shadow-amber-500/30'
                         : 'bg-zinc-800/80 text-zinc-300 border-zinc-700/80 hover:bg-zinc-700 hover:text-amber-300'
@@ -414,7 +414,7 @@ export const MultiBandVfoDeck: React.FC<MultiBandVfoDeckProps> = ({
                 <span className="text-emerald-400 font-bold flex items-center gap-1">
                   <Sparkles className="w-3 h-3" /> RDS BROADCAST
                 </span>
-                <span className="px-1.5 py-0.5 rounded bg-red-950 text-red-300 border border-red-800 text-[10px] font-bold">
+                <span className="px-2 py-0.5 rounded bg-red-950 text-red-300 border border-red-800 text-[10px] font-bold">
                   {rdsData.stereoDetected ? 'STEREO' : 'MONO'}
                 </span>
               </div>
@@ -448,7 +448,7 @@ export const MultiBandVfoDeck: React.FC<MultiBandVfoDeckProps> = ({
             <button
               type="button"
               onClick={() => onCtcssSquelchToggle(!ctcssSquelchEnabled)}
-              className={`px-2.5 py-1 rounded text-[10px] font-bold border transition-all cursor-pointer ${
+              className={`px-3 py-1.5 rounded-md text-[10px] font-bold border transition-all cursor-pointer ${
                 ctcssSquelchEnabled
                   ? 'bg-cyan-500/20 text-cyan-300 border-cyan-500/50'
                   : 'bg-zinc-800 text-zinc-400 border-zinc-700'
@@ -463,7 +463,7 @@ export const MultiBandVfoDeck: React.FC<MultiBandVfoDeckProps> = ({
             <select
               value={ctcssToneHz || ''}
               onChange={(e) => onCtcssToneChange(e.target.value ? parseFloat(e.target.value) : null)}
-              className="bg-zinc-900 border border-zinc-700 text-amber-300 px-2.5 py-1 rounded-lg flex-1 focus:outline-none font-bold"
+              className="bg-zinc-900 border border-zinc-700 text-amber-300 px-3 py-1.5 rounded-lg flex-1 focus:outline-none font-bold cursor-pointer"
               aria-label="CTCSS Tone Selector"
             >
               <option value="">CSQ / CARRIER SQUELCH (NO TONE)</option>
@@ -476,7 +476,7 @@ export const MultiBandVfoDeck: React.FC<MultiBandVfoDeckProps> = ({
           </div>
 
           {/* Live Tone Detection Telemetry */}
-          <div className="flex items-center justify-between text-xs font-mono bg-zinc-950 px-2.5 py-1.5 rounded-lg border border-zinc-800">
+          <div className="flex items-center justify-between text-xs font-mono bg-zinc-950 px-3 py-2 rounded-lg border border-zinc-800">
             <span className="text-zinc-400 font-bold">DECODED TONE:</span>
             {ctcssResult.detectedToneHz ? (
               <span className="text-cyan-400 font-bold flex items-center gap-1.5">
@@ -521,7 +521,7 @@ export const MultiBandVfoDeck: React.FC<MultiBandVfoDeckProps> = ({
                       onCtcssToneChange(preset.ctcssToneHz);
                     }
                   }}
-                  className={`text-xs px-2.5 py-1.5 rounded-lg font-mono transition-all text-left flex flex-col justify-center border cursor-pointer min-w-0 ${
+                  className={`text-xs px-3 py-2 rounded-lg font-mono transition-all text-left flex flex-col justify-center border cursor-pointer min-w-0 ${
                     isActive
                       ? 'bg-amber-500 text-black border-amber-400 font-bold shadow-md'
                       : 'bg-zinc-800/80 text-zinc-300 border-zinc-700/80 hover:bg-zinc-700 hover:text-white'
@@ -550,7 +550,7 @@ export const MultiBandVfoDeck: React.FC<MultiBandVfoDeckProps> = ({
               <button
                 type="button"
                 onClick={() => setShowKeypad(false)}
-                className="text-zinc-400 hover:text-zinc-100 text-sm font-bold px-2 py-0.5 rounded cursor-pointer"
+                className="text-zinc-400 hover:text-zinc-100 text-sm font-bold px-2.5 py-1 rounded-md cursor-pointer"
               >
                 ✕
               </button>
@@ -567,7 +567,7 @@ export const MultiBandVfoDeck: React.FC<MultiBandVfoDeckProps> = ({
                   placeholder="e.g. 146.520 or 27.185"
                   value={keypadInput}
                   onChange={(e) => setKeypadInput(e.target.value)}
-                  className="w-full bg-black border border-zinc-700 text-amber-300 px-3 py-2 rounded font-mono text-lg font-bold focus:outline-none focus:border-amber-400"
+                  className="w-full bg-black border border-zinc-700 text-amber-300 px-3.5 py-2 rounded-lg font-mono text-lg font-bold focus:outline-none focus:border-amber-400"
                 />
               </div>
               <div className="grid grid-cols-3 gap-2">
@@ -576,7 +576,7 @@ export const MultiBandVfoDeck: React.FC<MultiBandVfoDeckProps> = ({
                     key={quick}
                     type="button"
                     onClick={() => setKeypadInput(quick)}
-                    className="text-xs py-1.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 rounded font-mono font-bold cursor-pointer transition-colors"
+                    className="text-xs px-3 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 rounded-md font-mono font-bold cursor-pointer transition-colors"
                   >
                     {quick}
                   </button>
@@ -586,13 +586,13 @@ export const MultiBandVfoDeck: React.FC<MultiBandVfoDeckProps> = ({
                 <button
                   type="button"
                   onClick={() => setShowKeypad(false)}
-                  className="px-3 py-1.5 text-xs font-mono text-zinc-400 hover:text-zinc-200 cursor-pointer"
+                  className="px-3.5 py-1.5 rounded-md text-xs font-mono text-zinc-400 hover:text-zinc-200 cursor-pointer"
                 >
                   CANCEL
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-1.5 text-xs font-mono font-bold bg-amber-500 hover:bg-amber-400 text-black rounded cursor-pointer shadow-md"
+                  className="px-4 py-1.5 rounded-md text-xs font-mono font-bold bg-amber-500 hover:bg-amber-400 text-black cursor-pointer shadow-md"
                 >
                   TUNE
                 </button>

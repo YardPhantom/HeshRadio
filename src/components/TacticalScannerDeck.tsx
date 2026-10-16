@@ -132,14 +132,14 @@ export const TacticalScannerDeck: React.FC<TacticalScannerDeckProps> = ({
         <div className="flex items-center gap-2">
           <button
             onClick={handleExportJson}
-            className="px-2.5 py-1 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 rounded text-xs flex items-center gap-1 border border-zinc-700 cursor-pointer transition-colors"
+            className="px-3.5 py-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 rounded-lg text-xs flex items-center gap-1.5 border border-zinc-700 cursor-pointer transition-colors font-bold"
             title="Export Memory Banks to JSON"
           >
             <Download className="w-3.5 h-3.5" /> EXPORT JSON
           </button>
           <button
             onClick={() => setShowAddModal(true)}
-            className="px-2.5 py-1 bg-amber-500 hover:bg-amber-400 text-black font-bold rounded text-xs flex items-center gap-1 cursor-pointer transition-colors shadow-sm"
+            className="px-3.5 py-2 bg-amber-500 hover:bg-amber-400 text-black font-bold rounded-lg text-xs flex items-center gap-1.5 cursor-pointer transition-colors shadow-sm"
           >
             <Plus className="w-3.5 h-3.5" /> ADD CHANNEL
           </button>
@@ -147,12 +147,12 @@ export const TacticalScannerDeck: React.FC<TacticalScannerDeckProps> = ({
       </div>
 
       {/* Scanner Control Bar */}
-      <div className="grid grid-cols-1 md:grid-cols-12 gap-3 bg-black/40 p-3 rounded-lg border border-zinc-800/80 items-center">
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-3 bg-black/40 p-4 rounded-xl border border-zinc-800/80 items-center">
         {/* Play/Stop Button */}
         <div className="md:col-span-3">
           <button
             onClick={handleToggleScan}
-            className={`w-full py-2.5 rounded font-bold text-xs flex items-center justify-center gap-2 shadow-lg transition-all ${
+            className={`w-full py-2.5 px-4 rounded-lg font-bold text-xs flex items-center justify-center gap-2 shadow-lg transition-all cursor-pointer ${
               scanStatus.isScanning
                 ? 'bg-red-600 hover:bg-red-500 text-white animate-pulse'
                 : 'bg-emerald-600 hover:bg-emerald-500 text-black'
@@ -173,7 +173,7 @@ export const TacticalScannerDeck: React.FC<TacticalScannerDeckProps> = ({
         {/* Scan Status Badge */}
         <div className="md:col-span-3 text-xs">
           <div className="text-zinc-500 text-[10px]">SCANNER STATUS</div>
-          <div className="font-bold flex items-center gap-1.5">
+          <div className="font-bold flex items-center gap-1.5 pt-0.5">
             <span
               className={`w-2 h-2 rounded-full ${
                 scanStatus.isScanning
@@ -207,7 +207,7 @@ export const TacticalScannerDeck: React.FC<TacticalScannerDeckProps> = ({
           <select
             value={resumeMode}
             onChange={(e) => setResumeMode(e.target.value as ScanResumeMode)}
-            className="w-full bg-[#121924] border border-zinc-700 rounded px-2 py-1 text-xs text-zinc-200"
+            className="w-full bg-[#121924] border border-zinc-700 rounded-lg px-3 py-1.5 text-xs text-zinc-200 cursor-pointer focus:outline-none"
           >
             <option value="CARRIER_OPERATED">CARRIER-OPERATED (CO) - Wait 1.5s after speech</option>
             <option value="TIME_OPERATED">TIME-OPERATED (TO) - Pause 5s then resume</option>
@@ -228,18 +228,18 @@ export const TacticalScannerDeck: React.FC<TacticalScannerDeckProps> = ({
             step={20}
             value={dwellMs}
             onChange={(e) => setDwellMs(parseInt(e.target.value, 10))}
-            className="w-full accent-amber-500 mt-1 cursor-pointer"
+            className="w-full accent-amber-500 mt-1.5 cursor-pointer"
           />
         </div>
       </div>
 
       {/* Memory Bank Tabs */}
-      <div className="flex flex-wrap gap-1 border-b border-zinc-800 pb-2">
+      <div className="flex flex-wrap gap-2 border-b border-zinc-800 pb-2.5">
         {banks.map((bank) => (
           <button
             key={bank.id}
             onClick={() => handleBankChange(bank.id)}
-            className={`px-3 py-1.5 rounded text-xs font-bold transition-all ${
+            className={`px-3.5 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer ${
               activeBankId === bank.id
                 ? 'bg-amber-500 text-black shadow-md'
                 : 'bg-zinc-900 text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800'
@@ -255,14 +255,14 @@ export const TacticalScannerDeck: React.FC<TacticalScannerDeckProps> = ({
         <table className="w-full text-left text-xs border-collapse">
           <thead>
             <tr className="border-b border-zinc-800 text-zinc-500 text-[11px]">
-              <th className="py-2 px-2">CH</th>
-              <th className="py-2 px-2">LABEL</th>
-              <th className="py-2 px-2">FREQUENCY</th>
-              <th className="py-2 px-2">MODE</th>
-              <th className="py-2 px-2">CTCSS / OFFSET</th>
-              <th className="py-2 px-2">ALPHA TAG</th>
-              <th className="py-2 px-2 text-center">LOCKOUT</th>
-              <th className="py-2 px-2 text-right">ACTION</th>
+              <th className="py-2.5 px-3.5">CH</th>
+              <th className="py-2.5 px-3.5">LABEL</th>
+              <th className="py-2.5 px-3.5">FREQUENCY</th>
+              <th className="py-2.5 px-3.5">MODE</th>
+              <th className="py-2.5 px-3.5">CTCSS / OFFSET</th>
+              <th className="py-2.5 px-3.5">ALPHA TAG</th>
+              <th className="py-2.5 px-3.5 text-center">LOCKOUT</th>
+              <th className="py-2.5 px-3.5 text-right">ACTION</th>
             </tr>
           </thead>
           <tbody>
@@ -279,17 +279,17 @@ export const TacticalScannerDeck: React.FC<TacticalScannerDeckProps> = ({
                       : 'hover:bg-zinc-900/60 text-zinc-300'
                   }`}
                 >
-                  <td className="py-2 px-2 font-mono">{chan.channelNumber}</td>
-                  <td className="py-2 px-2 font-bold">{chan.label}</td>
-                  <td className="py-2 px-2 font-mono text-amber-400">
+                  <td className="py-2.5 px-3.5 font-mono">{chan.channelNumber}</td>
+                  <td className="py-2.5 px-3.5 font-bold">{chan.label}</td>
+                  <td className="py-2.5 px-3.5 font-mono text-amber-400">
                     {chan.frequencyMhz.toFixed(4)} MHz
                   </td>
-                  <td className="py-2 px-2">
-                    <span className="px-1.5 py-0.5 rounded bg-zinc-800 text-[10px] text-zinc-300">
+                  <td className="py-2.5 px-3.5">
+                    <span className="px-2.5 py-1 rounded-md bg-zinc-800 text-[10px] text-zinc-300 font-bold inline-block">
                       {chan.mode}
                     </span>
                   </td>
-                  <td className="py-2 px-2 text-zinc-400">
+                  <td className="py-2.5 px-3.5 text-zinc-400">
                     {chan.ctcssToneHz ? `${chan.ctcssToneHz} Hz` : 'CSQ'}
                     {chan.repeaterOffsetMhz !== 0 && (
                       <span className="ml-1 text-cyan-400">
@@ -297,13 +297,13 @@ export const TacticalScannerDeck: React.FC<TacticalScannerDeckProps> = ({
                       </span>
                     )}
                   </td>
-                  <td className="py-2 px-2 text-zinc-400 text-[11px] truncate max-w-xs">
+                  <td className="py-2.5 px-3.5 text-zinc-400 text-[11px] truncate max-w-xs">
                     {chan.alphaTag}
                   </td>
-                  <td className="py-2 px-2 text-center">
+                  <td className="py-2.5 px-3.5 text-center">
                     <button
                       onClick={() => handleToggleSkip(chan.id)}
-                      className={`p-1 rounded ${
+                      className={`p-1.5 rounded cursor-pointer ${
                         chan.skip
                           ? 'text-red-400 hover:text-red-300'
                           : 'text-zinc-500 hover:text-zinc-300'
@@ -313,16 +313,16 @@ export const TacticalScannerDeck: React.FC<TacticalScannerDeckProps> = ({
                       {chan.skip ? <Lock className="w-3.5 h-3.5" /> : <Unlock className="w-3.5 h-3.5" />}
                     </button>
                   </td>
-                  <td className="py-2 px-2 text-right space-x-1">
+                  <td className="py-2.5 px-3.5 text-right space-x-1.5">
                     <button
                       onClick={() => onTuneChannel(chan)}
-                      className="px-2 py-0.5 rounded bg-amber-500/20 hover:bg-amber-500/40 text-amber-300 border border-amber-500/30 text-[10px]"
+                      className="px-3 py-1 rounded-md bg-amber-500/20 hover:bg-amber-500/40 text-amber-300 border border-amber-500/30 text-[10px] font-bold cursor-pointer transition-colors"
                     >
                       TUNE
                     </button>
                     <button
                       onClick={() => handleDeleteChannel(chan.id)}
-                      className="px-1.5 py-0.5 rounded bg-red-950/40 hover:bg-red-900/60 text-red-400 text-[10px]"
+                      className="px-2.5 py-1 rounded-md bg-red-950/40 hover:bg-red-900/60 text-red-400 text-[10px] cursor-pointer transition-colors"
                       title="Delete Memory"
                     >
                       <Trash2 className="w-3 h-3 inline" />
@@ -337,10 +337,10 @@ export const TacticalScannerDeck: React.FC<TacticalScannerDeckProps> = ({
 
       {/* Add Channel Modal */}
       {showAddModal && (
-        <div className="fixed inset-0 bg-black/80 flex items-center justify-center p-4 z-50">
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50">
           <form
             onSubmit={handleAddChannel}
-            className="bg-[#0f1722] border border-zinc-700 rounded-xl p-5 max-w-md w-full space-y-4"
+            className="bg-[#0f1722] border border-zinc-700 rounded-xl p-5 max-w-md w-full space-y-4 shadow-2xl"
           >
             <h3 className="text-sm font-bold text-amber-400 flex items-center gap-1.5">
               <Plus className="w-4 h-4" /> ADD MEMORY CHANNEL TO {activeBank.name}
@@ -354,7 +354,7 @@ export const TacticalScannerDeck: React.FC<TacticalScannerDeckProps> = ({
                   placeholder="e.g. CH 21 / TACOMA RPT"
                   value={newLabel}
                   onChange={(e) => setNewLabel(e.target.value)}
-                  className="w-full bg-black/60 border border-zinc-700 rounded p-1.5 mt-1 text-white font-mono"
+                  className="w-full bg-black/60 border border-zinc-700 rounded-lg px-3 py-2 mt-1 text-white font-mono focus:outline-none"
                   required
                 />
               </div>
@@ -366,7 +366,7 @@ export const TacticalScannerDeck: React.FC<TacticalScannerDeckProps> = ({
                   step="0.0001"
                   value={newFreq}
                   onChange={(e) => setNewFreq(e.target.value)}
-                  className="w-full bg-black/60 border border-zinc-700 rounded p-1.5 mt-1 text-amber-300 font-mono"
+                  className="w-full bg-black/60 border border-zinc-700 rounded-lg px-3 py-2 mt-1 text-amber-300 font-mono focus:outline-none"
                   required
                 />
               </div>
@@ -376,7 +376,7 @@ export const TacticalScannerDeck: React.FC<TacticalScannerDeckProps> = ({
                 <select
                   value={newMode}
                   onChange={(e) => setNewMode(e.target.value as ModulationModeExtended)}
-                  className="w-full bg-black/60 border border-zinc-700 rounded p-1.5 mt-1 text-white"
+                  className="w-full bg-black/60 border border-zinc-700 rounded-lg px-3 py-2 mt-1 text-white focus:outline-none"
                 >
                   <option value="AM">AM (Amplitude Mod)</option>
                   <option value="NFM">NFM (Narrowband FM)</option>
@@ -394,7 +394,7 @@ export const TacticalScannerDeck: React.FC<TacticalScannerDeckProps> = ({
                   placeholder="e.g. Local Club Net / Highway"
                   value={newAlpha}
                   onChange={(e) => setNewAlpha(e.target.value)}
-                  className="w-full bg-black/60 border border-zinc-700 rounded p-1.5 mt-1 text-white"
+                  className="w-full bg-black/60 border border-zinc-700 rounded-lg px-3 py-2 mt-1 text-white focus:outline-none"
                 />
               </div>
             </div>
@@ -403,13 +403,13 @@ export const TacticalScannerDeck: React.FC<TacticalScannerDeckProps> = ({
               <button
                 type="button"
                 onClick={() => setShowAddModal(false)}
-                className="px-3 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 rounded text-xs"
+                className="px-3.5 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 rounded-lg text-xs cursor-pointer"
               >
                 CANCEL
               </button>
               <button
                 type="submit"
-                className="px-3 py-1.5 bg-amber-500 hover:bg-amber-400 text-black font-bold rounded text-xs"
+                className="px-4 py-1.5 bg-amber-500 hover:bg-amber-400 text-black font-bold rounded-lg text-xs cursor-pointer shadow-md"
               >
                 SAVE CHANNEL
               </button>

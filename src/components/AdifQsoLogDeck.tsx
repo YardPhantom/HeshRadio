@@ -146,23 +146,23 @@ export const AdifQsoLogDeck: React.FC<AdifQsoLogDeckProps> = ({
         </div>
 
         {/* Action Buttons */}
-        <div className="flex flex-wrap items-center gap-1.5 font-mono text-xs">
+        <div className="flex flex-wrap items-center gap-2 font-mono text-xs">
           <button
             onClick={() => setShowAddForm((v) => !v)}
-            className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-black font-bold rounded flex items-center gap-1 shadow-md transition-all"
+            className="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-500 text-black font-bold rounded-lg flex items-center gap-1.5 shadow-md transition-all cursor-pointer"
           >
             <Plus className="w-3.5 h-3.5" /> LOG QSO NOW
           </button>
           <button
             onClick={handleExportAdif}
-            className="px-3 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 border border-zinc-700 font-bold rounded flex items-center gap-1 transition-all"
+            className="px-3.5 py-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 border border-zinc-700 font-bold rounded-lg flex items-center gap-1.5 transition-all cursor-pointer"
             title="Export standard ADIF 3.1.4 file (.adi) for LoTW, QRZ, and eQSL"
           >
             <Download className="w-3.5 h-3.5 text-emerald-400" /> EXPORT .ADI
           </button>
           <button
             onClick={() => fileInputRef.current?.click()}
-            className="px-3 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 border border-zinc-700 font-bold rounded flex items-center gap-1 transition-all"
+            className="px-3.5 py-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 border border-zinc-700 font-bold rounded-lg flex items-center gap-1.5 transition-all cursor-pointer"
             title="Import existing .adi logbook"
           >
             <Upload className="w-3.5 h-3.5 text-cyan-400" /> IMPORT .ADI
@@ -197,23 +197,23 @@ export const AdifQsoLogDeck: React.FC<AdifQsoLogDeckProps> = ({
                 placeholder="e.g. W1AW or CB Handle"
                 value={newCall}
                 onChange={(e) => setNewCall(e.target.value)}
-                className="w-full bg-zinc-900 border border-zinc-700 text-amber-300 px-2 py-1 rounded font-bold uppercase"
+                className="w-full bg-zinc-900 border border-zinc-700 text-amber-300 px-3 py-1.5 rounded-lg font-bold uppercase focus:outline-none focus:border-emerald-500"
               />
             </div>
             <div>
               <label className="text-zinc-400 text-[10px] block mb-1">RST SENT / RCVD:</label>
-              <div className="flex gap-1">
+              <div className="flex gap-1.5">
                 <input
                   type="text"
                   value={newRstSent}
                   onChange={(e) => setNewRstSent(e.target.value)}
-                  className="w-1/2 bg-zinc-900 border border-zinc-700 text-zinc-200 px-2 py-1 rounded text-center"
+                  className="w-1/2 bg-zinc-900 border border-zinc-700 text-zinc-200 px-3 py-1.5 rounded-lg text-center focus:outline-none"
                 />
                 <input
                   type="text"
                   value={newRstRcvd}
                   onChange={(e) => setNewRstRcvd(e.target.value)}
-                  className="w-1/2 bg-zinc-900 border border-zinc-700 text-zinc-200 px-2 py-1 rounded text-center"
+                  className="w-1/2 bg-zinc-900 border border-zinc-700 text-zinc-200 px-3 py-1.5 rounded-lg text-center focus:outline-none"
                 />
               </div>
             </div>
@@ -224,7 +224,7 @@ export const AdifQsoLogDeck: React.FC<AdifQsoLogDeckProps> = ({
                 placeholder="e.g. Bob"
                 value={newName}
                 onChange={(e) => setNewName(e.target.value)}
-                className="w-full bg-zinc-900 border border-zinc-700 text-zinc-200 px-2 py-1 rounded"
+                className="w-full bg-zinc-900 border border-zinc-700 text-zinc-200 px-3 py-1.5 rounded-lg focus:outline-none"
               />
             </div>
             <div>
@@ -234,7 +234,7 @@ export const AdifQsoLogDeck: React.FC<AdifQsoLogDeckProps> = ({
                 placeholder="e.g. FN31pr"
                 value={newGrid}
                 onChange={(e) => setNewGrid(e.target.value)}
-                className="w-full bg-zinc-900 border border-zinc-700 text-zinc-200 px-2 py-1 rounded uppercase"
+                className="w-full bg-zinc-900 border border-zinc-700 text-zinc-200 px-3 py-1.5 rounded-lg uppercase focus:outline-none"
               />
             </div>
           </div>
@@ -246,7 +246,7 @@ export const AdifQsoLogDeck: React.FC<AdifQsoLogDeckProps> = ({
               placeholder="e.g. 5x9 audio report on 40m LSB ragchew net"
               value={newComment}
               onChange={(e) => setNewComment(e.target.value)}
-              className="w-full bg-zinc-900 border border-zinc-700 text-zinc-200 px-2 py-1 rounded"
+              className="w-full bg-zinc-900 border border-zinc-700 text-zinc-200 px-3 py-1.5 rounded-lg focus:outline-none"
             />
           </div>
 
@@ -254,13 +254,13 @@ export const AdifQsoLogDeck: React.FC<AdifQsoLogDeckProps> = ({
             <button
               type="button"
               onClick={() => setShowAddForm(false)}
-              className="px-3 py-1 bg-zinc-800 text-zinc-400 rounded"
+              className="px-3.5 py-1.5 bg-zinc-800 text-zinc-400 hover:text-zinc-200 rounded-lg cursor-pointer"
             >
               CANCEL
             </button>
             <button
               type="submit"
-              className="px-4 py-1 bg-emerald-500 text-black font-bold rounded shadow-md"
+              className="px-4 py-1.5 bg-emerald-500 hover:bg-emerald-400 text-black font-bold rounded-lg shadow-md cursor-pointer"
             >
               RECORD QSO TO ADIF
             </button>
@@ -269,8 +269,8 @@ export const AdifQsoLogDeck: React.FC<AdifQsoLogDeckProps> = ({
       )}
 
       {/* Search Bar */}
-      <div className="flex items-center gap-2 bg-black/40 px-3 py-1.5 rounded-lg border border-zinc-800 text-xs font-mono">
-        <Search className="w-4 h-4 text-zinc-500" />
+      <div className="flex items-center gap-2.5 bg-black/40 px-3.5 py-2 rounded-lg border border-zinc-800 text-xs font-mono">
+        <Search className="w-4 h-4 text-zinc-500 shrink-0" />
         <input
           type="text"
           placeholder="Filter log by callsign, name, band, mode, or Maidenhead grid..."
@@ -279,7 +279,7 @@ export const AdifQsoLogDeck: React.FC<AdifQsoLogDeckProps> = ({
           className="bg-transparent text-zinc-200 flex-1 focus:outline-none"
         />
         {searchQuery && (
-          <button onClick={() => setSearchQuery('')} className="text-zinc-500 hover:text-zinc-300">
+          <button onClick={() => setSearchQuery('')} className="text-zinc-500 hover:text-zinc-300 px-1">
             ✕
           </button>
         )}
@@ -290,49 +290,49 @@ export const AdifQsoLogDeck: React.FC<AdifQsoLogDeckProps> = ({
         <table className="w-full text-left border-collapse">
           <thead>
             <tr className="bg-zinc-900/90 text-zinc-400 text-[11px] border-b border-zinc-800">
-              <th className="p-2.5">UTC DATE / TIME</th>
-              <th className="p-2.5">CALLSIGN</th>
-              <th className="p-2.5">BAND / FREQ</th>
-              <th className="p-2.5">MODE</th>
-              <th className="p-2.5">RST (S/R)</th>
-              <th className="p-2.5">GRID</th>
-              <th className="p-2.5">NAME</th>
-              <th className="p-2.5">COMMENT</th>
-              <th className="p-2.5 text-right">ACTION</th>
+              <th className="px-3.5 py-2.5">UTC DATE / TIME</th>
+              <th className="px-3.5 py-2.5">CALLSIGN</th>
+              <th className="px-3.5 py-2.5">BAND / FREQ</th>
+              <th className="px-3.5 py-2.5">MODE</th>
+              <th className="px-3.5 py-2.5">RST (S/R)</th>
+              <th className="px-3.5 py-2.5">GRID</th>
+              <th className="px-3.5 py-2.5">NAME</th>
+              <th className="px-3.5 py-2.5">COMMENT</th>
+              <th className="px-3.5 py-2.5 text-right">ACTION</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-zinc-850">
             {filteredRecords.length === 0 ? (
               <tr>
-                <td colSpan={9} className="p-4 text-center text-zinc-500">
+                <td colSpan={9} className="p-6 text-center text-zinc-500">
                   No QSO records found. Log your first contact or import an ADIF file!
                 </td>
               </tr>
             ) : (
               filteredRecords.map((r) => (
                 <tr key={r.id} className="hover:bg-zinc-900/50 transition-colors">
-                  <td className="p-2.5 text-zinc-400 text-[11px]">
+                  <td className="px-3.5 py-2.5 text-zinc-400 text-[11px]">
                     {r.qsoDate.slice(0, 4)}-{r.qsoDate.slice(4, 6)}-{r.qsoDate.slice(6, 8)}{' '}
                     {r.timeOn.slice(0, 2)}:{r.timeOn.slice(2, 4)}Z
                   </td>
-                  <td className="p-2.5 font-bold text-amber-300">{r.call}</td>
-                  <td className="p-2.5 text-cyan-300">
+                  <td className="px-3.5 py-2.5 font-bold text-amber-300">{r.call}</td>
+                  <td className="px-3.5 py-2.5 text-cyan-300">
                     {r.band} ({r.freqMhz} MHz)
                   </td>
-                  <td className="p-2.5 text-emerald-400 font-bold">
+                  <td className="px-3.5 py-2.5 text-emerald-400 font-bold">
                     {r.mode}
                     {r.submode ? `-${r.submode}` : ''}
                   </td>
-                  <td className="p-2.5 text-zinc-300">
+                  <td className="px-3.5 py-2.5 text-zinc-300">
                     {r.rstSent} / {r.rstRcvd}
                   </td>
-                  <td className="p-2.5 text-zinc-400">{r.gridSquare || '—'}</td>
-                  <td className="p-2.5 text-zinc-300">{r.name || '—'}</td>
-                  <td className="p-2.5 text-zinc-400 truncate max-w-xs">{r.comment || '—'}</td>
-                  <td className="p-2.5 text-right">
+                  <td className="px-3.5 py-2.5 text-zinc-400">{r.gridSquare || '—'}</td>
+                  <td className="px-3.5 py-2.5 text-zinc-300">{r.name || '—'}</td>
+                  <td className="px-3.5 py-2.5 text-zinc-400 truncate max-w-xs">{r.comment || '—'}</td>
+                  <td className="px-3.5 py-2.5 text-right">
                     <button
                       onClick={() => handleDelete(r.id)}
-                      className="text-zinc-500 hover:text-red-400 transition-colors p-1"
+                      className="text-zinc-500 hover:text-red-400 transition-colors p-1.5 rounded hover:bg-zinc-800 cursor-pointer"
                       title="Delete QSO"
                     >
                       <Trash2 className="w-3.5 h-3.5" />

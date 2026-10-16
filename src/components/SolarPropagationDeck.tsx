@@ -181,7 +181,7 @@ export const SolarPropagationDeck: React.FC<SolarPropagationDeckProps> = ({
         <button
           onClick={handleRefresh}
           disabled={refreshing}
-          className="text-xs px-3 py-1 bg-zinc-800 hover:bg-zinc-700 text-amber-300 rounded font-mono font-bold border border-zinc-700 flex items-center gap-1.5 transition-all"
+          className="text-xs px-3.5 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-amber-300 rounded-md font-mono font-bold border border-zinc-700 flex items-center gap-2 transition-all cursor-pointer"
         >
           <RefreshCw className={`w-3.5 h-3.5 ${refreshing ? 'animate-spin' : ''}`} />
           {refreshing ? 'REFRESHING...' : 'POLL NOAA SWPC'}
@@ -190,13 +190,13 @@ export const SolarPropagationDeck: React.FC<SolarPropagationDeckProps> = ({
 
       {/* 1. Solar Weather Telemetry Gauges */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs font-mono">
-        <div className="bg-black/40 p-3 rounded-lg border border-zinc-800 space-y-1">
+        <div className="bg-black/40 p-3.5 rounded-xl border border-zinc-800 space-y-1">
           <div className="text-[10px] text-zinc-500 uppercase">10.7cm Solar Flux (SFI)</div>
           <div className="text-xl font-bold text-amber-400">{telemetry.solarFluxIndex} sfu</div>
           <div className="text-[10px] text-emerald-400">Ionospheric F2 Energy High</div>
         </div>
 
-        <div className="bg-black/40 p-3 rounded-lg border border-zinc-800 space-y-1">
+        <div className="bg-black/40 p-3.5 rounded-xl border border-zinc-800 space-y-1">
           <div className="text-[10px] text-zinc-500 uppercase">Planetary Kp-Index</div>
           <div className="text-xl font-bold text-emerald-400">{telemetry.kpIndex} Kp</div>
           <div className="text-[10px] text-zinc-400">
@@ -204,7 +204,7 @@ export const SolarPropagationDeck: React.FC<SolarPropagationDeckProps> = ({
           </div>
         </div>
 
-        <div className="bg-black/40 p-3 rounded-lg border border-zinc-800 space-y-1">
+        <div className="bg-black/40 p-3.5 rounded-xl border border-zinc-800 space-y-1">
           <div className="text-[10px] text-zinc-500 uppercase">11m CB (27 MHz) Skip Status</div>
           <div
             className={`text-base font-bold truncate ${
@@ -220,7 +220,7 @@ export const SolarPropagationDeck: React.FC<SolarPropagationDeckProps> = ({
           <div className="text-[10px] text-zinc-400">Estimated MUF: {telemetry.estimatedMufMhz} MHz</div>
         </div>
 
-        <div className="bg-black/40 p-3 rounded-lg border border-zinc-800 space-y-1">
+        <div className="bg-black/40 p-3.5 rounded-xl border border-zinc-800 space-y-1">
           <div className="text-[10px] text-zinc-500 uppercase">Sunspot Number (SSN)</div>
           <div className="text-xl font-bold text-amber-300">{telemetry.sunspotNumber}</div>
           <div className="text-[10px] text-zinc-500">Cycle 25 Solar Peak</div>
@@ -238,18 +238,18 @@ export const SolarPropagationDeck: React.FC<SolarPropagationDeckProps> = ({
           </span>
         </div>
 
-        <div className="bg-black rounded-lg border border-zinc-800 p-2 overflow-hidden flex justify-center">
+        <div className="bg-black rounded-xl border border-zinc-800 p-2.5 overflow-hidden flex justify-center">
           <canvas
             ref={mapCanvasRef}
             width={640}
             height={320}
-            className="w-full max-w-2xl h-auto rounded"
+            className="w-full max-w-2xl h-auto rounded-lg"
           />
         </div>
       </div>
 
       {/* 3. Maidenhead Geodesy & Great Circle Beam Heading Calculator */}
-      <div className="bg-black/40 p-3 rounded-lg border border-zinc-800 space-y-3 font-mono text-xs">
+      <div className="bg-black/40 p-4 rounded-xl border border-zinc-800 space-y-3 font-mono text-xs">
         <div className="text-zinc-300 font-bold flex items-center gap-1.5">
           <Compass className="w-4 h-4 text-cyan-400" /> MAIDENHEAD GEODESY &amp; GREAT CIRCLE BEAM HEADINGS
         </div>
@@ -265,7 +265,7 @@ export const SolarPropagationDeck: React.FC<SolarPropagationDeckProps> = ({
                 setFromGrid(g);
                 if (onMyGridChange) onMyGridChange(g);
               }}
-              className="w-full bg-zinc-900 border border-zinc-700 text-cyan-300 px-3 py-1.5 rounded font-bold uppercase"
+              className="w-full bg-zinc-900 border border-zinc-700 text-cyan-300 px-3.5 py-2 rounded-lg font-bold uppercase focus:outline-none"
             />
           </div>
 
@@ -275,14 +275,14 @@ export const SolarPropagationDeck: React.FC<SolarPropagationDeckProps> = ({
               type="text"
               value={toGrid}
               onChange={(e) => setToGrid(e.target.value.toUpperCase())}
-              className="w-full bg-zinc-900 border border-zinc-700 text-emerald-300 px-3 py-1.5 rounded font-bold uppercase"
+              className="w-full bg-zinc-900 border border-zinc-700 text-emerald-300 px-3.5 py-2 rounded-lg font-bold uppercase focus:outline-none"
             />
           </div>
 
           <div className="flex items-end">
             <button
               onClick={handleCalculatePath}
-              className="w-full py-1.5 bg-cyan-600 hover:bg-cyan-500 text-black font-bold rounded shadow-md transition-all"
+              className="w-full py-2 px-3.5 bg-cyan-600 hover:bg-cyan-500 text-black font-bold rounded-lg shadow-md transition-all cursor-pointer"
             >
               CALCULATE BEAM HEADING
             </button>
@@ -290,7 +290,7 @@ export const SolarPropagationDeck: React.FC<SolarPropagationDeckProps> = ({
         </div>
 
         {/* Calculated Results */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs bg-zinc-950 p-2.5 rounded border border-zinc-800">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs bg-zinc-950 p-3 rounded-lg border border-zinc-800">
           <div>
             <span className="text-[10px] text-zinc-500 uppercase block">Distance</span>
             <span className="text-zinc-100 font-bold">

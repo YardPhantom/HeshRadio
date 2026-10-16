@@ -88,7 +88,7 @@ export const NoaaEmergencyDeck: React.FC<NoaaEmergencyDeckProps> = ({
         <button
           onClick={handleSimulateAlert}
           disabled={simulating}
-          className="px-3 py-1.5 bg-red-600 hover:bg-red-500 disabled:opacity-50 text-white font-bold rounded text-xs flex items-center gap-1.5 shadow-lg shadow-red-600/30 transition-all cursor-pointer"
+          className="px-4 py-2 bg-red-600 hover:bg-red-500 disabled:opacity-50 text-white font-bold rounded-lg text-xs flex items-center gap-2 shadow-lg shadow-red-600/30 transition-all cursor-pointer"
         >
           <Zap className="w-3.5 h-3.5" />
           {simulating ? 'RUNNING EMERGENCY TEST...' : 'SIMULATE NWS 1050Hz & SAME ALERT'}
@@ -113,7 +113,7 @@ export const NoaaEmergencyDeck: React.FC<NoaaEmergencyDeckProps> = ({
       {/* 1050 Hz Detector Telemetry & NOAA Channels Grid */}
       <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
         {/* Detector Status */}
-        <div className="md:col-span-5 bg-black/40 border border-zinc-800 rounded-lg p-3 space-y-3">
+        <div className="md:col-span-5 bg-black/40 border border-zinc-800 rounded-xl p-3.5 space-y-3">
           <div className="text-xs font-bold text-amber-400 flex items-center gap-1.5">
             <Radio className="w-4 h-4" /> 1050 Hz GOERTZEL WARNING ALARM DETECTOR
           </div>
@@ -147,14 +147,14 @@ export const NoaaEmergencyDeck: React.FC<NoaaEmergencyDeckProps> = ({
             </div>
           </div>
 
-          <div className="p-2 bg-zinc-900/60 rounded border border-zinc-800 text-[11px] text-zinc-400 leading-relaxed">
+          <div className="p-2.5 bg-zinc-900/60 rounded-lg border border-zinc-800 text-[11px] text-zinc-400 leading-relaxed">
             Per NWS NWSI 10-1712, the 1050 Hz alert tone precedes life-threatening weather warnings
             and activates automatic receiver un-muting.
           </div>
         </div>
 
         {/* NOAA 7-Channel Quick Selector */}
-        <div className="md:col-span-7 bg-black/40 border border-zinc-800 rounded-lg p-3 space-y-2">
+        <div className="md:col-span-7 bg-black/40 border border-zinc-800 rounded-xl p-3.5 space-y-2">
           <div className="text-xs font-bold text-cyan-400 flex items-center justify-between">
             <span className="flex items-center gap-1.5">
               <Volume2 className="w-4 h-4" /> NWS ALL-HAZARDS FREQUENCIES (162.400 - 162.550 MHz)
@@ -167,7 +167,7 @@ export const NoaaEmergencyDeck: React.FC<NoaaEmergencyDeckProps> = ({
               <button
                 key={ch.freq}
                 onClick={() => onTuneNoaaChannel && onTuneNoaaChannel(ch.freq)}
-                className="p-2 bg-zinc-900 hover:bg-cyan-950/40 border border-zinc-800 hover:border-cyan-500/50 rounded text-center transition-all group"
+                className="p-2.5 px-3 bg-zinc-900 hover:bg-cyan-950/40 border border-zinc-800 hover:border-cyan-500/50 rounded-lg text-center transition-all group cursor-pointer"
               >
                 <div className="text-zinc-400 group-hover:text-cyan-300 font-bold text-xs">
                   {ch.label}
@@ -196,13 +196,13 @@ export const NoaaEmergencyDeck: React.FC<NoaaEmergencyDeckProps> = ({
           <table className="w-full text-left text-xs border-collapse">
             <thead>
               <tr className="border-b border-zinc-800 text-zinc-500 text-[11px]">
-                <th className="py-2 px-2">SEVERITY</th>
-                <th className="py-2 px-2">EVENT</th>
-                <th className="py-2 px-2">ISSUED</th>
-                <th className="py-2 px-2">EXPIRES</th>
-                <th className="py-2 px-2">AFFECTED AREAS (FIPS)</th>
-                <th className="py-2 px-2">ORIGINATOR</th>
-                <th className="py-2 px-2">RAW SAME PACKET</th>
+                <th className="py-2.5 px-3.5">SEVERITY</th>
+                <th className="py-2.5 px-3.5">EVENT</th>
+                <th className="py-2.5 px-3.5">ISSUED</th>
+                <th className="py-2.5 px-3.5">EXPIRES</th>
+                <th className="py-2.5 px-3.5">AFFECTED AREAS (FIPS)</th>
+                <th className="py-2.5 px-3.5">ORIGINATOR</th>
+                <th className="py-2.5 px-3.5">RAW SAME PACKET</th>
               </tr>
             </thead>
             <tbody>
@@ -211,9 +211,9 @@ export const NoaaEmergencyDeck: React.FC<NoaaEmergencyDeckProps> = ({
                   key={alert.id}
                   className="border-b border-zinc-800/40 hover:bg-zinc-900/50 text-zinc-300"
                 >
-                  <td className="py-2 px-2">
+                  <td className="py-2.5 px-3.5">
                     <span
-                      className={`px-2 py-0.5 rounded text-[10px] font-bold ${
+                      className={`px-2.5 py-1 rounded-md text-[10px] font-bold inline-block ${
                         alert.severity === 'WARNING' || alert.severity === 'EMERGENCY'
                           ? 'bg-red-950 text-red-300 border border-red-700'
                           : alert.severity === 'WATCH'
@@ -224,14 +224,14 @@ export const NoaaEmergencyDeck: React.FC<NoaaEmergencyDeckProps> = ({
                       {alert.severity}
                     </span>
                   </td>
-                  <td className="py-2 px-2 font-bold text-zinc-100">{alert.eventName}</td>
-                  <td className="py-2 px-2 font-mono text-zinc-400">{alert.issueTimeUtc}</td>
-                  <td className="py-2 px-2 font-mono text-amber-400">{alert.expireTimeUtc}</td>
-                  <td className="py-2 px-2 text-zinc-300 truncate max-w-xs">
+                  <td className="py-2.5 px-3.5 font-bold text-zinc-100">{alert.eventName}</td>
+                  <td className="py-2.5 px-3.5 font-mono text-zinc-400">{alert.issueTimeUtc}</td>
+                  <td className="py-2.5 px-3.5 font-mono text-amber-400">{alert.expireTimeUtc}</td>
+                  <td className="py-2.5 px-3.5 text-zinc-300 truncate max-w-xs">
                     {alert.fipsCodes.join(', ')}
                   </td>
-                  <td className="py-2 px-2 text-zinc-400">{alert.originatorLabel}</td>
-                  <td className="py-2 px-2 font-mono text-zinc-500 text-[10px] max-w-xs truncate">
+                  <td className="py-2.5 px-3.5 text-zinc-400">{alert.originatorLabel}</td>
+                  <td className="py-2.5 px-3.5 font-mono text-zinc-500 text-[10px] max-w-xs truncate">
                     {alert.rawString}
                   </td>
                 </tr>
