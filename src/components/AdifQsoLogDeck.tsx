@@ -1,7 +1,6 @@
 import React, { useRef, useState } from 'react';
 import { AdifLogger, AdifQsoRecord } from '../radio/adifLogger';
 import {
-  BookOpen,
   Download,
   Upload,
   Plus,

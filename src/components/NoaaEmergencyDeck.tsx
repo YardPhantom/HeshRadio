@@ -5,7 +5,6 @@ import {
 } from '../radio/sameDecoder';
 import { LaboratorySignalGenerator } from '../radio/signalGenerator';
 import {
-  ShieldAlert,
   AlertTriangle,
   Radio,
   Volume2,

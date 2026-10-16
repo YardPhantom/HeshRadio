@@ -42,12 +42,10 @@ import { CURRENT_VERSION } from './version';
 import {
   Radio,
   Cpu,
-  Cable,
   Music,
   ListFilter,
   ShieldAlert,
   Zap,
-  Mic,
   Activity,
   Sun,
   BookOpen,

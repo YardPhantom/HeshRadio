@@ -9,7 +9,6 @@ import {
   SolarTelemetry,
 } from '../radio/solarPropagation';
 import {
-  Sun,
   Compass,
   Globe,
   RefreshCw,

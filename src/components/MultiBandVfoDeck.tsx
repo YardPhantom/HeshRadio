@@ -7,7 +7,6 @@ import {
 import { CTCSS_TONES_HZ, CtcssDetectionResult } from '../radio/ctcssTones';
 import { RdsStationData } from '../radio/demodulators';
 import {
-  Radio,
   Split,
   Layers,
   Activity,

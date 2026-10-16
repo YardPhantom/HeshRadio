@@ -10,7 +10,6 @@ import { ModulationModeExtended } from '../radio/bandPlans';
 import {
   Play,
   Square,
-  FastForward,
   Plus,
   Trash2,
   Lock,

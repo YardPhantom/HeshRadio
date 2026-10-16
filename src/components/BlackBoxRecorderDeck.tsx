@@ -8,7 +8,6 @@ import {
   Play,
   Download,
   Trash2,
-  HardDrive,
 } from 'lucide-react';
 
 interface BlackBoxRecorderDeckProps {

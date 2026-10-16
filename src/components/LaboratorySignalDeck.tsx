@@ -4,7 +4,6 @@ import {
   LabSignalType,
 } from '../radio/signalGenerator';
 import {
-  Wrench,
   Play,
 } from 'lucide-react';
 

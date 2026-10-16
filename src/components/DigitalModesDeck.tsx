@@ -18,7 +18,6 @@ import {
 import {
   MapPin,
   Send,
-  Zap,
   Image as ImageIcon,
   Play,
   Clock,
