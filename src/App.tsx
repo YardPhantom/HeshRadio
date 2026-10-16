@@ -34,6 +34,7 @@ import { NoaaEmergencyDeck } from './components/NoaaEmergencyDeck';
 import { BlackBoxRecorderDeck } from './components/BlackBoxRecorderDeck';
 import { LaboratorySignalDeck } from './components/LaboratorySignalDeck';
 import { MobileTacticalCockpit } from './components/MobileTacticalCockpit';
+import { FmRadioPlayerDeck } from './components/FmRadioPlayerDeck';
 import { AdifLogger } from './radio/adifLogger';
 import { ScanEngine, MemoryChannel } from './radio/scanEngine';
 import { BlackBoxRecorder } from './radio/blackBoxRecorder';
@@ -70,6 +71,7 @@ interface TrafficLogEntry {
 
 export type ViewTab =
   | 'VFO_SDR'
+  | 'FM_RADIO'
   | 'SCANNER'
   | 'NOAA_EAS'
   | 'BLACK_BOX'
@@ -85,17 +87,25 @@ export const App: React.FC = () => {
   // Navigation / View Tabs
   const [activeTab, setActiveTab] = useState<ViewTab>('VFO_SDR');
 
-  type WorkspaceCategory = 'TRANSCEIVER' | 'SCAN_ALERTS' | 'VOICE_AUDIO' | 'DIGITAL_WX' | 'HARDWARE_LAB';
+  type WorkspaceCategory =
+    | 'TRANSCEIVER'
+    | 'FM_BROADCAST'
+    | 'SCAN_ALERTS'
+    | 'VOICE_AUDIO'
+    | 'DIGITAL_WX'
+    | 'HARDWARE_LAB';
 
   const getCategoryForTab = (tab: ViewTab): WorkspaceCategory => {
     switch (tab) {
       case 'VFO_SDR':
         return 'TRANSCEIVER';
+      case 'FM_RADIO':
+      case 'INTERNET_RADIO':
+        return 'FM_BROADCAST';
       case 'SCANNER':
       case 'NOAA_EAS':
         return 'SCAN_ALERTS';
       case 'BLACK_BOX':
-      case 'INTERNET_RADIO':
       case 'TRAFFIC_LOG':
         return 'VOICE_AUDIO';
       case 'DIGITAL_MODES':
@@ -408,6 +418,25 @@ export const App: React.FC = () => {
       rigControllerRef.current.setMode(band.defaultMode);
     }
   }, [activeVfo]);
+
+  const handleTuneFmToVfo = useCallback((targetFreqMhz: number) => {
+    const fmBand =
+      findBandPlanForFrequency(targetFreqMhz) ||
+      MASTER_BAND_PLANS.find((b) => b.id === 'fm-broadcast') ||
+      MASTER_BAND_PLANS[0];
+    setCurrentBand(fmBand);
+    setFrequencyMhz(targetFreqMhz);
+    setVfoAFreqMhz(targetFreqMhz);
+    setMode('WFM');
+    setActiveTab('VFO_SDR');
+    if (sdrBridgeRef.current) {
+      sdrBridgeRef.current.setFrequency(Math.round(targetFreqMhz * 1e6));
+    }
+    if (rigControllerRef.current) {
+      rigControllerRef.current.setFrequency(Math.round(targetFreqMhz * 1e6));
+      rigControllerRef.current.setMode('WFM');
+    }
+  }, []);
 
   const handleModeChange = useCallback((newMode: ModulationModeExtended) => {
     setMode(newMode);
@@ -755,7 +784,25 @@ export const App: React.FC = () => {
               <span>TRANSCEIVER</span>
             </button>
 
-            {/* 2. SCAN & ALERTS */}
+            {/* 2. FM BROADCAST */}
+            <button
+              type="button"
+              onClick={() => {
+                if (activeTab !== 'FM_RADIO' && activeTab !== 'INTERNET_RADIO') {
+                  setActiveTab('FM_RADIO');
+                }
+              }}
+              className={`px-3.5 py-2 rounded-lg text-xs font-mono font-bold flex items-center gap-2 transition-all duration-150 cursor-pointer select-none border active:scale-[0.98] ${
+                activeCategory === 'FM_BROADCAST'
+                  ? 'bg-gradient-to-b from-pink-500/25 to-pink-600/10 text-pink-300 border-pink-500/60 shadow-lg shadow-pink-500/15'
+                  : 'bg-zinc-900/60 text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/70 border-zinc-800/80'
+              }`}
+            >
+              <Music className={`w-3.5 h-3.5 ${activeCategory === 'FM_BROADCAST' ? 'text-pink-400 animate-pulse' : 'text-zinc-500'}`} />
+              <span>FM BROADCAST</span>
+            </button>
+
+            {/* 3. SCAN & ALERTS */}
             <button
               type="button"
               onClick={() => {
@@ -773,11 +820,11 @@ export const App: React.FC = () => {
               <span>SCAN &amp; ALERTS</span>
             </button>
 
-            {/* 3. AUDIO & SPOTS */}
+            {/* 4. VOICE & SPOTS */}
             <button
               type="button"
               onClick={() => {
-                if (activeTab !== 'BLACK_BOX' && activeTab !== 'INTERNET_RADIO' && activeTab !== 'TRAFFIC_LOG') {
+                if (activeTab !== 'BLACK_BOX' && activeTab !== 'TRAFFIC_LOG') {
                   setActiveTab('BLACK_BOX');
                 }
               }}
@@ -788,7 +835,7 @@ export const App: React.FC = () => {
               }`}
             >
               <HardDrive className={`w-3.5 h-3.5 ${activeCategory === 'VOICE_AUDIO' ? 'text-orange-400' : 'text-zinc-500'}`} />
-              <span>AUDIO &amp; SPOTS</span>
+              <span>VOICE &amp; SPOTS</span>
             </button>
 
             {/* 4. DIGITAL MODES */}
@@ -849,6 +896,34 @@ export const App: React.FC = () => {
             </div>
           )}
 
+          {activeCategory === 'FM_BROADCAST' && (
+            <div className="flex flex-wrap items-center gap-2 text-xs font-mono">
+              <button
+                type="button"
+                onClick={() => setActiveTab('FM_RADIO')}
+                className={`px-3.5 py-1.5 rounded-full font-bold flex items-center gap-2 transition-all cursor-pointer border ${
+                  activeTab === 'FM_RADIO'
+                    ? 'bg-pink-500 text-black border-pink-400 shadow-md shadow-pink-500/30'
+                    : 'bg-zinc-800/90 text-zinc-400 hover:text-zinc-200 border-zinc-700 hover:bg-zinc-700'
+                }`}
+              >
+                <Radio className="w-3.5 h-3.5" /> FM RADIO TUNER (87.5 – 108.0 MHz)
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setActiveTab('INTERNET_RADIO')}
+                className={`px-3.5 py-1.5 rounded-full font-bold flex items-center gap-2 transition-all cursor-pointer border ${
+                  activeTab === 'INTERNET_RADIO'
+                    ? 'bg-emerald-500 text-black border-emerald-400 shadow-md shadow-emerald-500/30'
+                    : 'bg-zinc-800/90 text-zinc-400 hover:text-zinc-200 border-zinc-700 hover:bg-zinc-700'
+                }`}
+              >
+                <Music className="w-3.5 h-3.5" /> TRUCKER WEB STREAMS (AUTO-DUCKER)
+              </button>
+            </div>
+          )}
+
           {activeCategory === 'SCAN_ALERTS' && (
             <div className="flex flex-wrap items-center gap-2 text-xs font-mono">
               <button
@@ -889,18 +964,6 @@ export const App: React.FC = () => {
                 }`}
               >
                 <HardDrive className="w-3.5 h-3.5" /> 60s BLACK BOX REPLAY
-              </button>
-
-              <button
-                type="button"
-                onClick={() => setActiveTab('INTERNET_RADIO')}
-                className={`px-3.5 py-1.5 rounded-full font-bold flex items-center gap-2 transition-all cursor-pointer border ${
-                  activeTab === 'INTERNET_RADIO'
-                    ? 'bg-emerald-500 text-black border-emerald-400 shadow-md shadow-emerald-500/30'
-                    : 'bg-zinc-800/90 text-zinc-400 hover:text-zinc-200 border-zinc-700 hover:bg-zinc-700'
-                }`}
-              >
-                <Music className="w-3.5 h-3.5" /> INTERNET RADIO AUTO-DUCKER
               </button>
 
               <button
@@ -1226,6 +1289,16 @@ export const App: React.FC = () => {
               </div>
             </section>
           </div>
+        )}
+
+        {/* TAB: FM BROADCAST RADIO PLAYER */}
+        {activeTab === 'FM_RADIO' && (
+          <FmRadioPlayerDeck
+            duckGain={duckGain}
+            autoDuckEnabled={autoDuckEnabled}
+            onToggleAutoDuck={() => setAutoDuckEnabled((v) => !v)}
+            onTuneTransceiverVfo={handleTuneFmToVfo}
+          />
         )}
 
         {/* TAB 3: INTERNET RADIO AUTO-DUCKER */}
