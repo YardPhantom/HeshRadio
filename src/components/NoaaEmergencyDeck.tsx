@@ -213,7 +213,7 @@ export const NoaaEmergencyDeck: React.FC<NoaaEmergencyDeckProps> = ({
                 >
                   <td className="py-2.5 px-3.5">
                     <span
-                      className={`px-2.5 py-1 rounded-md text-[10px] font-bold inline-block ${
+                      className={`px-3.5 py-1 rounded-md text-[10px] font-bold inline-block ${
                         alert.severity === 'WARNING' || alert.severity === 'EMERGENCY'
                           ? 'bg-red-950 text-red-300 border border-red-700'
                           : alert.severity === 'WATCH'

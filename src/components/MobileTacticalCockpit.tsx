@@ -124,63 +124,63 @@ export const MobileTacticalCockpit: React.FC<MobileTacticalCockpitProps> = ({
           {/* Night Vision Toggle */}
           <button
             onClick={toggleNightVision}
-            className={`p-1.5 rounded border transition-colors ${
+            className={`p-2 rounded-lg border transition-colors cursor-pointer ${
               nightVisionActive
                 ? 'bg-red-950 border-red-600 text-red-300'
                 : 'bg-zinc-800 border-zinc-700 text-zinc-400'
             }`}
             title="Monochromatic Red Tactical Night Vision"
           >
-            <Eye className="w-3.5 h-3.5" />
+            <Eye className="w-3.5 h-3.5 shrink-0" />
           </button>
 
           {/* Wake Lock Toggle */}
           <button
             onClick={() => setWakeLockActive((v) => !v)}
-            className={`p-1.5 rounded border transition-colors ${
+            className={`p-2 rounded-lg border transition-colors cursor-pointer ${
               wakeLockActive
                 ? 'bg-amber-950 border-amber-600 text-amber-300'
                 : 'bg-zinc-800 border-zinc-700 text-zinc-400'
             }`}
             title="Screen Always-On WakeLock"
           >
-            {wakeLockActive ? <Lock className="w-3.5 h-3.5" /> : <Unlock className="w-3.5 h-3.5" />}
+            {wakeLockActive ? <Lock className="w-3.5 h-3.5 shrink-0" /> : <Unlock className="w-3.5 h-3.5 shrink-0" />}
           </button>
 
           {/* Keypad Quick Button */}
           <button
             onClick={() => setShowKeypad((v) => !v)}
-            className="p-1.5 bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 rounded text-zinc-300"
+            className="p-2 bg-zinc-800 hover:bg-zinc-700 border border-zinc-700 rounded-lg text-zinc-300 cursor-pointer"
             title="Direct Frequency Keypad"
           >
-            <Hash className="w-3.5 h-3.5" />
+            <Hash className="w-3.5 h-3.5 shrink-0" />
           </button>
 
           {/* Emergency Panic Unkey Button */}
           <button
             onClick={onPanicUnkey}
-            className="p-1.5 bg-red-950 hover:bg-red-900 border border-red-700 rounded text-red-300"
+            className="p-2 bg-red-950 hover:bg-red-900 border border-red-700 rounded-lg text-red-300 cursor-pointer"
             title="Immediate Fail-Safe Panic Unkey"
           >
-            <Zap className="w-3.5 h-3.5 text-red-400" />
+            <Zap className="w-3.5 h-3.5 text-red-400 shrink-0" />
           </button>
         </div>
       </div>
 
       {/* Expanded S26 Ultra Controls */}
       {isExpanded && (
-        <div className="py-2 px-1 border-t border-zinc-800/80 grid grid-cols-2 gap-2 text-xs">
-          <div className="p-2 bg-black/60 rounded border border-zinc-800">
-            <div className="text-[10px] text-zinc-500">TUNED FREQUENCY</div>
-            <div className="text-amber-400 font-bold text-sm font-mono">
+        <div className="py-2.5 px-1.5 border-t border-zinc-800/80 grid grid-cols-2 gap-2.5 text-xs">
+          <div className="p-3 px-3.5 bg-black/60 rounded-xl border border-zinc-800">
+            <div className="text-[10px] text-zinc-500 font-bold">TUNED FREQUENCY</div>
+            <div className="text-amber-400 font-bold text-sm font-mono pt-1">
               {currentFreqMhz.toFixed(4)} MHz
             </div>
-            <div className="text-[10px] text-zinc-400">{currentMode} MODE</div>
+            <div className="text-[10px] text-zinc-400 pt-0.5">{currentMode} MODE</div>
           </div>
 
-          <div className="p-2 bg-black/60 rounded border border-zinc-800 flex flex-col justify-between">
-            <div className="text-[10px] text-zinc-500">CARRIER STATE</div>
-            <div className="font-bold text-xs flex items-center gap-1.5">
+          <div className="p-3 px-3.5 bg-black/60 rounded-xl border border-zinc-800 flex flex-col justify-between">
+            <div className="text-[10px] text-zinc-500 font-bold">CARRIER STATE</div>
+            <div className="font-bold text-xs flex items-center gap-1.5 pt-1">
               <span
                 className={`w-2 h-2 rounded-full ${
                   pttActive

@@ -317,14 +317,14 @@ export const FmRadioPlayerDeck: React.FC<FmRadioPlayerDeckProps> = ({
         {/* Top Info Readout Row */}
         <div className="flex flex-wrap items-center justify-between gap-3 border-b border-zinc-800/80 pb-3">
           <div className="flex items-center gap-2">
-            <span className="px-2.5 py-1 rounded-md text-[10px] font-bold bg-red-950/80 text-red-400 border border-red-700 animate-pulse">
+            <span className="px-3 py-1 rounded-md text-[10px] font-bold bg-red-950/80 text-red-400 border border-red-700 animate-pulse">
               ● LIVE ON AIR
             </span>
-            <span className="px-2.5 py-1 rounded-md text-[10px] font-bold bg-zinc-800 text-zinc-300 border border-zinc-700">
+            <span className="px-3 py-1 rounded-md text-[10px] font-bold bg-zinc-800 text-zinc-300 border border-zinc-700">
               FM STEREO
             </span>
-            <span className="px-2.5 py-1 rounded-md text-[10px] font-bold bg-cyan-950 text-cyan-300 border border-cyan-800 flex items-center gap-1">
-              <Sparkles className="w-3 h-3 text-cyan-400" /> RDS ACTIVE
+            <span className="px-3 py-1 rounded-md text-[10px] font-bold bg-cyan-950 text-cyan-300 border border-cyan-800 flex items-center gap-1.5">
+              <Sparkles className="w-3 h-3 text-cyan-400 shrink-0" /> RDS ACTIVE
             </span>
           </div>
 
@@ -714,7 +714,7 @@ export const FmRadioPlayerDeck: React.FC<FmRadioPlayerDeckProps> = ({
                       <span className="font-bold text-amber-400 flex items-center gap-1.5">
                         <Radio className="w-3.5 h-3.5" /> {st.frequencyMhz.toFixed(1)} MHz
                       </span>
-                      <span className="text-[10px] px-2 py-0.5 rounded bg-zinc-800 text-zinc-400 font-bold">
+                      <span className="text-[10px] px-2.5 py-1 rounded-md bg-zinc-800 text-zinc-300 font-bold border border-zinc-700/80">
                         {st.bitrate}
                       </span>
                     </div>
@@ -750,7 +750,7 @@ export const FmRadioPlayerDeck: React.FC<FmRadioPlayerDeckProps> = ({
                       <button
                         type="button"
                         onClick={() => onTuneTransceiverVfo(st.frequencyMhz)}
-                        className="py-1.5 px-2.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 rounded-lg text-xs border border-zinc-700 cursor-pointer"
+                        className="py-1.5 px-3 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 rounded-lg text-xs border border-zinc-700 cursor-pointer font-bold font-mono"
                         title="Set VFO A to this frequency"
                       >
                         VFO

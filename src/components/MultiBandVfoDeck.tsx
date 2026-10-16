@@ -213,7 +213,7 @@ export const MultiBandVfoDeck: React.FC<MultiBandVfoDeckProps> = ({
               >
                 <div className="flex items-center justify-between gap-1 text-[10px] uppercase font-bold text-zinc-400">
                   <span className="tracking-wider">VFO A</span>
-                  <span className="text-[9px] px-1.5 py-0.5 rounded bg-zinc-800/90 text-amber-400 border border-zinc-700 font-bold">RX</span>
+                  <span className="text-[10px] px-2.5 py-0.5 rounded-md bg-zinc-800/90 text-amber-400 border border-zinc-700 font-bold tracking-wide">RX</span>
                 </div>
                 <div className="text-sm font-bold font-mono tracking-tight text-amber-300 pt-1.5 truncate">
                   {vfoAFreqMhz.toFixed(4)} <span className="text-[11px] text-zinc-500 font-normal">MHz</span>
@@ -229,7 +229,7 @@ export const MultiBandVfoDeck: React.FC<MultiBandVfoDeckProps> = ({
               >
                 <div className="flex items-center justify-between gap-1 text-[10px] uppercase font-bold text-zinc-400">
                   <span className="tracking-wider">VFO B</span>
-                  <span className="text-[9px] px-1.5 py-0.5 rounded bg-zinc-800/90 text-zinc-300 border border-zinc-700 font-bold">TX/SPLIT</span>
+                  <span className="text-[10px] px-2.5 py-0.5 rounded-md bg-zinc-800/90 text-zinc-300 border border-zinc-700 font-bold tracking-wide">TX/SPLIT</span>
                 </div>
                 <div className="text-sm font-bold font-mono tracking-tight text-amber-300 pt-1.5 truncate">
                   {vfoBFreqMhz.toFixed(4)} <span className="text-[11px] text-zinc-500 font-normal">MHz</span>
@@ -294,17 +294,17 @@ export const MultiBandVfoDeck: React.FC<MultiBandVfoDeckProps> = ({
               <span className="text-[11px] text-amber-400 font-bold uppercase truncate max-w-[240px] sm:max-w-xs" title={currentBand.name}>
                 {currentBand.name}
               </span>
-              <span className="px-2.5 py-1 rounded-md text-[10px] bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 font-bold shrink-0">
+              <span className="px-3 py-1 rounded-md text-[10px] bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 font-bold shrink-0">
                 {activeVfo} ACTIVE
               </span>
             </div>
             <button
               type="button"
               onClick={() => setShowKeypad(true)}
-              className="text-xs bg-zinc-900 hover:bg-amber-500/20 text-zinc-300 hover:text-amber-300 px-3 py-1.5 rounded-md border border-zinc-800 font-mono flex items-center gap-1.5 shrink-0 transition-colors cursor-pointer"
+              className="text-xs bg-zinc-900 hover:bg-amber-500/20 text-zinc-300 hover:text-amber-300 px-3.5 py-1.5 rounded-md border border-zinc-800 font-mono flex items-center gap-2 shrink-0 transition-colors cursor-pointer"
               title="Direct Frequency Keypad"
             >
-              <Hash className="w-3.5 h-3.5 text-amber-400" /> DIRECT TUNE
+              <Hash className="w-3.5 h-3.5 text-amber-400 shrink-0" /> DIRECT TUNE
             </button>
           </div>
 
@@ -430,7 +430,7 @@ export const MultiBandVfoDeck: React.FC<MultiBandVfoDeckProps> = ({
                 <span className="text-emerald-400 font-bold flex items-center gap-1">
                   <Sparkles className="w-3 h-3" /> RDS BROADCAST
                 </span>
-                <span className="px-2 py-0.5 rounded bg-red-950 text-red-300 border border-red-800 text-[10px] font-bold">
+                <span className="px-3 py-1 rounded-md bg-red-950 text-red-300 border border-red-800 text-[10px] font-bold">
                   {rdsData.stereoDetected ? 'STEREO' : 'MONO'}
                 </span>
               </div>

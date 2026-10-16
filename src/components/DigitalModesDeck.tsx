@@ -310,7 +310,7 @@ export const DigitalModesDeck: React.FC<DigitalModesDeckProps> = ({
                     <div className="flex items-center gap-2">
                       <span className="font-bold text-cyan-400">{pkt.sourceCall}</span>
                       <span className="text-zinc-500">▶ {pkt.destCall}</span>
-                      <span className="px-2.5 py-0.5 rounded-md bg-zinc-800 text-zinc-300 text-[10px] font-bold">
+                      <span className="px-3 py-1 rounded-md bg-zinc-800 text-zinc-300 text-[10px] font-bold border border-zinc-700/80">
                         {pkt.payloadType}
                       </span>
                     </div>
@@ -433,7 +433,7 @@ export const DigitalModesDeck: React.FC<DigitalModesDeckProps> = ({
                   <div className="flex items-center gap-3">
                     <span className="text-zinc-500">{msg.utcTime}</span>
                     <span
-                      className={`px-2.5 py-0.5 rounded-md text-[10px] font-bold ${
+                      className={`px-3 py-1 rounded-md text-[10px] font-bold border border-zinc-700/60 ${
                         msg.snrDb >= 0 ? 'bg-emerald-950 text-emerald-400' : 'bg-zinc-800 text-zinc-400'
                       }`}
                     >
