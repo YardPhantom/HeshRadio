@@ -1,0 +1,19 @@
+[package]
+name = "heshradio"
+version = "1.0.0"
+description = "HeshRadio - Tactical 40-Ch CB, SDR Waterfall & Internet Radio Transceiver (Windows & Android S26 Ultra)"
+authors = ["HeshRadio Engineering"]
+license = "MIT"
+edition = "2021"
+
+[lib]
+name = "heshradio_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2.0.0", features = [] }
+
+[dependencies]
+tauri = { version = "2.1.0", features = [] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
