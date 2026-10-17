@@ -3,6 +3,10 @@ import {
   CURATED_FM_STATIONS,
   FmRadioService,
   FmStation,
+  FM_COUNTRIES,
+  FM_CATEGORIES,
+  FmSortOption,
+  sortFmStations,
 } from '../radio/fmRadioService';
 import {
   Radio,
@@ -19,6 +23,10 @@ import {
   Plus,
   Compass,
   Zap,
+  Globe,
+  Layers,
+  ArrowUpDown,
+  RotateCcw,
 } from 'lucide-react';
 
 interface FmRadioPlayerDeckProps {
@@ -48,6 +56,8 @@ export const FmRadioPlayerDeck: React.FC<FmRadioPlayerDeckProps> = ({
   // Station Directory Search & Filter State
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [selectedGenre, setSelectedGenre] = useState<string>('ALL');
+  const [selectedCountry, setSelectedCountry] = useState<string>('ALL');
+  const [selectedSort, setSelectedSort] = useState<FmSortOption>('VOTES_DESC');
   const [stations, setStations] = useState<FmStation[]>(CURATED_FM_STATIONS);
   const [searching, setSearching] = useState<boolean>(false);
 
@@ -129,10 +139,10 @@ export const FmRadioPlayerDeck: React.FC<FmRadioPlayerDeckProps> = ({
 
   // Perform Online Search via Radio-Browser API
   const handleSearch = useCallback(
-    async (query: string, genre: string) => {
+    async (query: string, genre: string, country: string) => {
       setSearching(true);
       try {
-        const results = await service.searchOnlineStations(query, genre, '', 30);
+        const results = await service.searchOnlineStations(query, genre, country, 60);
         setStations(results);
       } finally {
         setSearching(false);
@@ -141,13 +151,24 @@ export const FmRadioPlayerDeck: React.FC<FmRadioPlayerDeckProps> = ({
     [service]
   );
 
-  // Trigger search on query or genre change
+  // Trigger search on query, genre, or country change
   useEffect(() => {
     const timer = setTimeout(() => {
-      handleSearch(searchQuery, selectedGenre);
+      handleSearch(searchQuery, selectedGenre, selectedCountry);
     }, 350);
     return () => clearTimeout(timer);
-  }, [searchQuery, selectedGenre, handleSearch]);
+  }, [searchQuery, selectedGenre, selectedCountry, handleSearch]);
+
+  // Derived sorted stations list based on active sorting criteria
+  const sortedStations = sortFmStations(stations, selectedSort);
+
+  // Reset all search, category, country, and sort filters back to default
+  const handleResetFilters = () => {
+    setSearchQuery('');
+    setSelectedGenre('ALL');
+    setSelectedCountry('ALL');
+    setSelectedSort('VOTES_DESC');
+  };
 
   // Frequency Dial Step Tuning
   const handleDialStep = (stepMhz: number) => {
@@ -155,7 +176,7 @@ export const FmRadioPlayerDeck: React.FC<FmRadioPlayerDeckProps> = ({
     if (nextFreq >= 87.5 && nextFreq <= 108.0) {
       setDialFreqMhz(nextFreq);
       // Find station on or closest to this frequency
-      const match = stations.find((s) => Math.abs(s.frequencyMhz - nextFreq) < 0.15);
+      const match = sortedStations.find((s) => Math.abs(s.frequencyMhz - nextFreq) < 0.15);
       if (match) {
         handlePlayStation(match);
       }
@@ -164,7 +185,7 @@ export const FmRadioPlayerDeck: React.FC<FmRadioPlayerDeckProps> = ({
 
   // Seek Up / Down to Next Available Station
   const handleSeek = (direction: 'UP' | 'DOWN') => {
-    const sorted = [...stations].sort((a, b) => a.frequencyMhz - b.frequencyMhz);
+    const sorted = [...sortedStations].sort((a, b) => a.frequencyMhz - b.frequencyMhz);
     if (sorted.length === 0) return;
 
     if (direction === 'UP') {
@@ -260,18 +281,7 @@ export const FmRadioPlayerDeck: React.FC<FmRadioPlayerDeckProps> = ({
     };
   }, [isPlaying, isMuted]);
 
-  // Standard Genres for Quick Filter Buttons
-  const GENRE_PILLS = [
-    { id: 'ALL', label: 'ALL STATIONS' },
-    { id: 'ROCK', label: 'ROCK / INDIE' },
-    { id: 'COUNTRY', label: 'COUNTRY' },
-    { id: 'NEWS', label: 'NEWS / NPR' },
-    { id: 'JAZZ', label: 'JAZZ / BLUES' },
-    { id: 'POP', label: 'POP / TOP 40' },
-    { id: 'ELECTRONIC', label: 'ELECTRONIC' },
-    { id: '80S', label: '80s / RETRO' },
-    { id: 'CLASSICAL', label: 'CLASSICAL' },
-  ];
+
 
   return (
     <section className="panel fm-radio-deck font-mono space-y-4" aria-label="FM Broadcast Radio Player">
@@ -648,42 +658,115 @@ export const FmRadioPlayerDeck: React.FC<FmRadioPlayerDeckProps> = ({
       </div>
 
       {/* 4. Live Online Radio Station Directory Search Engine */}
-      <div className="space-y-3 pt-2 border-t border-zinc-800/80">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <div className="space-y-0.5">
+      <div className="space-y-4 pt-4 border-t border-zinc-800/80">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
+          <div className="space-y-1">
             <h3 className="text-sm font-bold text-zinc-200 flex items-center gap-2">
               <Search className="w-4 h-4 text-cyan-400" /> ONLINE FM &amp; BROADCAST STREAM DIRECTORY
             </h3>
-            <p className="text-xs text-zinc-500">
-              Query over 40,000 live community broadcast stations via the Radio-Browser API.
+            <p className="text-xs text-zinc-400">
+              Explore 40,000+ live stations worldwide with real-time Country, Category, and Stream Quality filtering.
             </p>
           </div>
 
-          {/* Search Box */}
-          <div className="relative w-full sm:w-80">
-            <Search className="w-4 h-4 text-zinc-500 absolute left-3 top-2.5" />
-            <input
-              type="text"
-              placeholder="Search by callsign, genre, city..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-zinc-900 border border-zinc-700 text-zinc-200 pl-9 pr-3.5 py-2 rounded-lg text-xs focus:outline-none focus:border-cyan-500 font-mono"
-            />
-            {searchQuery && (
+          {/* Quick Stats / Station Count Badge & Reset Button */}
+          <div className="flex items-center gap-2 self-start md:self-auto flex-wrap">
+            <span className="text-[11px] font-mono px-3 py-1.5 rounded-lg bg-zinc-900 border border-zinc-800 text-amber-400 font-bold flex items-center gap-1.5 shadow-sm">
+              <Radio className="w-3.5 h-3.5" />
+              <span>{sortedStations.length} STATIONS AVAILABLE</span>
+            </span>
+
+            {(searchQuery || selectedGenre !== 'ALL' || selectedCountry !== 'ALL' || selectedSort !== 'VOTES_DESC') && (
               <button
                 type="button"
-                onClick={() => setSearchQuery('')}
-                className="absolute right-3 top-2.5 text-zinc-500 hover:text-zinc-300"
+                onClick={handleResetFilters}
+                className="px-3 py-1.5 rounded-lg text-[11px] font-bold bg-zinc-800 hover:bg-zinc-700 text-zinc-300 hover:text-white border border-zinc-700 flex items-center gap-1.5 transition-colors cursor-pointer"
+                title="Reset all filters and sorting back to default"
               >
-                ✕
+                <RotateCcw className="w-3 h-3 text-cyan-400" />
+                <span>RESET FILTERS</span>
               </button>
             )}
           </div>
         </div>
 
-        {/* Genre Filter Pills */}
-        <div className="flex flex-wrap gap-1.5">
-          {GENRE_PILLS.map((pill) => (
+        {/* Multi-Control Search, Country, Category & Sort Bar */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 bg-black/40 p-3 rounded-xl border border-zinc-800/90">
+          {/* Search Box */}
+          <div className="relative">
+            <Search className="w-4 h-4 text-zinc-500 absolute left-3 top-2.5 pointer-events-none" />
+            <input
+              type="text"
+              placeholder="Search callsign, genre, city..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full bg-zinc-900 border border-zinc-700 text-zinc-200 pl-9 pr-8 py-2 rounded-lg text-xs focus:outline-none focus:border-cyan-500 font-mono transition-colors"
+            />
+            {searchQuery && (
+              <button
+                type="button"
+                onClick={() => setSearchQuery('')}
+                className="absolute right-2.5 top-2.5 text-zinc-500 hover:text-zinc-300 cursor-pointer"
+                title="Clear search"
+              >
+                ✕
+              </button>
+            )}
+          </div>
+
+          {/* Country Selector */}
+          <div className="relative">
+            <Globe className="w-3.5 h-3.5 text-cyan-400 absolute left-3 top-2.5 pointer-events-none" />
+            <select
+              value={selectedCountry}
+              onChange={(e) => setSelectedCountry(e.target.value)}
+              className="w-full bg-zinc-900 border border-zinc-700 text-zinc-200 pl-8 pr-3 py-2 rounded-lg text-xs font-mono focus:outline-none focus:border-cyan-500 cursor-pointer appearance-none transition-colors"
+            >
+              {FM_COUNTRIES.map((c) => (
+                <option key={c.code} value={c.code} className="bg-zinc-900 text-zinc-200">
+                  {c.flag} {c.name}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Category / Genre Dropdown */}
+          <div className="relative">
+            <Layers className="w-3.5 h-3.5 text-amber-400 absolute left-3 top-2.5 pointer-events-none" />
+            <select
+              value={selectedGenre}
+              onChange={(e) => setSelectedGenre(e.target.value)}
+              className="w-full bg-zinc-900 border border-zinc-700 text-zinc-200 pl-8 pr-3 py-2 rounded-lg text-xs font-mono focus:outline-none focus:border-amber-500 cursor-pointer appearance-none transition-colors"
+            >
+              {FM_CATEGORIES.map((cat) => (
+                <option key={cat.id} value={cat.id} className="bg-zinc-900 text-zinc-200">
+                  {cat.label}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Sort By Dropdown */}
+          <div className="relative">
+            <ArrowUpDown className="w-3.5 h-3.5 text-emerald-400 absolute left-3 top-2.5 pointer-events-none" />
+            <select
+              value={selectedSort}
+              onChange={(e) => setSelectedSort(e.target.value as FmSortOption)}
+              className="w-full bg-zinc-900 border border-zinc-700 text-zinc-200 pl-8 pr-3 py-2 rounded-lg text-xs font-mono focus:outline-none focus:border-emerald-500 cursor-pointer appearance-none transition-colors"
+            >
+              <option value="VOTES_DESC" className="bg-zinc-900 text-zinc-200">Sort: Most Popular (Votes)</option>
+              <option value="FREQ_ASC" className="bg-zinc-900 text-zinc-200">Sort: Frequency (87.5 → 108 MHz)</option>
+              <option value="COUNTRY_ASC" className="bg-zinc-900 text-zinc-200">Sort: Country (A → Z)</option>
+              <option value="CATEGORY_ASC" className="bg-zinc-900 text-zinc-200">Sort: Category (A → Z)</option>
+              <option value="NAME_ASC" className="bg-zinc-900 text-zinc-200">Sort: Station Name (A → Z)</option>
+              <option value="BITRATE_DESC" className="bg-zinc-900 text-zinc-200">Sort: Audio Quality (Bitrate)</option>
+            </select>
+          </div>
+        </div>
+
+        {/* Quick Category / Genre Filter Pills */}
+        <div className="flex flex-wrap gap-1.5 pt-1">
+          {FM_CATEGORIES.map((pill) => (
             <button
               key={pill.id}
               type="button"
@@ -700,50 +783,79 @@ export const FmRadioPlayerDeck: React.FC<FmRadioPlayerDeckProps> = ({
         </div>
 
         {/* Station Cards Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 max-h-[460px] overflow-y-auto pr-1">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5 max-h-[500px] overflow-y-auto pr-1">
           {searching ? (
-            <div className="col-span-full py-12 text-center text-zinc-500 text-xs">
-              Querying online radio database...
+            <div className="col-span-full py-16 text-center text-zinc-400 text-xs font-mono space-y-2">
+              <div className="animate-pulse text-cyan-400 font-bold">TUNING WORLDWIDE BROADCAST API...</div>
+              <div>Retrieving stations for {selectedCountry !== 'ALL' ? selectedCountry : 'Global'} / {selectedGenre !== 'ALL' ? selectedGenre : 'All Categories'}</div>
             </div>
-          ) : stations.length === 0 ? (
-            <div className="col-span-full py-12 text-center text-zinc-500 text-xs bg-black/20 rounded-xl border border-zinc-900">
-              No matching stations found. Try searching for "rock", "country", "jazz", or a callsign.
+          ) : sortedStations.length === 0 ? (
+            <div className="col-span-full py-12 px-6 text-center text-zinc-400 text-xs bg-black/30 rounded-xl border border-zinc-800 space-y-3">
+              <div className="text-amber-400 font-bold">No stations found matching current criteria.</div>
+              <div className="text-zinc-500">
+                Try clearing search terms or selecting a different country or category.
+              </div>
+              <button
+                type="button"
+                onClick={handleResetFilters}
+                className="px-4 py-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 rounded-lg text-xs font-bold border border-zinc-700 cursor-pointer inline-flex items-center gap-1.5"
+              >
+                <RotateCcw className="w-3.5 h-3.5 text-cyan-400" />
+                <span>RESET ALL FILTERS</span>
+              </button>
             </div>
           ) : (
-            stations.map((st) => {
+            sortedStations.map((st) => {
               const isCurrent = st.id === currentStation.id && isPlaying;
               return (
                 <div
                   key={st.id}
-                  className={`p-3.5 rounded-xl border flex flex-col justify-between gap-2.5 transition-all ${
+                  className={`p-3.5 rounded-xl border flex flex-col justify-between gap-3 transition-all ${
                     isCurrent
-                      ? 'bg-amber-500/10 border-amber-500/50 shadow-md'
+                      ? 'bg-amber-500/10 border-amber-500/50 shadow-md ring-1 ring-amber-500/30'
                       : 'bg-black/40 border-zinc-800/90 hover:border-zinc-700'
                   }`}
                 >
-                  <div className="space-y-1">
-                    <div className="flex items-center justify-between text-xs font-mono">
-                      <span className="font-bold text-amber-400 flex items-center gap-1.5">
+                  <div className="space-y-1.5">
+                    {/* Top Row: Dial Frequency & Bitrate & Votes */}
+                    <div className="flex items-center justify-between text-xs font-mono gap-2">
+                      <span className="font-bold text-amber-400 flex items-center gap-1.5 shrink-0">
                         <Radio className="w-3.5 h-3.5" /> {st.frequencyMhz.toFixed(1)} MHz
                       </span>
-                      <span className="text-[10px] px-2.5 py-1 rounded-md bg-zinc-800 text-zinc-300 font-bold border border-zinc-700/80">
-                        {st.bitrate}
-                      </span>
+                      <div className="flex items-center gap-1.5 overflow-hidden">
+                        {st.votes !== undefined && st.votes > 0 && (
+                          <span className="text-[10px] px-2 py-0.5 rounded bg-zinc-900 text-amber-300 font-bold border border-zinc-800 shrink-0">
+                            ★ {st.votes > 1000 ? `${(st.votes / 1000).toFixed(1)}k` : st.votes}
+                          </span>
+                        )}
+                        <span className="text-[10px] px-2.5 py-1 rounded-md bg-zinc-800 text-zinc-300 font-bold border border-zinc-700/80 shrink-0">
+                          {st.bitrate}
+                        </span>
+                      </div>
                     </div>
 
+                    {/* Station Name */}
                     <div className="text-zinc-100 font-bold text-sm truncate" title={st.name}>
                       {st.name}
                     </div>
 
-                    <div className="text-xs text-zinc-400 truncate" title={st.genre}>
-                      {st.genre}
+                    {/* Genre / Format Badge */}
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-[11px] px-2 py-0.5 rounded bg-cyan-950/50 text-cyan-300 font-semibold border border-cyan-800/40 truncate" title={st.genre}>
+                        {st.genre}
+                      </span>
                     </div>
 
-                    <div className="text-[11px] text-zinc-500">
-                      {st.country} {st.state ? `• ${st.state}` : ''}
+                    {/* Country & Region */}
+                    <div className="text-[11px] text-zinc-400 flex items-center gap-1.5">
+                      <Globe className="w-3 h-3 text-zinc-500 shrink-0" />
+                      <span className="truncate">
+                        {st.country} {st.state ? `• ${st.state}` : ''}
+                      </span>
                     </div>
                   </div>
 
+                  {/* Actions Row */}
                   <div className="flex items-center gap-2 pt-2.5 border-t border-zinc-800/60">
                     <button
                       type="button"
