@@ -56,13 +56,15 @@ export const TacticalHeader: React.FC<TacticalHeaderProps> = ({
       <div className="header-telemetry-pills">
         <div className="ui-pill-md">
           <span className="ui-lbl">CALL / HANDLE</span>
-          <input
-            type="text"
-            value={operatorHandle}
-            onChange={(e) => onOperatorHandleChange(e.target.value.toUpperCase())}
-            className="handle-input font-mono font-bold"
-            aria-label="Operator Call or Handle"
-          />
+          <div className="inline-flex items-center px-1 py-0.5">
+            <input
+              type="text"
+              value={operatorHandle}
+              onChange={(e) => onOperatorHandleChange(e.target.value.toUpperCase())}
+              className="handle-input font-mono font-bold"
+              aria-label="Operator Call or Handle"
+            />
+          </div>
         </div>
 
         <div className="ui-pill-md">

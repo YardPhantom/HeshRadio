@@ -159,21 +159,25 @@ body {
 .handle-input {
   background: #0d1520;
   color: var(--accent-amber);
-  border: 1px solid rgba(245, 158, 11, 0.35);
-  border-radius: 8px;
-  padding-inline: 1.1rem;
-  padding-block: 0.55rem;
+  border: 1px solid rgba(245, 158, 11, 0.4);
+  border-radius: 6px;
+  padding-inline: 0.65rem;
+  padding-block: 0.25rem;
+  height: 24px;
+  max-height: 24px;
   font-family: var(--font-mono);
-  font-size: 0.76rem;
+  font-size: 0.72rem;
   font-weight: 700;
   box-sizing: border-box;
-  inline-size: 155px;
-  transition: border-color 0.15s ease;
+  inline-size: 130px;
+  transition: all 0.15s ease;
+  outline-offset: 1px;
 }
 
 .handle-input:focus {
   border-color: var(--accent-amber);
-  outline: none;
+  outline: 1px solid var(--accent-amber) !important;
+  box-shadow: 0 0 6px rgba(245, 158, 11, 0.3);
 }
 
 /* PANEL CARDS */

@@ -175,7 +175,7 @@ export const MultiBandVfoDeck: React.FC<MultiBandVfoDeckProps> = ({
         {/* Left: VFO A / VFO B Switcher & Repeater Shift Controls */}
         <div className="lg:col-span-4 flex flex-col justify-between gap-4 bg-black/50 p-4 sm:p-5 rounded-2xl border border-zinc-800/90 shadow-lg">
           <div className="space-y-3.5">
-            <div className="flex items-center justify-between gap-3 pb-2.5 border-b border-zinc-800/80">
+            <div className="flex items-center justify-between gap-3 pb-3 mb-3.5 border-b border-zinc-800/80">
               <span className="text-xs font-mono text-zinc-200 font-bold flex items-center gap-2">
                 <span className="p-2 rounded-lg bg-amber-500/15 border border-amber-500/35 flex items-center justify-center shrink-0">
                   <Split className="w-3.5 h-3.5 text-amber-400" />
