@@ -822,15 +822,22 @@ svg {
 }
 
 span {
-  padding-left: 0.25rem;
-  padding-right: 0.35rem;
-  padding-inline-start: 0.25rem;
-  padding-inline-end: 0.35rem;
+  display: inline-block;
+  vertical-align: middle;
+  padding-left: 0.35rem;
+  padding-right: 0.45rem;
+  padding-inline-start: 0.35rem;
+  padding-inline-end: 0.45rem;
+  padding-top: 0.05rem;
+  padding-bottom: 0.05rem;
+  box-sizing: border-box;
 }
 
 span:empty {
+  display: inline;
   padding: 0;
   padding-inline: 0;
+  padding-block: 0;
 }
 
 .net-controls-row {

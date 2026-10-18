@@ -214,8 +214,8 @@ export const CategoryTabBar: React.FC<CategoryTabBarProps> = ({
         </div>
       </div>
 
-      {/* Tier 2: Sleek Sub-Tabs */}
-      <div className="flex flex-wrap items-center gap-2.5 pt-3 border-t border-zinc-800/60">
+      {/* Tier 2: Sleek Sub-Tabs (Clean seamless row without top line) */}
+      <div className="flex flex-wrap items-center gap-2.5 pt-1">
         {activeCategory === 'TRANSCEIVER' && (
           <div className="flex flex-wrap items-center gap-2.5">
             <span className="ui-pill-btn bg-amber-500 text-black border-amber-400 shadow-sm">
