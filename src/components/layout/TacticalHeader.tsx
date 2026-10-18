@@ -30,15 +30,15 @@ export const TacticalHeader: React.FC<TacticalHeaderProps> = ({
   return (
     <header className="top-telemetry-bar" aria-label="Tactical Telemetry Header">
       <div className="brand-cluster">
-        <div className={`ui-pill-bcn ${pttActive ? 'tx' : squelchOpen ? 'rx-open' : 'rx-stby'}`}>
-          {pttActive
-            ? 'TX ON AIR'
-            : squelchOpen
-            ? activeRxHandle
+        {(pttActive || squelchOpen) && (
+          <div className={`ui-pill-bcn ${pttActive ? 'tx' : 'rx-open'}`}>
+            {pttActive
+              ? 'TX ON AIR'
+              : activeRxHandle
               ? `RX: ${activeRxHandle}`
-              : 'RX SQUELCH OPEN'
-            : 'RX GUARD'}
-        </div>
+              : 'RX SQUELCH OPEN'}
+          </div>
+        )}
         <div>
           <div className="flex items-center gap-2">
             <h1 className="app-logo">HESHRADIO</h1>

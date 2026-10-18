@@ -733,12 +733,13 @@ export const FmRadioPlayerDeck: React.FC<FmRadioPlayerDeckProps> = ({
           </div>
 
           {/* Category / Genre Dropdown */}
-          <div className="relative px-0.5 py-0.5">
-            <Layers className="w-3.5 h-3.5 text-amber-400 absolute left-3.5 top-3 pointer-events-none" />
+          <div className="relative px-0.5 py-0.5 flex items-center">
+            <span className="w-1.5" />
+            <Layers className="w-3.5 h-3.5 text-amber-400 absolute left-4 top-3 pointer-events-none shrink-0" />
             <select
               value={selectedGenre}
               onChange={(e) => setSelectedGenre(e.target.value)}
-              className="ui-input-box w-full cursor-pointer appearance-none"
+              className="ui-input-box w-full cursor-pointer appearance-none pl-10 pr-4"
             >
               {FM_CATEGORIES.map((cat) => (
                 <option key={cat.id} value={cat.id} className="bg-zinc-900 text-zinc-200">

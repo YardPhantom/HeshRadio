@@ -382,8 +382,10 @@ export const MultiBandVfoDeck: React.FC<MultiBandVfoDeckProps> = ({
         <div className="lg:col-span-3 flex flex-col justify-between gap-4 bg-black/50 p-4 sm:p-5 rounded-2xl border border-zinc-800/90 shadow-lg">
           <div className="space-y-3">
             <div className="flex items-center justify-between text-xs font-mono text-zinc-400 font-bold pb-2 border-b border-zinc-800/80">
-              <span className="flex items-center gap-1.5 text-zinc-200">
-                <Layers className="w-3.5 h-3.5 text-amber-400" /> DEMODULATOR
+              <span className="inline-flex items-center gap-2 text-zinc-200">
+                <span className="w-1" />
+                <Layers className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                <span className="tracking-wider">DEMODULATOR</span>
               </span>
               <span className="text-amber-400 font-bold bg-amber-950/40 border border-amber-800/40 px-3.5 py-1.5 rounded-lg leading-none">
                 {mode}
