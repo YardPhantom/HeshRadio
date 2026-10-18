@@ -180,7 +180,7 @@ export const SolarPropagationDeck: React.FC<SolarPropagationDeckProps> = ({
         <button
           onClick={handleRefresh}
           disabled={refreshing}
-          className="text-xs px-3.5 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-amber-300 rounded-md font-mono font-bold border border-zinc-700 flex items-center gap-2 transition-all cursor-pointer"
+          className="text-xs px-3.5 py-2 bg-zinc-800 hover:bg-zinc-700 text-amber-300 rounded-lg font-mono font-bold border border-zinc-700 flex items-center gap-2 transition-all cursor-pointer"
         >
           <RefreshCw className={`w-3.5 h-3.5 ${refreshing ? 'animate-spin' : ''}`} />
           {refreshing ? 'REFRESHING...' : 'POLL NOAA SWPC'}
@@ -281,7 +281,7 @@ export const SolarPropagationDeck: React.FC<SolarPropagationDeckProps> = ({
           <div className="flex items-end">
             <button
               onClick={handleCalculatePath}
-              className="w-full py-2 px-3.5 bg-cyan-600 hover:bg-cyan-500 text-black font-bold rounded-lg shadow-md transition-all cursor-pointer"
+              className="w-full py-2.5 px-4 bg-cyan-600 hover:bg-cyan-500 text-black font-bold rounded-lg shadow-md transition-all cursor-pointer"
             >
               CALCULATE BEAM HEADING
             </button>
@@ -289,7 +289,7 @@ export const SolarPropagationDeck: React.FC<SolarPropagationDeckProps> = ({
         </div>
 
         {/* Calculated Results */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs bg-zinc-950 p-3 rounded-lg border border-zinc-800">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs bg-zinc-950 p-3.5 rounded-xl border border-zinc-800">
           <div>
             <span className="text-[10px] text-zinc-500 uppercase block">Distance</span>
             <span className="text-zinc-100 font-bold">

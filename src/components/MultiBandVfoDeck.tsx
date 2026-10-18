@@ -130,7 +130,7 @@ export const MultiBandVfoDeck: React.FC<MultiBandVfoDeckProps> = ({
                   key={b.id}
                   type="button"
                   onClick={() => onSelectBand(b)}
-                  className={`text-xs px-3 py-1.5 rounded-md font-mono font-bold transition-all cursor-pointer border ${
+                  className={`text-xs px-3.5 py-2 rounded-lg font-mono font-bold transition-all cursor-pointer border ${
                     isSelected
                       ? 'bg-amber-500 text-black border-amber-400 shadow-md shadow-amber-500/20'
                       : 'bg-zinc-800/80 text-zinc-300 border-zinc-700/80 hover:bg-zinc-700 hover:text-amber-300'
@@ -144,7 +144,7 @@ export const MultiBandVfoDeck: React.FC<MultiBandVfoDeckProps> = ({
           </div>
 
           {/* All Bands Dropdown (eliminates clutter of 18 separate buttons) */}
-          <div className="flex items-center gap-2 bg-zinc-900 border border-zinc-700/90 rounded-md px-3 py-1.5">
+          <div className="flex items-center gap-2 bg-zinc-900 border border-zinc-700/90 rounded-lg px-3.5 py-2">
             <span className="text-[10px] font-mono text-zinc-500 uppercase font-bold">ALL BANDS:</span>
             <select
               value={currentBand.id}
@@ -179,7 +179,7 @@ export const MultiBandVfoDeck: React.FC<MultiBandVfoDeckProps> = ({
         {/* Left: VFO A / VFO B Switcher & Repeater Shift Controls */}
         <div className="lg:col-span-4 flex flex-col justify-between gap-4 bg-black/50 p-4 sm:p-5 rounded-2xl border border-zinc-800/90 shadow-lg">
           <div className="space-y-3.5">
-            <div className="flex items-center justify-between gap-3 pb-2 border-b border-zinc-800/80">
+            <div className="flex items-center justify-between gap-3 pb-2.5 border-b border-zinc-800/80">
               <span className="text-xs font-mono text-zinc-200 font-bold flex items-center gap-2">
                 <span className="p-1.5 rounded-lg bg-amber-500/15 border border-amber-500/35 flex items-center justify-center shrink-0">
                   <Split className="w-3.5 h-3.5 text-amber-400" />
@@ -190,7 +190,7 @@ export const MultiBandVfoDeck: React.FC<MultiBandVfoDeckProps> = ({
                 <button
                   type="button"
                   onClick={onVfoSwitch}
-                  className="text-xs px-3.5 py-1.5 bg-zinc-800 hover:bg-amber-500/25 text-amber-300 rounded-lg border border-zinc-700 flex items-center gap-1.5 font-mono font-bold cursor-pointer transition-colors shadow-sm"
+                  className="text-xs px-3.5 py-2 bg-zinc-800 hover:bg-amber-500/25 text-amber-300 rounded-lg border border-zinc-700 flex items-center gap-1.5 font-mono font-bold cursor-pointer transition-colors shadow-sm"
                   title="Swap VFO A and VFO B"
                 >
                   <ArrowRightLeft className="w-3.5 h-3.5 text-amber-400 shrink-0" />
@@ -199,7 +199,7 @@ export const MultiBandVfoDeck: React.FC<MultiBandVfoDeckProps> = ({
                 <button
                   type="button"
                   onClick={onVfoCopy}
-                  className="text-xs px-3.5 py-1.5 bg-zinc-800 hover:bg-amber-500/25 text-zinc-300 hover:text-white rounded-lg border border-zinc-700 flex items-center gap-1.5 font-mono font-bold cursor-pointer transition-colors shadow-sm"
+                  className="text-xs px-3.5 py-2 bg-zinc-800 hover:bg-amber-500/25 text-zinc-300 hover:text-white rounded-lg border border-zinc-700 flex items-center gap-1.5 font-mono font-bold cursor-pointer transition-colors shadow-sm"
                   title="Copy Active VFO to Inactive VFO (A = B)"
                 >
                   <Copy className="w-3.5 h-3.5 text-zinc-400 shrink-0" />
@@ -211,7 +211,7 @@ export const MultiBandVfoDeck: React.FC<MultiBandVfoDeckProps> = ({
             {/* VFO A & VFO B: Generous, Spacious Full-Width Rows with Zero Edge Collision */}
             <div className="flex flex-col gap-2.5 text-xs font-mono">
               <div
-                className={`p-3.5 px-4 rounded-xl border transition-all flex items-center justify-between gap-3 ${
+                className={`p-4 sm:px-4.5 py-3.5 rounded-xl border transition-all flex flex-wrap items-center justify-between gap-3 ${
                   activeVfo === 'VFO_A'
                     ? 'border-amber-500/80 bg-gradient-to-r from-amber-500/20 via-amber-500/10 to-transparent text-amber-300 font-bold shadow-md shadow-amber-500/15'
                     : 'border-zinc-800/90 bg-zinc-900/50 text-zinc-400'
@@ -219,7 +219,7 @@ export const MultiBandVfoDeck: React.FC<MultiBandVfoDeckProps> = ({
               >
                 <div className="flex items-center gap-2.5 min-w-0">
                   <span className="text-xs font-mono uppercase font-bold tracking-wider text-zinc-300">VFO A</span>
-                  <span className="text-[10px] font-mono px-3 py-1 rounded-md bg-zinc-800/90 text-amber-400 border border-zinc-700 font-bold tracking-wider shrink-0 shadow-sm">
+                  <span className="text-[10px] font-mono px-3 py-1.5 rounded-md bg-zinc-800/90 text-amber-400 border border-zinc-700 font-bold tracking-wider shrink-0 shadow-sm">
                     RX ACTIVE
                   </span>
                 </div>
@@ -229,7 +229,7 @@ export const MultiBandVfoDeck: React.FC<MultiBandVfoDeckProps> = ({
               </div>
 
               <div
-                className={`p-3.5 px-4 rounded-xl border transition-all flex items-center justify-between gap-3 ${
+                className={`p-4 sm:px-4.5 py-3.5 rounded-xl border transition-all flex flex-wrap items-center justify-between gap-3 ${
                   activeVfo === 'VFO_B'
                     ? 'border-amber-500/80 bg-gradient-to-r from-amber-500/20 via-amber-500/10 to-transparent text-amber-300 font-bold shadow-md shadow-amber-500/15'
                     : 'border-zinc-800/90 bg-zinc-900/50 text-zinc-400'
@@ -237,7 +237,7 @@ export const MultiBandVfoDeck: React.FC<MultiBandVfoDeckProps> = ({
               >
                 <div className="flex items-center gap-2.5 min-w-0">
                   <span className="text-xs font-mono uppercase font-bold tracking-wider text-zinc-300">VFO B</span>
-                  <span className="text-[10px] font-mono px-3 py-1 rounded-md bg-zinc-800/90 text-zinc-300 border border-zinc-700 font-bold tracking-wider shrink-0 shadow-sm">
+                  <span className="text-[10px] font-mono px-3 py-1.5 rounded-md bg-zinc-800/90 text-zinc-300 border border-zinc-700 font-bold tracking-wider shrink-0 shadow-sm">
                     TX / SPLIT
                   </span>
                 </div>
@@ -252,7 +252,7 @@ export const MultiBandVfoDeck: React.FC<MultiBandVfoDeckProps> = ({
           <div className="pt-3 border-t border-zinc-800/70 space-y-2.5">
             <div className="flex items-center justify-between text-xs font-mono text-zinc-400 px-1">
               <span className="font-bold">REPEATER SHIFT:</span>
-              <span className="text-amber-400 font-bold bg-amber-950/40 border border-amber-800/40 px-2.5 py-0.5 rounded-md">
+              <span className="text-amber-400 font-bold bg-amber-950/40 border border-amber-800/40 px-3 py-1 rounded-md">
                 {repeaterOffsetMode}
               </span>
             </div>
@@ -390,7 +390,7 @@ export const MultiBandVfoDeck: React.FC<MultiBandVfoDeckProps> = ({
               <span className="flex items-center gap-1.5 text-zinc-200">
                 <Layers className="w-3.5 h-3.5 text-amber-400" /> DEMODULATOR
               </span>
-              <span className="text-amber-400 font-bold bg-amber-950/40 border border-amber-800/40 px-2.5 py-0.5 rounded-md">
+              <span className="text-amber-400 font-bold bg-amber-950/40 border border-amber-800/40 px-3 py-1.5 rounded-lg">
                 {mode}
               </span>
             </div>
@@ -418,7 +418,7 @@ export const MultiBandVfoDeck: React.FC<MultiBandVfoDeckProps> = ({
 
           {/* Demodulator Mode Details */}
           {mode === 'CW' && (
-            <div className="bg-zinc-900/90 p-2.5 rounded-lg border border-zinc-800 space-y-1.5">
+            <div className="bg-zinc-900/90 p-3.5 rounded-xl border border-zinc-800 space-y-2">
               <div className="flex justify-between text-xs font-mono text-zinc-400">
                 <span>CW BFO PITCH:</span>
                 <span className="text-amber-300 font-bold">{cwBfoPitchHz} Hz</span>
@@ -439,12 +439,12 @@ export const MultiBandVfoDeck: React.FC<MultiBandVfoDeckProps> = ({
           )}
 
           {mode === 'WFM' && (
-            <div className="bg-zinc-900/90 p-2.5 rounded-lg border border-amber-500/20 text-xs font-mono space-y-1 min-h-[64px]">
+            <div className="bg-zinc-900/90 p-3.5 rounded-xl border border-amber-500/20 text-xs font-mono space-y-1.5 min-h-[64px]">
               <div className="flex items-center justify-between">
                 <span className="text-emerald-400 font-bold flex items-center gap-1">
                   <Sparkles className="w-3 h-3" /> RDS BROADCAST
                 </span>
-                <span className="px-3 py-1 rounded-md bg-red-950 text-red-300 border border-red-800 text-[10px] font-bold">
+                <span className="px-3 py-1.5 rounded-md bg-red-950 text-red-300 border border-red-800 text-[10px] font-bold">
                   {rdsData.stereoDetected ? 'STEREO' : 'MONO'}
                 </span>
               </div>
@@ -456,7 +456,7 @@ export const MultiBandVfoDeck: React.FC<MultiBandVfoDeckProps> = ({
           )}
 
           {mode !== 'CW' && mode !== 'WFM' && (
-            <div className="bg-zinc-900/50 p-2.5 rounded-lg border border-zinc-800/60 text-[11px] font-mono text-zinc-500 flex items-center justify-between">
+            <div className="bg-zinc-900/50 p-3 px-3.5 rounded-xl border border-zinc-800/60 text-[11px] font-mono text-zinc-500 flex items-center justify-between">
               <span>PASSBAND:</span>
               <span className="text-zinc-300 font-bold">
                 {mode === 'AM' ? '6.0 kHz AM' : mode === 'NFM' ? '12.5 kHz NFM' : '2.7 kHz SSB'}
@@ -478,7 +478,7 @@ export const MultiBandVfoDeck: React.FC<MultiBandVfoDeckProps> = ({
             <button
               type="button"
               onClick={() => onCtcssSquelchToggle(!ctcssSquelchEnabled)}
-              className={`px-3.5 py-1.5 rounded-lg text-[10px] font-bold border transition-all cursor-pointer ${
+              className={`px-3.5 py-2 rounded-lg text-xs font-bold border transition-all cursor-pointer ${
                 ctcssSquelchEnabled
                   ? 'bg-cyan-500/20 text-cyan-300 border-cyan-500/50 shadow-sm'
                   : 'bg-zinc-800 text-zinc-400 border-zinc-700'
@@ -506,7 +506,7 @@ export const MultiBandVfoDeck: React.FC<MultiBandVfoDeckProps> = ({
           </div>
 
           {/* Live Tone Detection Telemetry */}
-          <div className="flex items-center justify-between text-xs font-mono bg-zinc-950 px-3.5 py-2 rounded-lg border border-zinc-800">
+          <div className="flex items-center justify-between text-xs font-mono bg-zinc-950 px-4 py-2.5 rounded-xl border border-zinc-800">
             <span className="text-zinc-400 font-bold">DECODED TONE:</span>
             {ctcssResult.detectedToneHz ? (
               <span className="text-cyan-400 font-bold flex items-center gap-1.5">

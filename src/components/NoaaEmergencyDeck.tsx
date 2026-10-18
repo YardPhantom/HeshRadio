@@ -149,7 +149,7 @@ export const NoaaEmergencyDeck: React.FC<NoaaEmergencyDeckProps> = ({
             </div>
           </div>
 
-          <div className="p-2.5 bg-zinc-900/60 rounded-lg border border-zinc-800 text-[11px] text-zinc-400 leading-relaxed">
+          <div className="p-3.5 bg-zinc-900/60 rounded-xl border border-zinc-800 text-[11px] text-zinc-400 leading-relaxed">
             Per NWS NWSI 10-1712, the 1050 Hz alert tone precedes life-threatening weather warnings
             and activates automatic receiver un-muting.
           </div>
@@ -169,7 +169,7 @@ export const NoaaEmergencyDeck: React.FC<NoaaEmergencyDeckProps> = ({
               <button
                 key={ch.freq}
                 onClick={() => onTuneNoaaChannel && onTuneNoaaChannel(ch.freq)}
-                className="p-2.5 px-3 bg-zinc-900 hover:bg-cyan-950/40 border border-zinc-800 hover:border-cyan-500/50 rounded-lg text-center transition-all group cursor-pointer"
+                className="p-3 px-3.5 bg-zinc-900 hover:bg-cyan-950/40 border border-zinc-800 hover:border-cyan-500/50 rounded-xl text-center transition-all group cursor-pointer"
               >
                 <div className="text-zinc-400 group-hover:text-cyan-300 font-bold text-xs">
                   {ch.label}

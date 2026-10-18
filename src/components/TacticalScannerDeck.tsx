@@ -315,13 +315,13 @@ export const TacticalScannerDeck: React.FC<TacticalScannerDeckProps> = ({
                   <td className="py-2.5 px-3.5 text-right space-x-1.5">
                     <button
                       onClick={() => onTuneChannel(chan)}
-                      className="px-3 py-1 rounded-md bg-amber-500/20 hover:bg-amber-500/40 text-amber-300 border border-amber-500/30 text-[10px] font-bold cursor-pointer transition-colors"
+                      className="px-3.5 py-1.5 rounded-lg bg-amber-500/20 hover:bg-amber-500/40 text-amber-300 border border-amber-500/30 text-[10px] font-bold cursor-pointer transition-colors"
                     >
                       TUNE
                     </button>
                     <button
                       onClick={() => handleDeleteChannel(chan.id)}
-                      className="px-3 py-1 rounded-md bg-red-950/40 hover:bg-red-900/60 text-red-400 text-[10px] cursor-pointer transition-colors border border-red-800/40"
+                      className="px-3.5 py-1.5 rounded-lg bg-red-950/40 hover:bg-red-900/60 text-red-400 text-[10px] cursor-pointer transition-colors border border-red-800/40"
                       title="Delete Memory"
                     >
                       <Trash2 className="w-3 h-3 inline" />
@@ -353,7 +353,7 @@ export const TacticalScannerDeck: React.FC<TacticalScannerDeckProps> = ({
                   placeholder="e.g. CH 21 / TACOMA RPT"
                   value={newLabel}
                   onChange={(e) => setNewLabel(e.target.value)}
-                  className="w-full bg-black/60 border border-zinc-700 rounded-lg px-3 py-2 mt-1 text-white font-mono focus:outline-none"
+                  className="w-full bg-black/60 border border-zinc-700 rounded-lg px-3.5 py-2 mt-1 text-white font-mono focus:outline-none"
                   required
                 />
               </div>
@@ -365,7 +365,7 @@ export const TacticalScannerDeck: React.FC<TacticalScannerDeckProps> = ({
                   step="0.0001"
                   value={newFreq}
                   onChange={(e) => setNewFreq(e.target.value)}
-                  className="w-full bg-black/60 border border-zinc-700 rounded-lg px-3 py-2 mt-1 text-amber-300 font-mono focus:outline-none"
+                  className="w-full bg-black/60 border border-zinc-700 rounded-lg px-3.5 py-2 mt-1 text-amber-300 font-mono focus:outline-none"
                   required
                 />
               </div>
@@ -375,7 +375,7 @@ export const TacticalScannerDeck: React.FC<TacticalScannerDeckProps> = ({
                 <select
                   value={newMode}
                   onChange={(e) => setNewMode(e.target.value as ModulationModeExtended)}
-                  className="w-full bg-black/60 border border-zinc-700 rounded-lg px-3 py-2 mt-1 text-white focus:outline-none"
+                  className="w-full bg-black/60 border border-zinc-700 rounded-lg px-3.5 py-2 mt-1 text-white focus:outline-none cursor-pointer"
                 >
                   <option value="AM">AM (Amplitude Mod)</option>
                   <option value="NFM">NFM (Narrowband FM)</option>
@@ -393,7 +393,7 @@ export const TacticalScannerDeck: React.FC<TacticalScannerDeckProps> = ({
                   placeholder="e.g. Local Club Net / Highway"
                   value={newAlpha}
                   onChange={(e) => setNewAlpha(e.target.value)}
-                  className="w-full bg-black/60 border border-zinc-700 rounded-lg px-3 py-2 mt-1 text-white focus:outline-none"
+                  className="w-full bg-black/60 border border-zinc-700 rounded-lg px-3.5 py-2 mt-1 text-white focus:outline-none"
                 />
               </div>
             </div>
@@ -402,13 +402,13 @@ export const TacticalScannerDeck: React.FC<TacticalScannerDeckProps> = ({
               <button
                 type="button"
                 onClick={() => setShowAddModal(false)}
-                className="px-3.5 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 rounded-lg text-xs cursor-pointer"
+                className="px-3.5 py-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 rounded-lg text-xs cursor-pointer"
               >
                 CANCEL
               </button>
               <button
                 type="submit"
-                className="px-4 py-1.5 bg-amber-500 hover:bg-amber-400 text-black font-bold rounded-lg text-xs cursor-pointer shadow-md"
+                className="px-4 py-2 bg-amber-500 hover:bg-amber-400 text-black font-bold rounded-lg text-xs cursor-pointer shadow-md"
               >
                 SAVE CHANNEL
               </button>

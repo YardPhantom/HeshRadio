@@ -136,6 +136,7 @@ function heshRadioPttRelayPlugin(): Plugin {
 }
 
 export default defineConfig({
+  base: './',
   plugins: [react(), heshRadioPttRelayPlugin()],
   clearScreen: false,
   server: {

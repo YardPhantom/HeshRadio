@@ -697,7 +697,7 @@ export const App: React.FC = () => {
           <div>
             <div className="flex items-center gap-2">
               <h1 className="app-logo">HESHRADIO</h1>
-              <span className="px-3 py-1 rounded-md text-[10px] font-mono font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40 tracking-wider shadow-sm">
+              <span className="px-3.5 py-1.5 rounded-lg text-[10px] font-mono font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40 tracking-wider shadow-sm">
                 {CURRENT_VERSION}
               </span>
             </div>
@@ -875,7 +875,7 @@ export const App: React.FC = () => {
 
           <div className="flex items-center gap-2 text-xs font-mono text-zinc-400">
             <span className="text-zinc-500">IARU S9 REF:</span>
-            <span className="text-amber-400 font-bold bg-amber-950/40 border border-amber-800/40 px-3.5 py-1.5 rounded-md">
+            <span className="text-amber-400 font-bold bg-amber-950/40 border border-amber-800/40 px-3.5 py-2 rounded-lg">
               {frequencyMhz > 30 ? '-93 dBm (VHF/UHF)' : '-73 dBm (HF)'}
             </span>
           </div>
@@ -885,10 +885,10 @@ export const App: React.FC = () => {
         <div className="flex flex-wrap items-center gap-2.5 pt-2.5 border-t border-zinc-800/60">
           {activeCategory === 'TRANSCEIVER' && (
             <div className="flex flex-wrap items-center gap-2.5 text-xs font-mono">
-              <span className="px-4.5 py-2 rounded-lg bg-amber-500 text-black font-bold flex items-center gap-2 shadow-sm">
+              <span className="px-4.5 py-2.5 rounded-lg bg-amber-500 text-black font-bold flex items-center gap-2 shadow-sm">
                 <Radio className="w-3.5 h-3.5 shrink-0" /> VFO &amp; 120Hz WATERFALL
               </span>
-              <span className="text-zinc-400 text-xs px-3 py-1.5 bg-zinc-900/60 rounded-md border border-zinc-800">
+              <span className="text-zinc-400 text-xs px-3.5 py-2 bg-zinc-900/60 rounded-lg border border-zinc-800">
                 Tuned: <strong className="text-amber-300">{frequencyMhz.toFixed(4)} MHz</strong> ({mode}) • <span className="text-zinc-300">{currentBand.name}</span>
               </span>
             </div>
@@ -899,7 +899,7 @@ export const App: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setActiveTab('FM_RADIO')}
-                className={`px-4.5 py-2 rounded-lg font-bold flex items-center gap-2.5 transition-all cursor-pointer border ${
+                className={`px-4.5 py-2.5 rounded-lg font-bold flex items-center gap-2.5 transition-all cursor-pointer border ${
                   activeTab === 'FM_RADIO'
                     ? 'bg-pink-500 text-black border-pink-400 shadow-md shadow-pink-500/30'
                     : 'bg-zinc-800/90 text-zinc-400 hover:text-zinc-200 border-zinc-700 hover:bg-zinc-700'
@@ -911,7 +911,7 @@ export const App: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setActiveTab('INTERNET_RADIO')}
-                className={`px-4.5 py-2 rounded-lg font-bold flex items-center gap-2.5 transition-all cursor-pointer border ${
+                className={`px-4.5 py-2.5 rounded-lg font-bold flex items-center gap-2.5 transition-all cursor-pointer border ${
                   activeTab === 'INTERNET_RADIO'
                     ? 'bg-emerald-500 text-black border-emerald-400 shadow-md shadow-emerald-500/30'
                     : 'bg-zinc-800/90 text-zinc-400 hover:text-zinc-200 border-zinc-700 hover:bg-zinc-700'
@@ -927,7 +927,7 @@ export const App: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setActiveTab('SCANNER')}
-                className={`px-4.5 py-2 rounded-lg font-bold flex items-center gap-2.5 transition-all cursor-pointer border ${
+                className={`px-4.5 py-2.5 rounded-lg font-bold flex items-center gap-2.5 transition-all cursor-pointer border ${
                   activeTab === 'SCANNER'
                     ? 'bg-emerald-500 text-black border-emerald-400 shadow-md shadow-emerald-500/30'
                     : 'bg-zinc-800/90 text-zinc-400 hover:text-zinc-200 border-zinc-700 hover:bg-zinc-700'
@@ -939,7 +939,7 @@ export const App: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setActiveTab('NOAA_EAS')}
-                className={`px-4.5 py-2 rounded-lg font-bold flex items-center gap-2.5 transition-all cursor-pointer border ${
+                className={`px-4.5 py-2.5 rounded-lg font-bold flex items-center gap-2.5 transition-all cursor-pointer border ${
                   activeTab === 'NOAA_EAS'
                     ? 'bg-red-500 text-white border-red-400 shadow-md shadow-red-500/30'
                     : 'bg-zinc-800/90 text-zinc-400 hover:text-zinc-200 border-zinc-700 hover:bg-zinc-700'
@@ -955,7 +955,7 @@ export const App: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setActiveTab('BLACK_BOX')}
-                className={`px-4.5 py-2 rounded-lg font-bold flex items-center gap-2.5 transition-all cursor-pointer border ${
+                className={`px-4.5 py-2.5 rounded-lg font-bold flex items-center gap-2.5 transition-all cursor-pointer border ${
                   activeTab === 'BLACK_BOX'
                     ? 'bg-orange-500 text-black border-orange-400 shadow-md shadow-orange-500/30'
                     : 'bg-zinc-800/90 text-zinc-400 hover:text-zinc-200 border-zinc-700 hover:bg-zinc-700'
@@ -967,7 +967,7 @@ export const App: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setActiveTab('TRAFFIC_LOG')}
-                className={`px-4.5 py-2 rounded-lg font-bold flex items-center gap-2.5 transition-all cursor-pointer border ${
+                className={`px-4.5 py-2.5 rounded-lg font-bold flex items-center gap-2.5 transition-all cursor-pointer border ${
                   activeTab === 'TRAFFIC_LOG'
                     ? 'bg-amber-500 text-black border-amber-400 shadow-md shadow-amber-500/30'
                     : 'bg-zinc-800/90 text-zinc-400 hover:text-zinc-200 border-zinc-700 hover:bg-zinc-700'
@@ -983,7 +983,7 @@ export const App: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setActiveTab('DIGITAL_MODES')}
-                className={`px-4.5 py-2 rounded-lg font-bold flex items-center gap-2.5 transition-all cursor-pointer border ${
+                className={`px-4.5 py-2.5 rounded-lg font-bold flex items-center gap-2.5 transition-all cursor-pointer border ${
                   activeTab === 'DIGITAL_MODES'
                     ? 'bg-purple-500 text-white border-purple-400 shadow-md shadow-purple-500/30'
                     : 'bg-zinc-800/90 text-zinc-400 hover:text-zinc-200 border-zinc-700 hover:bg-zinc-700'
@@ -995,7 +995,7 @@ export const App: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setActiveTab('PROPAGATION')}
-                className={`px-4.5 py-2 rounded-lg font-bold flex items-center gap-2.5 transition-all cursor-pointer border ${
+                className={`px-4.5 py-2.5 rounded-lg font-bold flex items-center gap-2.5 transition-all cursor-pointer border ${
                   activeTab === 'PROPAGATION'
                     ? 'bg-yellow-500 text-black border-yellow-400 shadow-md shadow-yellow-500/30'
                     : 'bg-zinc-800/90 text-zinc-400 hover:text-zinc-200 border-zinc-700 hover:bg-zinc-700'
@@ -1007,7 +1007,7 @@ export const App: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setActiveTab('ADIF_LOG')}
-                className={`px-4.5 py-2 rounded-lg font-bold flex items-center gap-2.5 transition-all cursor-pointer border ${
+                className={`px-4.5 py-2.5 rounded-lg font-bold flex items-center gap-2.5 transition-all cursor-pointer border ${
                   activeTab === 'ADIF_LOG'
                     ? 'bg-blue-500 text-white border-blue-400 shadow-md shadow-blue-500/30'
                     : 'bg-zinc-800/90 text-zinc-400 hover:text-zinc-200 border-zinc-700 hover:bg-zinc-700'
@@ -1023,7 +1023,7 @@ export const App: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setActiveTab('HARDWARE_RIG')}
-                className={`px-4.5 py-2 rounded-lg font-bold flex items-center gap-2.5 transition-all cursor-pointer border ${
+                className={`px-4.5 py-2.5 rounded-lg font-bold flex items-center gap-2.5 transition-all cursor-pointer border ${
                   activeTab === 'HARDWARE_RIG'
                     ? 'bg-cyan-500 text-black border-cyan-400 shadow-md shadow-cyan-500/30'
                     : 'bg-zinc-800/90 text-zinc-400 hover:text-zinc-200 border-zinc-700 hover:bg-zinc-700'
@@ -1035,7 +1035,7 @@ export const App: React.FC = () => {
               <button
                 type="button"
                 onClick={() => setActiveTab('LAB_SUITE')}
-                className={`px-4.5 py-2 rounded-lg font-bold flex items-center gap-2.5 transition-all cursor-pointer border ${
+                className={`px-4.5 py-2.5 rounded-lg font-bold flex items-center gap-2.5 transition-all cursor-pointer border ${
                   activeTab === 'LAB_SUITE'
                     ? 'bg-teal-500 text-black border-teal-400 shadow-md shadow-teal-500/30'
                     : 'bg-zinc-800/90 text-zinc-400 hover:text-zinc-200 border-zinc-700 hover:bg-zinc-700'
@@ -1153,7 +1153,7 @@ export const App: React.FC = () => {
                     <button
                       type="button"
                       onClick={() => setTalkbackEnabled((v) => !v)}
-                      className={`py-1.5 px-2 rounded border text-center font-bold cursor-pointer transition-colors ${
+                      className={`py-2.5 px-3.5 rounded-lg border text-center font-bold cursor-pointer transition-colors ${
                         talkbackEnabled
                           ? 'bg-amber-500/20 text-amber-300 border-amber-500/40'
                           : 'bg-zinc-800 text-zinc-400 border-zinc-700 hover:text-zinc-200'
@@ -1164,7 +1164,7 @@ export const App: React.FC = () => {
                     <button
                       type="button"
                       onClick={() => setAnlEnabled((v) => !v)}
-                      className={`py-1.5 px-2 rounded border text-center font-bold cursor-pointer transition-colors ${
+                      className={`py-2.5 px-3.5 rounded-lg border text-center font-bold cursor-pointer transition-colors ${
                         anlEnabled
                           ? 'bg-cyan-500/20 text-cyan-300 border-cyan-500/40'
                           : 'bg-zinc-800 text-zinc-400 border-zinc-700 hover:text-zinc-200'

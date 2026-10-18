@@ -303,7 +303,7 @@ export const AdifQsoLogDeck: React.FC<AdifQsoLogDeckProps> = ({
             <Cloud className="w-3.5 h-3.5 text-cyan-400" />
             <span>WRL SYNC</span>
             {stats.unsyncedCount > 0 && (
-              <span className="px-1.5 py-0.2 text-[10px] bg-amber-500 text-black rounded font-black">
+              <span className="px-2 py-0.5 text-[10px] bg-amber-500 text-black rounded-full font-black font-mono">
                 {stats.unsyncedCount}
               </span>
             )}
@@ -477,7 +477,7 @@ export const AdifQsoLogDeck: React.FC<AdifQsoLogDeckProps> = ({
                 placeholder="e.g. W1AW or CB Handle"
                 value={newCall}
                 onChange={(e) => setNewCall(e.target.value)}
-                className="w-full bg-zinc-900 border border-zinc-700 text-amber-300 px-3 py-1.5 rounded-lg font-bold uppercase focus:outline-none focus:border-emerald-500"
+                className="w-full bg-zinc-900 border border-zinc-700 text-amber-300 px-3.5 py-2 rounded-lg font-bold uppercase focus:outline-none focus:border-emerald-500"
               />
             </div>
             <div>
@@ -487,13 +487,13 @@ export const AdifQsoLogDeck: React.FC<AdifQsoLogDeckProps> = ({
                   type="text"
                   value={newRstSent}
                   onChange={(e) => setNewRstSent(e.target.value)}
-                  className="w-1/2 bg-zinc-900 border border-zinc-700 text-zinc-200 px-3 py-1.5 rounded-lg text-center focus:outline-none"
+                  className="w-1/2 bg-zinc-900 border border-zinc-700 text-zinc-200 px-3.5 py-2 rounded-lg text-center focus:outline-none"
                 />
                 <input
                   type="text"
                   value={newRstRcvd}
                   onChange={(e) => setNewRstRcvd(e.target.value)}
-                  className="w-1/2 bg-zinc-900 border border-zinc-700 text-zinc-200 px-3 py-1.5 rounded-lg text-center focus:outline-none"
+                  className="w-1/2 bg-zinc-900 border border-zinc-700 text-zinc-200 px-3.5 py-2 rounded-lg text-center focus:outline-none"
                 />
               </div>
             </div>
@@ -504,7 +504,7 @@ export const AdifQsoLogDeck: React.FC<AdifQsoLogDeckProps> = ({
                 placeholder="e.g. Bob"
                 value={newName}
                 onChange={(e) => setNewName(e.target.value)}
-                className="w-full bg-zinc-900 border border-zinc-700 text-zinc-200 px-3 py-1.5 rounded-lg focus:outline-none"
+                className="w-full bg-zinc-900 border border-zinc-700 text-zinc-200 px-3.5 py-2 rounded-lg focus:outline-none"
               />
             </div>
             <div>
@@ -514,7 +514,7 @@ export const AdifQsoLogDeck: React.FC<AdifQsoLogDeckProps> = ({
                 placeholder="e.g. FN31pr"
                 value={newGrid}
                 onChange={(e) => setNewGrid(e.target.value)}
-                className="w-full bg-zinc-900 border border-zinc-700 text-zinc-200 px-3 py-1.5 rounded-lg uppercase focus:outline-none"
+                className="w-full bg-zinc-900 border border-zinc-700 text-zinc-200 px-3.5 py-2 rounded-lg uppercase focus:outline-none"
               />
             </div>
           </div>
@@ -527,7 +527,7 @@ export const AdifQsoLogDeck: React.FC<AdifQsoLogDeckProps> = ({
                 placeholder="e.g. US-0662 or K-1234"
                 value={newPota}
                 onChange={(e) => setNewPota(e.target.value)}
-                className="w-full bg-zinc-900 border border-zinc-700 text-pink-300 px-3 py-1.5 rounded-lg uppercase focus:outline-none focus:border-pink-500"
+                className="w-full bg-zinc-900 border border-zinc-700 text-pink-300 px-3.5 py-2 rounded-lg uppercase focus:outline-none focus:border-pink-500"
               />
             </div>
             <div>
@@ -537,7 +537,7 @@ export const AdifQsoLogDeck: React.FC<AdifQsoLogDeckProps> = ({
                 placeholder="e.g. W7W/RS-001"
                 value={newSota}
                 onChange={(e) => setNewSota(e.target.value)}
-                className="w-full bg-zinc-900 border border-zinc-700 text-amber-300 px-3 py-1.5 rounded-lg uppercase focus:outline-none focus:border-amber-500"
+                className="w-full bg-zinc-900 border border-zinc-700 text-amber-300 px-3.5 py-2 rounded-lg uppercase focus:outline-none focus:border-amber-500"
               />
             </div>
           </div>
@@ -549,7 +549,7 @@ export const AdifQsoLogDeck: React.FC<AdifQsoLogDeckProps> = ({
               placeholder="e.g. 5x9 audio report on 40m LSB ragchew net"
               value={newComment}
               onChange={(e) => setNewComment(e.target.value)}
-              className="w-full bg-zinc-900 border border-zinc-700 text-zinc-200 px-3 py-1.5 rounded-lg focus:outline-none"
+              className="w-full bg-zinc-900 border border-zinc-700 text-zinc-200 px-3.5 py-2 rounded-lg focus:outline-none"
             />
           </div>
 
@@ -557,13 +557,13 @@ export const AdifQsoLogDeck: React.FC<AdifQsoLogDeckProps> = ({
             <button
               type="button"
               onClick={() => setShowAddForm(false)}
-              className="px-3.5 py-1.5 bg-zinc-800 text-zinc-400 hover:text-zinc-200 rounded-lg cursor-pointer"
+              className="px-3.5 py-2 bg-zinc-800 text-zinc-400 hover:text-zinc-200 rounded-lg cursor-pointer"
             >
               CANCEL
             </button>
             <button
               type="submit"
-              className="px-4 py-1.5 bg-emerald-500 hover:bg-emerald-400 text-black font-bold rounded-lg shadow-md cursor-pointer"
+              className="px-4 py-2 bg-emerald-500 hover:bg-emerald-400 text-black font-bold rounded-lg shadow-md cursor-pointer"
             >
               RECORD QSO TO ADIF
             </button>
@@ -660,11 +660,11 @@ export const AdifQsoLogDeck: React.FC<AdifQsoLogDeckProps> = ({
                     </td>
                     <td className="px-3.5 py-2.5">
                       {r.potaRef ? (
-                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold bg-pink-950/80 text-pink-300 border border-pink-700/50">
+                        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-[10px] font-bold bg-pink-950/80 text-pink-300 border border-pink-700/50">
                           <Trees className="w-3 h-3 text-pink-400" /> {r.potaRef}
                         </span>
                       ) : r.sotaRef ? (
-                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-bold bg-amber-950/80 text-amber-300 border border-amber-700/50">
+                        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-[10px] font-bold bg-amber-950/80 text-amber-300 border border-amber-700/50">
                           ⛰️ {r.sotaRef}
                         </span>
                       ) : (
@@ -798,7 +798,7 @@ export const AdifQsoLogDeck: React.FC<AdifQsoLogDeckProps> = ({
                 placeholder="wrl_live_..."
                 value={wrlApiKey}
                 onChange={(e) => setWrlApiKey(e.target.value)}
-                className="w-full bg-zinc-900 border border-zinc-700 text-cyan-300 px-3 py-2 rounded-lg font-mono focus:outline-none focus:border-cyan-500"
+                className="w-full bg-zinc-900 border border-zinc-700 text-cyan-300 px-3.5 py-2.5 rounded-lg font-mono focus:outline-none focus:border-cyan-500"
               />
               <div className="text-[10px] text-zinc-500">
                 Obtain your key in WRL under Integrations &gt; Developer API.

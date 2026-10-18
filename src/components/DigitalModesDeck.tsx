@@ -255,21 +255,21 @@ export const DigitalModesDeck: React.FC<DigitalModesDeckProps> = ({
         <div className="space-y-4">
           {/* Tactical APRS Status & Beacon Control Bar */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-3 text-xs font-mono">
-            <div className="bg-black/50 p-2.5 rounded border border-zinc-800">
+            <div className="bg-black/50 p-3.5 rounded-xl border border-zinc-800 space-y-1">
               <div className="text-[10px] text-zinc-500 uppercase">APRS Frequency</div>
               <div className="text-cyan-300 font-bold">144.390 MHz (NA Primary)</div>
             </div>
-            <div className="bg-black/50 p-2.5 rounded border border-zinc-800">
+            <div className="bg-black/50 p-3.5 rounded-xl border border-zinc-800 space-y-1">
               <div className="text-[10px] text-zinc-500 uppercase">APRS-IS Passcode</div>
               <div className="text-amber-300 font-bold">
                 {myCallsign}: <span className="text-white font-mono">{aprsPasscode}</span>
               </div>
             </div>
-            <div className="bg-black/50 p-2.5 rounded border border-zinc-800">
+            <div className="bg-black/50 p-3.5 rounded-xl border border-zinc-800 space-y-1">
               <div className="text-[10px] text-zinc-500 uppercase">Modem Standard</div>
               <div className="text-zinc-200 font-bold">Bell 202 AFSK (1200 Baud)</div>
             </div>
-            <div className="bg-black/50 p-2.5 rounded border border-zinc-800">
+            <div className="bg-black/50 p-3.5 rounded-xl border border-zinc-800 space-y-1">
               <div className="text-[10px] text-zinc-500 uppercase">Path / Digipeaters</div>
               <div className="text-zinc-300 font-bold">WIDE1-1, WIDE2-1</div>
             </div>
@@ -388,20 +388,20 @@ export const DigitalModesDeck: React.FC<DigitalModesDeckProps> = ({
               </div>
             </div>
 
-            <div className="bg-black/40 p-3 rounded-lg border border-zinc-800 space-y-1">
+            <div className="bg-black/40 p-3.5 rounded-xl border border-zinc-800 space-y-1">
               <div className="text-[10px] text-zinc-500 uppercase">Target Station</div>
               <input
                 type="text"
                 value={ft8SelectedTarget}
                 onChange={(e) => setFt8SelectedTarget(e.target.value.toUpperCase())}
-                className="w-full bg-zinc-900 border border-zinc-700 text-amber-300 px-3 py-1.5 rounded-md font-bold focus:outline-none"
+                className="w-full bg-zinc-900 border border-zinc-700 text-amber-300 px-3.5 py-2 rounded-lg font-bold focus:outline-none"
               />
             </div>
 
-            <div className="bg-black/40 p-3 rounded-lg border border-zinc-800 flex items-center justify-center gap-2">
+            <div className="bg-black/40 p-3.5 rounded-xl border border-zinc-800 flex items-center justify-center gap-2">
               <button
                 onClick={() => handleTransmitFt8Message(`CQ ${myCallsign} ${myGridSquare.slice(0, 4)}`)}
-                className="flex-1 py-2 px-3 bg-amber-500 hover:bg-amber-400 text-black font-bold rounded-lg shadow-md transition-all text-center cursor-pointer"
+                className="flex-1 py-2.5 px-3.5 bg-amber-500 hover:bg-amber-400 text-black font-bold rounded-lg shadow-md transition-all text-center cursor-pointer"
               >
                 CALL CQ
               </button>
@@ -409,7 +409,7 @@ export const DigitalModesDeck: React.FC<DigitalModesDeckProps> = ({
                 onClick={() =>
                   handleTransmitFt8Message(`${ft8SelectedTarget} ${myCallsign} -08`)
                 }
-                className="flex-1 py-2 px-3 bg-zinc-800 hover:bg-zinc-700 text-amber-300 border border-zinc-700 font-bold rounded-lg text-center cursor-pointer"
+                className="flex-1 py-2.5 px-3.5 bg-zinc-800 hover:bg-zinc-700 text-amber-300 border border-zinc-700 font-bold rounded-lg text-center cursor-pointer"
               >
                 SEND -08
               </button>
@@ -448,7 +448,7 @@ export const DigitalModesDeck: React.FC<DigitalModesDeckProps> = ({
                         const parts = msg.message.split(' ');
                         if (parts[1]) setFt8SelectedTarget(parts[1]);
                       }}
-                      className="text-[10px] px-3 py-1 bg-zinc-800 hover:bg-amber-500/20 text-zinc-300 hover:text-amber-300 rounded-md border border-zinc-700 font-bold cursor-pointer transition-colors"
+                      className="text-xs px-3.5 py-1.5 bg-zinc-800 hover:bg-amber-500/20 text-zinc-300 hover:text-amber-300 rounded-lg border border-zinc-700 font-bold cursor-pointer transition-colors"
                     >
                       ANSWER
                     </button>
@@ -507,7 +507,7 @@ export const DigitalModesDeck: React.FC<DigitalModesDeckProps> = ({
                     <button
                       key={modeKey}
                       onClick={() => setSstvMode(modeKey)}
-                      className={`w-full text-left p-2.5 px-3 rounded-lg border transition-all cursor-pointer ${
+                      className={`w-full text-left p-3 px-3.5 rounded-lg border transition-all cursor-pointer ${
                         active
                           ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/60 font-bold'
                           : 'bg-zinc-900 text-zinc-400 border-zinc-800 hover:text-zinc-200'
