@@ -21,10 +21,6 @@ export interface FmStation {
   isCustom?: boolean;
 }
 
-export interface FmPresetSlot {
-  presetNumber: number; // 1 to 8
-  station: FmStation | null;
-}
 
 export type FmSortOption =
   | 'COUNTRY_ASC'

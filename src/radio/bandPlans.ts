@@ -358,22 +358,3 @@ export function findBandPlanForFrequency(freqMhz: number): BandPlan | null {
   return null;
 }
 
-/**
- * Automatically infers the standard modulation mode for any RF frequency
- * across 100 kHz - 1.75 GHz based on international frequency allocations.
- */
-export function inferDefaultModeForFrequency(freqMhz: number): ModulationModeExtended {
-  if (freqMhz >= 88.0 && freqMhz <= 108.0) return 'WFM';
-  if (freqMhz >= 118.0 && freqMhz <= 137.0) return 'AM';
-  if (freqMhz >= 162.4 && freqMhz <= 162.55) return 'WX';
-  if (freqMhz >= 26.965 && freqMhz <= 27.405) {
-    if (Math.abs(freqMhz - 27.385) < 0.002) return 'LSB'; // Ch 38
-    if (Math.abs(freqMhz - 27.315) < 0.002) return 'NFM'; // Ch 31 FM
-    return 'AM';
-  }
-  if (freqMhz >= 144.0 && freqMhz <= 148.0) return 'NFM';
-  if (freqMhz >= 420.0 && freqMhz <= 470.0) return 'NFM';
-  if (freqMhz >= 156.0 && freqMhz <= 162.0) return 'NFM';
-  if (freqMhz < 10.0) return 'LSB'; // Standard amateur HF convention (< 10 MHz)
-  return 'USB';                     // Standard amateur HF convention (> 10 MHz)
-}

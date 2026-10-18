@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import {
   BandPlan,
+  findBandPlanForFrequency,
   MASTER_BAND_PLANS,
   ModulationModeExtended,
 } from '../radio/bandPlans';
@@ -96,7 +97,12 @@ export const MultiBandVfoDeck: React.FC<MultiBandVfoDeckProps> = ({
     e.preventDefault();
     const val = parseFloat(keypadInput.trim());
     if (!isNaN(val) && val >= 0.1 && val <= 1750.0) {
-      onFrequencyChange(parseFloat(val.toFixed(6)));
+      const fixedVal = parseFloat(val.toFixed(6));
+      onFrequencyChange(fixedVal);
+      const matchingBand = findBandPlanForFrequency(fixedVal);
+      if (matchingBand && matchingBand.id !== currentBand.id) {
+        onSelectBand(matchingBand);
+      }
       setShowKeypad(false);
       setKeypadInput('');
     }

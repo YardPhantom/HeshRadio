@@ -61,65 +61,7 @@ export const CB_CHANNELS: CbChannelInfo[] = [
   { channel: 40, frequencyMhz: 27.405, frequencyHz: 27_405_000, defaultMode: 'LSB', label: 'CH 40', truckerUsage: 'Top-of-Band SSB Regional Net' },
 ];
 
-export interface NoaaWxChannel {
-  wxChannel: number;
-  frequencyMhz: number;
-  label: string;
-  stationName: string;
-  forecastText: string;
-}
 
-export const NOAA_WX_CHANNELS: NoaaWxChannel[] = [
-  {
-    wxChannel: 1,
-    frequencyMhz: 162.55,
-    label: 'WX1',
-    stationName: 'KEC63 / 162.550 MHz',
-    forecastText: 'NOAA Weather Radio All Hazards KEC63. Interstate corridor advisory: Gusty crosswinds 35 knots across high profile passes. Clear visibility eastbound.',
-  },
-  {
-    wxChannel: 2,
-    frequencyMhz: 162.4,
-    label: 'WX2',
-    stationName: 'KHB32 / 162.400 MHz',
-    forecastText: 'NOAA Weather Radio KHB32. Barometric pressure 30.12 inches and rising. Overnight highway conditions dry, temperature 54 degrees.',
-  },
-  {
-    wxChannel: 3,
-    frequencyMhz: 162.475,
-    label: 'WX3',
-    stationName: 'WXM60 / 162.475 MHz',
-    forecastText: 'NOAA Weather Radio WXM60. Mountain pass traction advisory in effect above 5000 feet. Carry chains for commercial vehicles.',
-  },
-  {
-    wxChannel: 4,
-    frequencyMhz: 162.425,
-    label: 'WX4',
-    stationName: 'WWG24 / 162.425 MHz',
-    forecastText: 'NOAA Weather Radio WWG24. Severe thunderstorm watch cleared for southern tier interstate corridors.',
-  },
-  {
-    wxChannel: 5,
-    frequencyMhz: 162.45,
-    label: 'WX5',
-    stationName: 'KIG98 / 162.450 MHz',
-    forecastText: 'NOAA Weather Radio KIG98. Coastal fog reducing visibility to 1/2 mile along I-5 marine layer corridor.',
-  },
-  {
-    wxChannel: 6,
-    frequencyMhz: 162.5,
-    label: 'WX6',
-    stationName: 'KXI58 / 162.500 MHz',
-    forecastText: 'NOAA Weather Radio KXI58. High Plains wind advisory for empty trailers and high-profile 53-foot vans.',
-  },
-  {
-    wxChannel: 7,
-    frequencyMhz: 162.525,
-    label: 'WX7',
-    stationName: 'WNG650 / 162.525 MHz',
-    forecastText: 'NOAA Weather Radio WNG650. All hazards S.A.M.E. alert standby channel.',
-  },
-];
 
 export interface HighwayCorridor {
   id: string;
@@ -138,89 +80,7 @@ export const HIGHWAY_CORRIDORS: HighwayCorridor[] = [
   { id: 'LAN', code: 'LOCAL LAN / S26', name: 'Direct Windows ↔ Samsung S26 Ultra LAN', activeRigs: 2, regionDesc: 'Zero-latency local Wi-Fi WebSocket bridge between your devices' },
 ];
 
-export interface TruckerTransmission {
-  handle: string;
-  corridor: string;
-  milepost: string;
-  channel: number;
-  mode: ModulationMode;
-  signalDbm: number; // e.g. -65 dBm (S9+8dB)
-  text: string;
-  pitchHz: number;
-}
 
-export const SIMULATED_TRUCKER_TRAFFIC: TruckerTransmission[] = [
-  {
-    handle: 'Iron Horse 402',
-    corridor: 'I-80 TRANSCON',
-    milepost: 'MM 142 Westbound',
-    channel: 19,
-    mode: 'AM',
-    signalDbm: -67, // S9+6dB
-    text: 'Breaker 1-9, watch your foot westbound at the 142 yardstick, you got a full-grown bear in the median shooting laser.',
-    pitchHz: 112,
-  },
-  {
-    handle: 'Diesel Doctor',
-    corridor: 'I-80 TRANSCON',
-    milepost: 'MM 145 Eastbound',
-    channel: 19,
-    mode: 'AM',
-    signalDbm: -75, // S8
-    text: 'Appreciate that comeback Iron Horse! Eastbound is clean and green all the way back to the Flying J at exit 118.',
-    pitchHz: 96,
-  },
-  {
-    handle: 'Silver Eagle',
-    corridor: 'I-5 WEST COAST',
-    milepost: 'MM 68 Northbound',
-    channel: 19,
-    mode: 'AM',
-    signalDbm: -81, // S7
-    text: 'Northbound Peterbilt with the bull rack, you got your ears on? Scale house at the 71 is CLOSED, roll right on by.',
-    pitchHz: 124,
-  },
-  {
-    handle: 'Nightcrawler',
-    corridor: 'I-95 EAST COAST',
-    milepost: 'MM 210 Southbound',
-    channel: 19,
-    mode: 'AM',
-    signalDbm: -61, // S9+12dB
-    text: 'Heads up southbound 19, right lane is stacked up behind an oversize wind turbine blade at the 208 bridge.',
-    pitchHz: 105,
-  },
-  {
-    handle: 'Motormouth 006',
-    corridor: 'SUPERBOWL SKIP',
-    milepost: 'Bayou Base 2.5kW',
-    channel: 6,
-    mode: 'AM',
-    signalDbm: -48, // S9+25dB
-    text: 'Auuuudio, one-two, one-two! Worldwide 006 down in the Bayou standing on the big maul, waving a hand across the Super Bowl, I am gone, bye-bye-bye!',
-    pitchHz: 92,
-  },
-  {
-    handle: 'REACT Base 9',
-    corridor: 'HIGHWAY WATCH',
-    milepost: 'Regional Dispatch',
-    channel: 9,
-    mode: 'AM',
-    signalDbm: -71, // S9+2dB
-    text: 'Channel 9 advisory: Disabled tractor-trailer on the right shoulder at interchange ramp 44B, tow unit is en route.',
-    pitchHz: 132,
-  },
-  {
-    handle: 'Whiskey Delta 449',
-    corridor: '11M F2 SKYWAVE SKIP',
-    milepost: 'Grid EM73 // Georgia',
-    channel: 38,
-    mode: 'LSB',
-    signalDbm: -77, // S8
-    text: 'CQ DX, CQ DX on 38 Lower Sideband! This is 449 Georgia standing by for any West Coast or Midwest skip stations.',
-    pitchHz: 118,
-  },
-];
 
 export interface InternetRadioStation {
   id: string;

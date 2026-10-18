@@ -523,13 +523,28 @@ export class RigController {
           const { value, done } = await this.serialReader.read();
           if (done) break;
           if (value) {
-            buffer += new TextDecoder().decode(value);
-            // Parse semicolons for Kenwood/Yaesu
-            let semiIdx: number;
-            while ((semiIdx = buffer.indexOf(';')) >= 0) {
-              const cmd = buffer.slice(0, semiIdx);
-              buffer = buffer.slice(semiIdx + 1);
-              this.parseCatCommand(cmd);
+            if (this.status.protocol === 'ICOM_CIV') {
+              for (let i = 0; i < value.length - 6; i++) {
+                if (value[i] === 0xfe && value[i + 1] === 0xfe) {
+                  const cmd = value[i + 4];
+                  if (cmd === 0x00 || cmd === 0x03) {
+                    const freqHz = decodeIcomBcdFrequency(value, i + 5);
+                    if (freqHz > 100_000 && freqHz < 2_000_000_000) {
+                      this.status.vfoAFreqHz = freqHz;
+                      this.notify();
+                    }
+                  }
+                }
+              }
+            } else {
+              buffer += new TextDecoder().decode(value);
+              // Parse semicolons for Kenwood/Yaesu
+              let semiIdx: number;
+              while ((semiIdx = buffer.indexOf(';')) >= 0) {
+                const cmd = buffer.slice(0, semiIdx);
+                buffer = buffer.slice(semiIdx + 1);
+                this.parseCatCommand(cmd);
+              }
             }
           }
         }

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import {
+  Noaa1050HzDetector,
   SameAlertMessage,
   SameMessageDecoder,
 } from '../radio/sameDecoder';
@@ -21,6 +22,7 @@ export const NoaaEmergencyDeck: React.FC<NoaaEmergencyDeckProps> = ({
   onTuneNoaaChannel,
 }) => {
   const [decoder] = useState(() => new SameMessageDecoder());
+  const [detector] = useState(() => new Noaa1050HzDetector(48000));
   const [signalGen] = useState(() => new LaboratorySignalGenerator(48000));
 
   const [alerts, setAlerts] = useState<SameAlertMessage[]>(() => decoder.getAlertHistory());
@@ -41,11 +43,12 @@ export const NoaaEmergencyDeck: React.FC<NoaaEmergencyDeckProps> = ({
 
   const handleSimulateAlert = () => {
     setSimulating(true);
-    setIsAlertActive(true);
-    setTonePowerDb(-18.5);
 
     // 1. Synthesize 1050 Hz alert tone + SAME burst
     const alertToneSamples = signalGen.generateNoaa1050HzAlert(2.5, 0.9);
+    detector.processAudioBlock(alertToneSamples);
+    setIsAlertActive(true);
+    setTonePowerDb(Math.round(detector.alertTonePowerDb * 10) / 10);
     const sameBurst = signalGen.generateSameAfskBurst(
       'ZCZC-WXR-TOR-053033+0045-2882115-KZZ99/NWS-',
       0.85
