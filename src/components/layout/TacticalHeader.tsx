@@ -30,7 +30,7 @@ export const TacticalHeader: React.FC<TacticalHeaderProps> = ({
   return (
     <header className="top-telemetry-bar" aria-label="Tactical Telemetry Header">
       <div className="brand-cluster">
-        <div className={`tx-rx-beacon ${pttActive ? 'tx' : squelchOpen ? 'rx-open' : 'rx-stby'}`}>
+        <div className={`ui-pill-bcn ${pttActive ? 'tx' : squelchOpen ? 'rx-open' : 'rx-stby'}`}>
           {pttActive
             ? 'TX ON AIR'
             : squelchOpen
@@ -42,7 +42,7 @@ export const TacticalHeader: React.FC<TacticalHeaderProps> = ({
         <div>
           <div className="flex items-center gap-2">
             <h1 className="app-logo">HESHRADIO</h1>
-            <span className="px-3.5 py-1.5 rounded-lg text-[10px] font-mono font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40 tracking-wider shadow-sm leading-none">
+            <span className="ui-pill-sm bg-amber-500/20 text-amber-300 border-amber-500/40 tracking-wider shadow-sm">
               {CURRENT_VERSION}
             </span>
           </div>
@@ -54,8 +54,8 @@ export const TacticalHeader: React.FC<TacticalHeaderProps> = ({
 
       {/* Global Tactical Header Pills */}
       <div className="header-telemetry-pills">
-        <div className="telemetry-pill">
-          <span className="pill-label">OPERATOR CALL / HANDLE</span>
+        <div className="ui-pill-md">
+          <span className="ui-lbl">CALL / HANDLE</span>
           <input
             type="text"
             value={operatorHandle}
@@ -65,10 +65,10 @@ export const TacticalHeader: React.FC<TacticalHeaderProps> = ({
           />
         </div>
 
-        <div className="telemetry-pill">
-          <span className="pill-label">HARDWARE SDR</span>
+        <div className="ui-pill-md">
+          <span className="ui-lbl">HARDWARE SDR</span>
           <span
-            className={`pill-value font-bold ${
+            className={`ui-val ${
               sdrStatus.connected ? 'text-emerald-400' : 'text-amber-400'
             }`}
           >
@@ -80,10 +80,10 @@ export const TacticalHeader: React.FC<TacticalHeaderProps> = ({
           </span>
         </div>
 
-        <div className="telemetry-pill">
-          <span className="pill-label">CAT RIG CONTROL</span>
+        <div className="ui-pill-md">
+          <span className="ui-lbl">CAT RIG CONTROL</span>
           <span
-            className={`pill-value font-bold ${
+            className={`ui-val ${
               rigStatus.connected ? 'text-emerald-400' : 'text-zinc-500'
             }`}
           >
@@ -91,16 +91,16 @@ export const TacticalHeader: React.FC<TacticalHeaderProps> = ({
           </span>
         </div>
 
-        <div className="telemetry-pill">
-          <span className="pill-label">UTC CLOCK</span>
-          <span className="pill-value">{utcClock}</span>
+        <div className="ui-pill-md">
+          <span className="ui-lbl">UTC CLOCK</span>
+          <span className="ui-val text-amber-300">{utcClock}</span>
         </div>
 
         {/* Emergency Panic Unkey Button */}
         <button
           type="button"
           onClick={onPanicUnkey}
-          className="px-3.5 py-2 bg-gradient-to-b from-red-600 to-red-800 hover:from-red-500 hover:to-red-700 text-white border border-red-500/60 rounded-lg text-xs font-mono font-bold flex items-center gap-2 shadow-lg shadow-red-950/60 active:scale-95 transition-all cursor-pointer"
+          className="ui-pill-btn bg-gradient-to-b from-red-600 to-red-800 hover:from-red-500 hover:to-red-700 text-white border border-red-500/60 shadow-lg shadow-red-950/60 active:scale-95 transition-all"
           title="Immediate Fail-Safe Panic Unkey"
         >
           <Zap className="w-3.5 h-3.5 text-red-200 animate-pulse shrink-0" /> PANIC UNKEY

@@ -34,7 +34,7 @@ export const TacticalBadge: React.FC<TacticalBadgeProps> = ({
 
   return (
     <span
-      className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-[10px] font-bold font-mono border shrink-0 leading-none tracking-wider ${variantStyles[variant]} ${className}`}
+      className={`ui-pill-sm shrink-0 tracking-wider ${variantStyles[variant]} ${className}`}
       title={title}
     >
       {icon && <span className="shrink-0 flex items-center">{icon}</span>}

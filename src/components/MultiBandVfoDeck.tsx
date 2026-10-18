@@ -125,7 +125,7 @@ export const MultiBandVfoDeck: React.FC<MultiBandVfoDeckProps> = ({
                     key={b.id}
                     type="button"
                     onClick={() => onSelectBand(b)}
-                    className={`text-xs px-3.5 py-2 rounded-lg font-mono font-bold transition-all cursor-pointer border ${
+                    className={`ui-pill-btn border ${
                       isSelected
                         ? 'bg-amber-500 text-black border-amber-400 shadow-md shadow-amber-500/20'
                         : 'bg-zinc-800/80 text-zinc-300 border-zinc-700/80 hover:bg-zinc-700 hover:text-amber-300'

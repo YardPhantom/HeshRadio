@@ -621,6 +621,170 @@ body {
   gap: 0.45rem;
 }
 
+/* ==========================================================================
+   UNIFIED SYSTEM TOKENS (PILLS, DIVS, SPANS - MAX 20 CHARS)
+   Enforces identical heights, inside paddings, and zero border collision
+   ========================================================================== */
+
+/* PILLS & BADGES (Fixed heights, flex centering, safe insets) */
+.ui-pill-sm {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 24px;
+  height: 24px;
+  padding: 0 0.65rem;
+  border-radius: 9999px;
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;
+  box-sizing: border-box;
+  border: 1px solid transparent;
+}
+
+.ui-pill-md {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 32px;
+  height: 32px;
+  padding: 0 0.85rem;
+  border-radius: 9999px;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;
+  box-sizing: border-box;
+  background: var(--bg-inset);
+  border: 1px solid var(--border-subtle);
+}
+
+.ui-pill-lg {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.65rem;
+  min-height: 40px;
+  height: 40px;
+  padding: 0 1.15rem;
+  border-radius: 9999px;
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  font-weight: 700;
+  line-height: 1;
+  white-space: nowrap;
+  box-sizing: border-box;
+  background: var(--bg-panel-elevated);
+  border: 1px solid var(--border-subtle);
+}
+
+.ui-pill-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 32px;
+  height: 32px;
+  padding: 0 0.95rem;
+  border-radius: 8px;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 700;
+  line-height: 1;
+  text-align: center;
+  box-sizing: border-box;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.ui-pill-bcn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 32px;
+  height: 32px;
+  padding: 0 1.15rem;
+  border-radius: 8px;
+  font-family: var(--font-mono);
+  font-size: 0.76rem;
+  font-weight: 700;
+  line-height: 1;
+  white-space: nowrap;
+  box-sizing: border-box;
+  border: 1px solid transparent;
+}
+
+/* DIV CONTAINERS (Cards, tiles, inputs with guaranteed insets) */
+.ui-panel {
+  padding: 1.25rem 1.35rem;
+  border-radius: 14px;
+  border: 1px solid var(--border-subtle);
+  background: linear-gradient(180deg, #0d1520 0%, #090e15 100%);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 0.85rem;
+  box-sizing: border-box;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+}
+
+.ui-tile {
+  padding: 0.85rem 1rem;
+  border-radius: 10px;
+  border: 1px solid rgba(63, 63, 70, 0.45);
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 0.5rem;
+  box-sizing: border-box;
+  transition: all 0.15s ease;
+}
+
+.ui-input-box {
+  min-height: 38px;
+  height: 38px;
+  padding-left: 2.25rem;
+  padding-right: 0.85rem;
+  border-radius: 8px;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  background: #0d1520;
+  border: 1px solid rgba(148, 163, 184, 0.25);
+  color: #f1f5f9;
+  box-sizing: border-box;
+  outline-offset: 2px;
+  transition: border-color 0.15s ease;
+}
+
+.ui-input-box:focus {
+  border-color: var(--accent-cyan);
+  outline: none;
+}
+
+/* SPAN LABELS AND VALUES */
+.ui-lbl {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  display: inline-flex;
+  align-items: center;
+}
+
+.ui-val {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--accent-cyan);
+  display: inline-flex;
+  align-items: center;
+}
+
 /* High-Performance 120Hz List Containment */
 .traffic-log-list,
 .overflow-x-auto,

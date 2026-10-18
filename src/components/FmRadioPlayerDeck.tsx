@@ -702,13 +702,13 @@ export const FmRadioPlayerDeck: React.FC<FmRadioPlayerDeckProps> = ({
               placeholder="Search callsign, genre, city..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-zinc-900 border border-zinc-700 text-zinc-200 pl-9 pr-8 py-2 rounded-lg text-xs focus:outline-none focus:border-cyan-500 font-mono transition-colors"
+              className="ui-input-box w-full"
             />
             {searchQuery && (
               <button
                 type="button"
                 onClick={() => setSearchQuery('')}
-                className="absolute right-3 top-3 text-zinc-500 hover:text-zinc-300 cursor-pointer"
+                className="absolute right-3 top-2.5 text-zinc-500 hover:text-zinc-300 cursor-pointer"
                 title="Clear search"
               >
                 ✕
@@ -722,7 +722,7 @@ export const FmRadioPlayerDeck: React.FC<FmRadioPlayerDeckProps> = ({
             <select
               value={selectedCountry}
               onChange={(e) => setSelectedCountry(e.target.value)}
-              className="w-full bg-zinc-900 border border-zinc-700 text-zinc-200 pl-8 pr-3 py-2 rounded-lg text-xs font-mono focus:outline-none focus:border-cyan-500 cursor-pointer appearance-none transition-colors"
+              className="ui-input-box w-full cursor-pointer appearance-none"
             >
               {FM_COUNTRIES.map((c) => (
                 <option key={c.code} value={c.code} className="bg-zinc-900 text-zinc-200">
@@ -738,7 +738,7 @@ export const FmRadioPlayerDeck: React.FC<FmRadioPlayerDeckProps> = ({
             <select
               value={selectedGenre}
               onChange={(e) => setSelectedGenre(e.target.value)}
-              className="w-full bg-zinc-900 border border-zinc-700 text-zinc-200 pl-8 pr-3 py-2 rounded-lg text-xs font-mono focus:outline-none focus:border-amber-500 cursor-pointer appearance-none transition-colors"
+              className="ui-input-box w-full cursor-pointer appearance-none"
             >
               {FM_CATEGORIES.map((cat) => (
                 <option key={cat.id} value={cat.id} className="bg-zinc-900 text-zinc-200">
@@ -754,7 +754,7 @@ export const FmRadioPlayerDeck: React.FC<FmRadioPlayerDeckProps> = ({
             <select
               value={selectedSort}
               onChange={(e) => setSelectedSort(e.target.value as FmSortOption)}
-              className="w-full bg-zinc-900 border border-zinc-700 text-zinc-200 pl-8 pr-3 py-2 rounded-lg text-xs font-mono focus:outline-none focus:border-emerald-500 cursor-pointer appearance-none transition-colors"
+              className="ui-input-box w-full cursor-pointer appearance-none"
             >
               <option value="VOTES_DESC" className="bg-zinc-900 text-zinc-200">Sort: Most Popular (Votes)</option>
               <option value="FREQ_ASC" className="bg-zinc-900 text-zinc-200">Sort: Frequency (87.5 → 108 MHz)</option>
@@ -773,7 +773,7 @@ export const FmRadioPlayerDeck: React.FC<FmRadioPlayerDeckProps> = ({
               key={pill.id}
               type="button"
               onClick={() => setSelectedGenre(pill.id)}
-              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer border ${
+              className={`ui-pill-btn border ${
                 selectedGenre === pill.id
                   ? 'bg-cyan-500 text-black border-cyan-400 shadow-md shadow-cyan-500/20'
                   : 'bg-zinc-900/90 text-zinc-400 hover:text-zinc-200 border-zinc-800'
