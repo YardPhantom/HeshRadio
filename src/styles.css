@@ -787,12 +787,23 @@ body {
 }
 
 /* Universal Focus-Visible & Button Outline Hygiene (WCAG 2.2 AA) */
+/* Universal Focus-Visible & Outline Hygiene (WCAG 2.2 AA) */
 button:focus-visible,
 input:focus-visible,
 select:focus-visible,
 [tabindex]:focus-visible {
   outline: 2px solid var(--accent-cyan) !important;
   outline-offset: 2px !important;
+}
+
+/* Form Controls & Dropdown Selectors:
+   Guaranteed perimeter margin so they NEVER touch or join with borders/outlines of parent containers */
+select,
+input[type="text"],
+input[type="number"],
+input[type="search"] {
+  box-sizing: border-box;
+  margin: 0.15rem 0.2rem;
 }
 
 /* Buttons will have safe internal padding and perimeter clearance so they NEVER touch borders/outlines of parent divs or spans */
@@ -802,9 +813,13 @@ button {
   outline-offset: 2px;
 }
 
-/* Ensure any div or span holding buttons enforces protective perimeter padding */
+/* Ensure any div or span holding form controls or buttons enforces protective perimeter padding */
 div:has(> button),
-span:has(> button) {
+span:has(> button),
+div:has(> select),
+span:has(> select),
+div:has(> input),
+span:has(> input) {
   padding: 0.25rem 0.35rem;
   box-sizing: border-box;
 }

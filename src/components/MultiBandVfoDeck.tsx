@@ -139,15 +139,15 @@ export const MultiBandVfoDeck: React.FC<MultiBandVfoDeckProps> = ({
             </div>
 
             {/* All Bands Dropdown */}
-            <div className="flex items-center gap-2 bg-zinc-900 border border-zinc-700/90 rounded-lg px-3.5 py-2">
-              <span className="text-[10px] font-mono text-zinc-500 uppercase font-bold">ALL BANDS:</span>
+            <div className="flex items-center gap-2 bg-zinc-900 border border-zinc-700/90 rounded-lg px-3.5 py-1.5 shadow-sm">
+              <span className="text-[10px] font-mono text-zinc-500 uppercase font-bold shrink-0">ALL BANDS:</span>
               <select
                 value={currentBand.id}
                 onChange={(e) => {
                   const found = MASTER_BAND_PLANS.find((b) => b.id === e.target.value);
                   if (found) onSelectBand(found);
                 }}
-                className="bg-transparent text-amber-300 text-xs font-mono font-bold focus:outline-none cursor-pointer pr-1"
+                className="bg-transparent text-amber-300 text-xs font-mono font-bold focus:outline-none cursor-pointer pr-2 my-0.5"
                 aria-label="Select RF Band"
               >
                 <optgroup label="HF & 11-Meter CB" className="bg-zinc-900 text-zinc-300">
@@ -478,11 +478,11 @@ export const MultiBandVfoDeck: React.FC<MultiBandVfoDeckProps> = ({
           </div>
 
           <div className="flex items-center gap-2 text-xs font-mono">
-            <span className="text-zinc-400 shrink-0">PL TONE:</span>
+            <span className="text-zinc-400 shrink-0 ui-lbl">PL TONE:</span>
             <select
               value={ctcssToneHz || ''}
               onChange={(e) => onCtcssToneChange(e.target.value ? parseFloat(e.target.value) : null)}
-              className="bg-zinc-900 border border-zinc-700 text-amber-300 px-3.5 py-2 rounded-lg flex-1 focus:outline-none font-bold cursor-pointer"
+              className="ui-input-box flex-1 text-amber-300 font-bold cursor-pointer"
               aria-label="CTCSS Tone Selector"
             >
               <option value="">CSQ / CARRIER SQUELCH (NO TONE)</option>
