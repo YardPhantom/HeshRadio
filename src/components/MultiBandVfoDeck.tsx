@@ -540,15 +540,15 @@ export const MultiBandVfoDeck: React.FC<MultiBandVfoDeckProps> = ({
                       onCtcssToneChange(preset.ctcssToneHz);
                     }
                   }}
-                  className={`text-xs px-3.5 py-2.5 rounded-xl font-mono transition-all text-left flex flex-col justify-center border cursor-pointer min-w-0 ${
+                  className={`text-xs px-3.5 py-2.5 rounded-xl font-mono transition-all text-center flex flex-col items-center justify-center border cursor-pointer min-w-0 ${
                     isActive
                       ? 'bg-amber-500 text-black border-amber-400 font-bold shadow-md'
                       : 'bg-zinc-800/80 text-zinc-300 border-zinc-700/80 hover:bg-zinc-700 hover:text-white'
                   }`}
                   title={`${preset.name}: ${preset.description}`}
                 >
-                  <span className="font-bold truncate w-full">{preset.name}</span>
-                  <span className={`text-[10px] truncate ${isActive ? 'text-black/80' : 'text-zinc-400'}`}>
+                  <span className="font-bold truncate w-full text-center">{preset.name}</span>
+                  <span className={`text-[10px] truncate w-full text-center ${isActive ? 'text-black/80' : 'text-zinc-400'}`}>
                     {preset.frequencyMhz.toFixed(3)} MHz
                   </span>
                 </button>

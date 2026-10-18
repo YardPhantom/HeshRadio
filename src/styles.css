@@ -628,7 +628,7 @@ body {
   contain: content;
 }
 
-/* Universal Focus-Visible Hygiene (WCAG 2.2 AA) */
+/* Universal Focus-Visible & Button Outline Hygiene (WCAG 2.2 AA) */
 button:focus-visible,
 input:focus-visible,
 select:focus-visible,
@@ -637,9 +637,14 @@ select:focus-visible,
   outline-offset: 2px !important;
 }
 
+/* Buttons will have safe internal padding so content never overlaps outlines or borders */
+button {
+  box-sizing: border-box;
+}
+
 /* Universal SVG and Span Safe Clearance:
    All SVG elements have padding in front of them so icons never touch borders/elements.
-   All Span text elements have padding space on both the left and right so text never touches borders/elements. */
+   All Span elements will ALWAYS have a padding on the right so text never touches trailing borders/outlines. */
 svg {
   box-sizing: content-box;
   padding-left: 0.25rem;
@@ -650,8 +655,9 @@ svg {
 
 span {
   padding-left: 0.25rem;
-  padding-right: 0.25rem;
-  padding-inline: 0.25rem;
+  padding-right: 0.35rem;
+  padding-inline-start: 0.25rem;
+  padding-inline-end: 0.35rem;
 }
 
 span:empty {
