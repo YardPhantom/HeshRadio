@@ -559,6 +559,31 @@ body {
   color: var(--text-secondary);
 }
 
+/* FM Station Card (15 chars <= 20 chars max) */
+.fm-station-card {
+  padding: 1.1rem 1.25rem;
+  border-radius: 12px;
+  border: 1px solid rgba(63, 63, 70, 0.4);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 0.85rem;
+  transition: all 0.15s ease;
+  background: rgba(0, 0, 0, 0.45);
+  box-sizing: border-box;
+}
+
+.fm-station-card:hover {
+  border-color: #52525b;
+}
+
+.fm-station-card.active {
+  background: rgba(245, 158, 11, 0.12);
+  border-color: rgba(245, 158, 11, 0.55);
+  box-shadow: 0 4px 14px -2px rgba(245, 158, 11, 0.18);
+  outline: 1px solid rgba(245, 158, 11, 0.3);
+}
+
 .net-controls-row {
   display: flex;
   flex-wrap: wrap;

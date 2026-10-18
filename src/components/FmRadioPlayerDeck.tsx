@@ -812,45 +812,41 @@ export const FmRadioPlayerDeck: React.FC<FmRadioPlayerDeckProps> = ({
               return (
                 <div
                   key={st.id}
-                  className={`p-3.5 rounded-xl border flex flex-col justify-between gap-3 transition-all ${
-                    isCurrent
-                      ? 'bg-amber-500/10 border-amber-500/50 shadow-md ring-1 ring-amber-500/30'
-                      : 'bg-black/40 border-zinc-800/90 hover:border-zinc-700'
-                  }`}
+                  className={`fm-station-card ${isCurrent ? 'active' : ''}`}
                 >
-                  <div className="space-y-1.5">
+                  <div className="space-y-2 px-1">
                     {/* Top Row: Dial Frequency & Bitrate & Votes */}
                     <div className="flex items-center justify-between text-xs font-mono gap-2">
-                      <span className="font-bold text-amber-400 flex items-center gap-1.5 shrink-0">
-                        <Radio className="w-3.5 h-3.5" /> {st.frequencyMhz.toFixed(1)} MHz
+                      <span className="font-bold text-amber-400 flex items-center gap-2 shrink-0">
+                        <Radio className="w-3.5 h-3.5 text-amber-400" /> {st.frequencyMhz.toFixed(1)} MHz
                       </span>
                       <div className="flex items-center gap-1.5 overflow-hidden">
                         {st.votes !== undefined && st.votes > 0 && (
-                          <span className="text-[10px] px-3 py-1 rounded-lg bg-zinc-900 text-amber-300 font-bold border border-zinc-800 shrink-0 leading-none">
+                          <span className="text-[10px] px-3 py-1.5 rounded-lg bg-zinc-900 text-amber-300 font-bold border border-zinc-800 shrink-0 leading-none">
                             ★ {st.votes > 1000 ? `${(st.votes / 1000).toFixed(1)}k` : st.votes}
                           </span>
                         )}
-                        <span className="text-[10px] px-3 py-1 rounded-lg bg-zinc-800 text-zinc-300 font-bold border border-zinc-700/80 shrink-0 leading-none">
+                        <span className="text-[10px] px-3 py-1.5 rounded-lg bg-zinc-800 text-zinc-300 font-bold border border-zinc-700/80 shrink-0 leading-none">
                           {st.bitrate}
                         </span>
                       </div>
                     </div>
 
                     {/* Station Name */}
-                    <div className="text-zinc-100 font-bold text-sm truncate" title={st.name}>
+                    <div className="text-zinc-100 font-bold text-sm truncate py-0.5" title={st.name}>
                       {st.name}
                     </div>
 
                     {/* Genre / Format Badge */}
                     <div className="flex items-center gap-1.5">
-                      <span className="text-[11px] px-3 py-1.5 rounded-lg bg-cyan-950/50 text-cyan-300 font-semibold border border-cyan-800/40 truncate leading-none" title={st.genre}>
+                      <span className="text-[11px] px-3.5 py-1.5 rounded-lg bg-cyan-950/50 text-cyan-300 font-semibold border border-cyan-800/40 truncate leading-none" title={st.genre}>
                         {st.genre}
                       </span>
                     </div>
 
                     {/* Country & Region */}
-                    <div className="text-[11px] text-zinc-400 flex items-center gap-1.5">
-                      <Globe className="w-3 h-3 text-zinc-500 shrink-0" />
+                    <div className="text-[11px] text-zinc-400 flex items-center gap-2">
+                      <Globe className="w-3.5 h-3.5 text-zinc-500 shrink-0" />
                       <span className="truncate">
                         {st.country} {st.state ? `• ${st.state}` : ''}
                       </span>
@@ -858,7 +854,7 @@ export const FmRadioPlayerDeck: React.FC<FmRadioPlayerDeckProps> = ({
                   </div>
 
                   {/* Actions Row */}
-                  <div className="flex items-center gap-2 pt-2.5 border-t border-zinc-800/60">
+                  <div className="flex items-center gap-2 pt-2.5 border-t border-zinc-800/60 px-1">
                     <button
                       type="button"
                       onClick={() => (isCurrent ? handleStop() : handlePlayStation(st))}
@@ -876,7 +872,7 @@ export const FmRadioPlayerDeck: React.FC<FmRadioPlayerDeckProps> = ({
                       <button
                         type="button"
                         onClick={() => onTuneTransceiverVfo(st.frequencyMhz)}
-                        className="py-2 px-3 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 rounded-lg text-xs border border-zinc-700 cursor-pointer font-bold font-mono"
+                        className="py-2 px-3.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 rounded-lg text-xs border border-zinc-700 cursor-pointer font-bold font-mono"
                         title="Set VFO A to this frequency"
                       >
                         VFO
