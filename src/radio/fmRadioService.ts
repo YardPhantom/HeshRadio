@@ -749,7 +749,7 @@ export const CURATED_FM_STATIONS: FmStation[] = [
     id: 'cbc-r1-kelowna-889',
     name: 'CBC Radio One Kelowna 88.9 FM',
     frequencyMhz: 88.9,
-    genre: 'News & NPR Talk',
+    genre: 'CBC Radio',
     country: 'Canada',
     countryCode: 'CA',
     state: 'British Columbia',
@@ -763,7 +763,7 @@ export const CURATED_FM_STATIONS: FmStation[] = [
     id: 'cbc-r1-kamloops-941',
     name: 'CBC Radio One Kamloops 94.1 FM',
     frequencyMhz: 94.1,
-    genre: 'News & NPR Talk',
+    genre: 'CBC Radio',
     country: 'Canada',
     countryCode: 'CA',
     state: 'British Columbia',
@@ -777,7 +777,7 @@ export const CURATED_FM_STATIONS: FmStation[] = [
     id: 'cbc-r1-princegeorge-915',
     name: 'CBC Radio One Prince George 91.5 FM',
     frequencyMhz: 91.5,
-    genre: 'News & NPR Talk',
+    genre: 'CBC Radio',
     country: 'Canada',
     countryCode: 'CA',
     state: 'British Columbia',
@@ -877,7 +877,7 @@ export const CURATED_FM_STATIONS: FmStation[] = [
     id: 'cbc-r1-calgary-991',
     name: 'CBC Radio One Calgary 99.1 FM',
     frequencyMhz: 99.1,
-    genre: 'News & NPR Talk',
+    genre: 'CBC Radio',
     country: 'Canada',
     countryCode: 'CA',
     state: 'Alberta',
@@ -891,7 +891,7 @@ export const CURATED_FM_STATIONS: FmStation[] = [
     id: 'cbc-r1-edmonton-939',
     name: 'CBC Radio One Edmonton 93.9 FM',
     frequencyMhz: 93.9,
-    genre: 'News & NPR Talk',
+    genre: 'CBC Radio',
     country: 'Canada',
     countryCode: 'CA',
     state: 'Alberta',
@@ -975,7 +975,7 @@ export const CURATED_FM_STATIONS: FmStation[] = [
     id: 'cbc-r1-regina-1025',
     name: 'CBC Radio One Regina 102.5 FM',
     frequencyMhz: 102.5,
-    genre: 'News & NPR Talk',
+    genre: 'CBC Radio',
     country: 'Canada',
     countryCode: 'CA',
     state: 'Saskatchewan',
@@ -1145,7 +1145,7 @@ export const CURATED_FM_STATIONS: FmStation[] = [
     id: 'cbc-r1-toronto-991',
     name: 'CBC Radio One Toronto 99.1 FM',
     frequencyMhz: 99.1,
-    genre: 'News & NPR Talk',
+    genre: 'CBC Radio',
     country: 'Canada',
     countryCode: 'CA',
     state: 'Ontario',
@@ -1159,7 +1159,7 @@ export const CURATED_FM_STATIONS: FmStation[] = [
     id: 'cbc-r1-ottawa-915',
     name: 'CBC Radio One Ottawa 91.5 FM',
     frequencyMhz: 91.5,
-    genre: 'News & NPR Talk',
+    genre: 'CBC Radio',
     country: 'Canada',
     countryCode: 'CA',
     state: 'Ontario',
@@ -1173,7 +1173,7 @@ export const CURATED_FM_STATIONS: FmStation[] = [
     id: 'cbc-r1-london-935',
     name: 'CBC Radio One London 93.5 FM',
     frequencyMhz: 93.5,
-    genre: 'News & NPR Talk',
+    genre: 'CBC Radio',
     country: 'Canada',
     countryCode: 'CA',
     state: 'Ontario',
@@ -1187,7 +1187,7 @@ export const CURATED_FM_STATIONS: FmStation[] = [
     id: 'cbc-r1-montreal-885',
     name: 'CBC Radio One Montreal 88.5 FM',
     frequencyMhz: 88.5,
-    genre: 'News & NPR Talk',
+    genre: 'CBC Radio',
     country: 'Canada',
     countryCode: 'CA',
     state: 'Quebec',
@@ -1837,7 +1837,17 @@ export class FmRadioService {
       const baseUrl = this.getActiveBaseUrl();
       const params = new URLSearchParams();
       if (cleanedQuery) params.append('name', cleanedQuery);
-      if (effectiveTag) params.append('tag', effectiveTag);
+      if (effectiveTag) {
+        if (effectiveTag === 'cbc') {
+          if (!cleanedQuery) {
+            params.append('name', 'cbc');
+          } else {
+            params.append('tag', 'cbc');
+          }
+        } else {
+          params.append('tag', effectiveTag);
+        }
+      }
       if (effectiveCountry) params.append('countrycode', effectiveCountry.toLowerCase());
       params.append('limit', limit.toString());
       params.append('hidebroken', 'true');
@@ -1919,8 +1929,9 @@ export class FmRadioService {
       const matchCategory =
         !tagLower ||
         genreLower.includes(tagLower) ||
+        (tagLower === 'cbc' && (genreLower.includes('cbc') || st.name.toLowerCase().includes('cbc'))) ||
         (tagLower === 'rock' && (genreLower.includes('rock') || genreLower.includes('indie'))) ||
-        (tagLower === 'news' && (genreLower.includes('news') || genreLower.includes('npr') || genreLower.includes('talk'))) ||
+        (tagLower === 'news' && (genreLower.includes('news') || genreLower.includes('npr') || genreLower.includes('talk') || genreLower.includes('cbc'))) ||
         (tagLower === 'country' && (genreLower.includes('country') || genreLower.includes('americana') || genreLower.includes('folk'))) ||
         (tagLower === 'electronic' && (genreLower.includes('electronic') || genreLower.includes('dance') || genreLower.includes('edm') || genreLower.includes('trance'))) ||
         (tagLower === '80s' && (genreLower.includes('80s') || genreLower.includes('synth') || genreLower.includes('retro'))) ||
