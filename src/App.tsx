@@ -204,15 +204,33 @@ export const App: React.FC = () => {
     }
   }, [frequencyMhz]);
 
-  // Connect to LAN / Embedded Vite WebSocket CB Relay
+  // Connect to LAN / Embedded Vite WebSocket CB Relay (Local Dev or Configured Relay Only)
   useEffect(() => {
+    const isLocalhost =
+      typeof window !== 'undefined' &&
+      (window.location.hostname === 'localhost' ||
+        window.location.hostname === '127.0.0.1' ||
+        window.location.hostname === '[::1]' ||
+        window.location.hostname.endsWith('.local'));
+
+    const customRelayUrl = (import.meta as any).env?.VITE_WS_CB_URL;
+
+    // Do not attempt to connect to static web servers that do not host a WebSocket daemon
+    if (!customRelayUrl && !isLocalhost) {
+      return;
+    }
+
     const proto = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-    const wsUrl = `${proto}//${window.location.host}/ws-cb`;
+    const wsUrl = customRelayUrl || `${proto}//${window.location.host}/ws-cb`;
     let ws: WebSocket | null = null;
 
     try {
       ws = new WebSocket(wsUrl);
       wsRef.current = ws;
+
+      ws.onerror = () => {
+        // Silent graceful fallback if local Vite relay daemon is inactive
+      };
 
       ws.onmessage = async (event) => {
         try {
@@ -255,7 +273,11 @@ export const App: React.FC = () => {
     } catch {}
 
     return () => {
-      if (ws) ws.close();
+      if (ws) {
+        ws.onerror = null;
+        ws.onmessage = null;
+        ws.close();
+      }
     };
   }, [masterVolume, anlEnabled, rogerBeep]);
 
