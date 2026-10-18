@@ -41,6 +41,21 @@ def ensure_remote_dir(sftp, remote_dir: str):
 
 def upload_directory(sftp, local_dir: Path, remote_dir: str):
     ensure_remote_dir(sftp, remote_dir)
+    # If uploading assets directory, clean up old hashed chunks first
+    if local_dir.name == "assets":
+        try:
+            remote_files = sftp.listdir(remote_dir)
+            current_local_files = {entry.name for entry in local_dir.iterdir()}
+            for rf in remote_files:
+                if rf not in current_local_files:
+                    try:
+                        sftp.remove(f"{remote_dir}/{rf}")
+                        print(f"  [-] Removed stale asset: {rf}")
+                    except Exception:
+                        pass
+        except Exception:
+            pass
+
     for entry in local_dir.iterdir():
         remote_path = f"{remote_dir}/{entry.name}"
         if entry.is_dir():
