@@ -636,7 +636,7 @@ export const FmRadioPlayerDeck: React.FC<FmRadioPlayerDeckProps> = ({
                 key={idx}
                 type="button"
                 onClick={() => (isCurrent && isPlaying ? handleStop() : handlePlayStation(station))}
-                className={`p-3.5 rounded-xl border text-left flex flex-col justify-between transition-all cursor-pointer min-h-[72px] ${
+                className={`p-3.5 rounded-xl border text-center flex flex-col justify-between transition-all cursor-pointer min-h-[72px] ${
                   isCurrent && isPlaying
                     ? 'bg-amber-500 text-black border-amber-400 font-bold shadow-md shadow-amber-500/20'
                     : isCurrent
@@ -652,7 +652,7 @@ export const FmRadioPlayerDeck: React.FC<FmRadioPlayerDeckProps> = ({
                     {station.frequencyMhz.toFixed(1)}
                   </span>
                 </div>
-                <div className="font-bold text-xs truncate w-full mt-1">{station.name}</div>
+                <div className="font-bold text-xs truncate w-full mt-1 text-center">{station.name}</div>
               </button>
             );
           })}
@@ -693,10 +693,10 @@ export const FmRadioPlayerDeck: React.FC<FmRadioPlayerDeckProps> = ({
         </div>
 
         {/* Multi-Control Search, Country, Category & Sort Bar */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 bg-black/40 p-3 rounded-xl border border-zinc-800/90">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5 bg-black/40 p-4 sm:p-4.5 rounded-xl border border-zinc-800/90 mb-4 shadow-sm">
           {/* Search Box */}
-          <div className="relative">
-            <Search className="w-4 h-4 text-zinc-500 absolute left-3 top-2.5 pointer-events-none" />
+          <div className="relative px-0.5 py-0.5">
+            <Search className="w-4 h-4 text-zinc-500 absolute left-3.5 top-3 pointer-events-none" />
             <input
               type="text"
               placeholder="Search callsign, genre, city..."
@@ -708,7 +708,7 @@ export const FmRadioPlayerDeck: React.FC<FmRadioPlayerDeckProps> = ({
               <button
                 type="button"
                 onClick={() => setSearchQuery('')}
-                className="absolute right-2.5 top-2.5 text-zinc-500 hover:text-zinc-300 cursor-pointer"
+                className="absolute right-3 top-3 text-zinc-500 hover:text-zinc-300 cursor-pointer"
                 title="Clear search"
               >
                 ✕
@@ -717,8 +717,8 @@ export const FmRadioPlayerDeck: React.FC<FmRadioPlayerDeckProps> = ({
           </div>
 
           {/* Country Selector */}
-          <div className="relative">
-            <Globe className="w-3.5 h-3.5 text-cyan-400 absolute left-3 top-2.5 pointer-events-none" />
+          <div className="relative px-0.5 py-0.5">
+            <Globe className="w-3.5 h-3.5 text-cyan-400 absolute left-3.5 top-3 pointer-events-none" />
             <select
               value={selectedCountry}
               onChange={(e) => setSelectedCountry(e.target.value)}
@@ -733,8 +733,8 @@ export const FmRadioPlayerDeck: React.FC<FmRadioPlayerDeckProps> = ({
           </div>
 
           {/* Category / Genre Dropdown */}
-          <div className="relative">
-            <Layers className="w-3.5 h-3.5 text-amber-400 absolute left-3 top-2.5 pointer-events-none" />
+          <div className="relative px-0.5 py-0.5">
+            <Layers className="w-3.5 h-3.5 text-amber-400 absolute left-3.5 top-3 pointer-events-none" />
             <select
               value={selectedGenre}
               onChange={(e) => setSelectedGenre(e.target.value)}
@@ -749,8 +749,8 @@ export const FmRadioPlayerDeck: React.FC<FmRadioPlayerDeckProps> = ({
           </div>
 
           {/* Sort By Dropdown */}
-          <div className="relative">
-            <ArrowUpDown className="w-3.5 h-3.5 text-emerald-400 absolute left-3 top-2.5 pointer-events-none" />
+          <div className="relative px-0.5 py-0.5">
+            <ArrowUpDown className="w-3.5 h-3.5 text-emerald-400 absolute left-3.5 top-3 pointer-events-none" />
             <select
               value={selectedSort}
               onChange={(e) => setSelectedSort(e.target.value as FmSortOption)}
