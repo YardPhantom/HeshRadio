@@ -3,6 +3,8 @@
  * Full specification compliance for log export, import, and verification.
  */
 
+import { calculateGeodesy } from './geodesy';
+
 export interface AdifQsoRecord {
   id: string;
   call: string;
@@ -22,6 +24,12 @@ export interface AdifQsoRecord {
   comment?: string;
   propMode?: string;      // "F2", "ES", "AUR", "TR"
   operator?: string;
+  potaRef?: string;       // POTA Park Reference e.g. "US-0662", "K-1234"
+  sotaRef?: string;       // SOTA Summit Reference e.g. "W7W/RS-001"
+  distanceMiles?: number; // Calculated great circle distance in miles
+  distanceKm?: number;    // Calculated great circle distance in km
+  bearingDeg?: number;    // Beam heading / azimuth in degrees (0 - 360)
+  wrlSynced?: boolean;    // Cloud synced to World Radio League API
 }
 
 const STORAGE_KEY = 'heshradio_adif_qso_log';
@@ -38,6 +46,10 @@ export class AdifLogger {
 
   private seedInitialQso(): void {
     const today = new Date().toISOString().slice(0, 10).replace(/-/g, '');
+    const g1 = calculateGeodesy('CN87uq', 'EM73');
+    const g2 = calculateGeodesy('CN87uq', 'CM87');
+    const g3 = calculateGeodesy('CN87uq', 'EL98');
+
     this.records = [
       {
         id: 'qso-1',
@@ -52,6 +64,9 @@ export class AdifLogger {
         name: 'Buck',
         gridSquare: 'EM73',
         myGridSquare: 'CN87uq',
+        distanceMiles: g1?.distanceMiles,
+        distanceKm: g1?.distanceKm,
+        bearingDeg: g1?.bearingDeg,
         comment: 'Ch 19 Highway Trucker Radio Check // Clean 4:1 Dynamike audio',
         operator: 'HESHRADIO-19',
       },
@@ -69,7 +84,11 @@ export class AdifLogger {
         name: 'Dave',
         gridSquare: 'CM87',
         myGridSquare: 'CN87uq',
-        comment: '20m Daytime Intercontinental FT8 contact',
+        potaRef: 'US-0662',
+        distanceMiles: g2?.distanceMiles,
+        distanceKm: g2?.distanceKm,
+        bearingDeg: g2?.bearingDeg,
+        comment: '20m Daytime Intercontinental FT8 contact // Mt. Rainier NP Activation',
         operator: 'HESHRADIO-19',
       },
       {
@@ -86,6 +105,9 @@ export class AdifLogger {
         name: 'Jim',
         gridSquare: 'EL98',
         myGridSquare: 'CN87uq',
+        distanceMiles: g3?.distanceMiles,
+        distanceKm: g3?.distanceKm,
+        bearingDeg: g3?.bearingDeg,
         comment: 'Ch 38 LSB North American DX Skip Shootout',
         propMode: 'F2',
         operator: 'HESHRADIO-19',
@@ -99,9 +121,25 @@ export class AdifLogger {
   }
 
   public addRecord(qso: Omit<AdifQsoRecord, 'id'>): AdifQsoRecord {
+    let distanceMiles = qso.distanceMiles;
+    let distanceKm = qso.distanceKm;
+    let bearingDeg = qso.bearingDeg;
+
+    if ((!distanceMiles || !bearingDeg) && qso.myGridSquare && qso.gridSquare) {
+      const geo = calculateGeodesy(qso.myGridSquare, qso.gridSquare);
+      if (geo) {
+        distanceMiles = geo.distanceMiles;
+        distanceKm = geo.distanceKm;
+        bearingDeg = geo.bearingDeg;
+      }
+    }
+
     const record: AdifQsoRecord = {
       ...qso,
       id: 'qso-' + Date.now() + '-' + Math.floor(Math.random() * 1000),
+      distanceMiles,
+      distanceKm,
+      bearingDeg,
     };
     this.records.unshift(record);
     this.saveToStorage();
@@ -161,6 +199,10 @@ export class AdifLogger {
       if (r.name) line += `<NAME:${r.name.length}>${r.name} `;
       if (r.gridSquare) line += `<GRIDSQUARE:${r.gridSquare.length}>${r.gridSquare} `;
       if (r.myGridSquare) line += `<MY_GRIDSQUARE:${r.myGridSquare.length}>${r.myGridSquare} `;
+      if (r.potaRef) line += `<POTA_REF:${r.potaRef.length}>${r.potaRef} `;
+      if (r.sotaRef) line += `<SOTA_REF:${r.sotaRef.length}>${r.sotaRef} `;
+      if (r.distanceKm) line += `<DISTANCE:${String(r.distanceKm).length}>${r.distanceKm} `;
+      if (r.bearingDeg !== undefined) line += `<ANT_AZ:${String(r.bearingDeg).length}>${r.bearingDeg} `;
       if (r.comment) line += `<COMMENT:${r.comment.length}>${r.comment} `;
       if (r.propMode) line += `<PROP_MODE:${r.propMode.length}>${r.propMode} `;
       if (r.operator) line += `<OPERATOR:${r.operator.length}>${r.operator} `;
@@ -204,6 +246,14 @@ export class AdifLogger {
           case 'NAME': parsed.name = val; break;
           case 'GRIDSQUARE': parsed.gridSquare = val; break;
           case 'MY_GRIDSQUARE': parsed.myGridSquare = val; break;
+          case 'POTA_REF':
+          case 'MY_SIG_INFO':
+          case 'SIG_INFO':
+            parsed.potaRef = val;
+            break;
+          case 'SOTA_REF': parsed.sotaRef = val; break;
+          case 'DISTANCE': parsed.distanceKm = parseFloat(val) || undefined; break;
+          case 'ANT_AZ': parsed.bearingDeg = parseInt(val, 10) || undefined; break;
           case 'COMMENT': parsed.comment = val; break;
           case 'PROP_MODE': parsed.propMode = val; break;
           case 'OPERATOR': parsed.operator = val; break;
@@ -225,6 +275,10 @@ export class AdifLogger {
           gridSquare: parsed.gridSquare,
           myGridSquare: parsed.myGridSquare,
           name: parsed.name,
+          potaRef: parsed.potaRef,
+          sotaRef: parsed.sotaRef,
+          distanceKm: parsed.distanceKm,
+          bearingDeg: parsed.bearingDeg,
           comment: parsed.comment,
           propMode: parsed.propMode,
           operator: parsed.operator,
