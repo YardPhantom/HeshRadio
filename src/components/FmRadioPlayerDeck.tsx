@@ -28,6 +28,7 @@ import {
   ArrowUpDown,
   RotateCcw,
 } from 'lucide-react';
+import { TacticalModal } from './common/TacticalModal';
 
 interface FmRadioPlayerDeckProps {
   duckGain: number; // 1.0 normal, 0.125 (-18 dB) when ducked by CB RF/PTT
@@ -901,94 +902,81 @@ export const FmRadioPlayerDeck: React.FC<FmRadioPlayerDeckProps> = ({
       </div>
 
       {/* 5. Custom Stream URL Entry Modal */}
-      {showCustomModal && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <form
-            onSubmit={handleAddCustomStation}
-            className="bg-[#0f1724] border border-zinc-700 rounded-2xl p-5 max-w-md w-full space-y-4 shadow-2xl"
-          >
-            <div className="flex justify-between items-center border-b border-zinc-800 pb-2">
-              <span className="font-bold text-amber-400 text-sm flex items-center gap-1.5">
-                <Plus className="w-4 h-4" /> ADD CUSTOM ONLINE FM STREAM
-              </span>
-              <button
-                type="button"
-                onClick={() => setShowCustomModal(false)}
-                className="text-zinc-400 hover:text-white px-2 py-1 rounded"
-              >
-                ✕
-              </button>
+      <TacticalModal
+        isOpen={showCustomModal}
+        onClose={() => setShowCustomModal(false)}
+        title="ADD CUSTOM ONLINE FM STREAM"
+        icon={<Plus className="w-4 h-4 text-amber-400" />}
+      >
+        <form onSubmit={handleAddCustomStation} className="space-y-4">
+          <div className="space-y-3 text-xs">
+            <div>
+              <label className="text-zinc-400 block mb-1">STATION NAME / CALLSIGN:</label>
+              <input
+                type="text"
+                required
+                placeholder="e.g. My Favorite FM Station"
+                value={customName}
+                onChange={(e) => setCustomName(e.target.value)}
+                className="w-full bg-black border border-zinc-700 text-white px-3.5 py-2 rounded-lg font-mono focus:outline-none"
+              />
             </div>
 
-            <div className="space-y-3 text-xs">
+            <div>
+              <label className="text-zinc-400 block mb-1">STREAM AUDIO URL (MP3 / AAC / ICECAST / HLS):</label>
+              <input
+                type="url"
+                required
+                placeholder="https://example.com/stream.mp3"
+                value={customUrl}
+                onChange={(e) => setCustomUrl(e.target.value)}
+                className="w-full bg-black border border-zinc-700 text-cyan-300 px-3.5 py-2 rounded-lg font-mono focus:outline-none"
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="text-zinc-400 block mb-1">STATION NAME / CALLSIGN:</label>
+                <label className="text-zinc-400 block mb-1">FM FREQUENCY (MHz):</label>
+                <input
+                  type="number"
+                  step="0.1"
+                  min="87.5"
+                  max="108.0"
+                  value={customFreq}
+                  onChange={(e) => setCustomFreq(e.target.value)}
+                  className="w-full bg-black border border-zinc-700 text-amber-300 px-3.5 py-2 rounded-lg font-mono font-bold focus:outline-none"
+                />
+              </div>
+              <div>
+                <label className="text-zinc-400 block mb-1">GENRE / FORMAT:</label>
                 <input
                   type="text"
-                  required
-                  placeholder="e.g. My Favorite FM Station"
-                  value={customName}
-                  onChange={(e) => setCustomName(e.target.value)}
+                  placeholder="e.g. Rock / News"
+                  value={customGenre}
+                  onChange={(e) => setCustomGenre(e.target.value)}
                   className="w-full bg-black border border-zinc-700 text-white px-3.5 py-2 rounded-lg font-mono focus:outline-none"
                 />
               </div>
-
-              <div>
-                <label className="text-zinc-400 block mb-1">STREAM AUDIO URL (MP3 / AAC / ICECAST / HLS):</label>
-                <input
-                  type="url"
-                  required
-                  placeholder="https://example.com/stream.mp3"
-                  value={customUrl}
-                  onChange={(e) => setCustomUrl(e.target.value)}
-                  className="w-full bg-black border border-zinc-700 text-cyan-300 px-3.5 py-2 rounded-lg font-mono focus:outline-none"
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="text-zinc-400 block mb-1">FM FREQUENCY (MHz):</label>
-                  <input
-                    type="number"
-                    step="0.1"
-                    min="87.5"
-                    max="108.0"
-                    value={customFreq}
-                    onChange={(e) => setCustomFreq(e.target.value)}
-                    className="w-full bg-black border border-zinc-700 text-amber-300 px-3.5 py-2 rounded-lg font-mono font-bold focus:outline-none"
-                  />
-                </div>
-                <div>
-                  <label className="text-zinc-400 block mb-1">GENRE / FORMAT:</label>
-                  <input
-                    type="text"
-                    placeholder="e.g. Rock / News"
-                    value={customGenre}
-                    onChange={(e) => setCustomGenre(e.target.value)}
-                    className="w-full bg-black border border-zinc-700 text-white px-3.5 py-2 rounded-lg font-mono focus:outline-none"
-                  />
-                </div>
-              </div>
             </div>
+          </div>
 
-            <div className="flex justify-end gap-2 pt-2 border-t border-zinc-800">
-              <button
-                type="button"
-                onClick={() => setShowCustomModal(false)}
-                className="px-3.5 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 rounded-lg text-xs"
-              >
-                CANCEL
-              </button>
-              <button
-                type="submit"
-                className="px-4 py-1.5 bg-amber-500 hover:bg-amber-400 text-black font-bold rounded-lg text-xs shadow-md"
-              >
-                ADD &amp; PLAY NOW
-              </button>
-            </div>
-          </form>
-        </div>
-      )}
+          <div className="flex justify-end gap-2 pt-2 border-t border-zinc-800">
+            <button
+              type="button"
+              onClick={() => setShowCustomModal(false)}
+              className="px-3.5 py-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 rounded-lg text-xs cursor-pointer"
+            >
+              CANCEL
+            </button>
+            <button
+              type="submit"
+              className="px-4 py-2 bg-amber-500 hover:bg-amber-400 text-black font-bold rounded-lg text-xs shadow-md cursor-pointer"
+            >
+              ADD &amp; PLAY NOW
+            </button>
+          </div>
+        </form>
+      </TacticalModal>
     </section>
   );
 };

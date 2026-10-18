@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { Suspense, lazy, useCallback, useEffect, useRef, useState } from 'react';
 import {
   BandPlan,
   findBandPlanForFrequency,
@@ -22,101 +22,56 @@ import { RigController, RigStatus } from './radio/rigController';
 import { RtlSdrHardwareBridge, RtlSdrStatus } from './radio/rtlSdrBridge';
 import { SMeterDisplay } from './components/SMeterDisplay';
 import { WaterfallDisplay } from './components/WaterfallDisplay';
-import { InternetRadioDeck } from './components/InternetRadioDeck';
 import { MultiBandVfoDeck } from './components/MultiBandVfoDeck';
-import { RtlSdrControlPanel } from './components/RtlSdrControlPanel';
-import { RigControllerPanel } from './components/RigControllerPanel';
-import { DigitalModesDeck } from './components/DigitalModesDeck';
-import { SolarPropagationDeck } from './components/SolarPropagationDeck';
-import { AdifQsoLogDeck } from './components/AdifQsoLogDeck';
-import { TacticalScannerDeck } from './components/TacticalScannerDeck';
-import { NoaaEmergencyDeck } from './components/NoaaEmergencyDeck';
-import { BlackBoxRecorderDeck } from './components/BlackBoxRecorderDeck';
-import { LaboratorySignalDeck } from './components/LaboratorySignalDeck';
 import { MobileTacticalCockpit } from './components/MobileTacticalCockpit';
 import { FmRadioPlayerDeck } from './components/FmRadioPlayerDeck';
 import { AdifLogger } from './radio/adifLogger';
 import { ScanEngine, MemoryChannel } from './radio/scanEngine';
 import { BlackBoxRecorder } from './radio/blackBoxRecorder';
-import { CURRENT_VERSION } from './version';
-import {
-  Radio,
-  Cpu,
-  Music,
-  ListFilter,
-  ShieldAlert,
-  Zap,
-  Activity,
-  Sun,
-  BookOpen,
-  FastForward,
-  HardDrive,
-  Wrench,
-} from 'lucide-react';
+import { TacticalHeader } from './components/layout/TacticalHeader';
+import { CategoryTabBar, ViewTab } from './components/layout/CategoryTabBar';
+import { AnalogControlKnobs } from './components/layout/AnalogControlKnobs';
+import { HighwayDispatchDeck, TrafficLogEntry } from './components/layout/HighwayDispatchDeck';
 
-interface TrafficLogEntry {
-  id: string;
-  utcTime: string;
-  handle: string;
-  corridor: string;
-  channelLabel: string;
-  freqMhz: string;
-  mode: ModulationModeExtended;
-  rstOrSignal: string;
-  message: string;
-  isSelf?: boolean;
-}
+// Lazy-loaded heavy sub-decks with React Suspense
+const DigitalModesDeck = lazy(() =>
+  import('./components/DigitalModesDeck').then((m) => ({ default: m.DigitalModesDeck }))
+);
+const SolarPropagationDeck = lazy(() =>
+  import('./components/SolarPropagationDeck').then((m) => ({ default: m.SolarPropagationDeck }))
+);
+const AdifQsoLogDeck = lazy(() =>
+  import('./components/AdifQsoLogDeck').then((m) => ({ default: m.AdifQsoLogDeck }))
+);
+const TacticalScannerDeck = lazy(() =>
+  import('./components/TacticalScannerDeck').then((m) => ({ default: m.TacticalScannerDeck }))
+);
+const NoaaEmergencyDeck = lazy(() =>
+  import('./components/NoaaEmergencyDeck').then((m) => ({ default: m.NoaaEmergencyDeck }))
+);
+const LaboratorySignalDeck = lazy(() =>
+  import('./components/LaboratorySignalDeck').then((m) => ({ default: m.LaboratorySignalDeck }))
+);
+const BlackBoxRecorderDeck = lazy(() =>
+  import('./components/BlackBoxRecorderDeck').then((m) => ({ default: m.BlackBoxRecorderDeck }))
+);
+const RtlSdrControlPanel = lazy(() =>
+  import('./components/RtlSdrControlPanel').then((m) => ({ default: m.RtlSdrControlPanel }))
+);
+const RigControllerPanel = lazy(() =>
+  import('./components/RigControllerPanel').then((m) => ({ default: m.RigControllerPanel }))
+);
 
-export type ViewTab =
-  | 'VFO_SDR'
-  | 'FM_RADIO'
-  | 'SCANNER'
-  | 'NOAA_EAS'
-  | 'BLACK_BOX'
-  | 'LAB_SUITE'
-  | 'DIGITAL_MODES'
-  | 'PROPAGATION'
-  | 'ADIF_LOG'
-  | 'HARDWARE_RIG'
-  | 'INTERNET_RADIO'
-  | 'TRAFFIC_LOG';
+const DeckLoadingFallback: React.FC = () => (
+  <div className="p-8 text-center text-zinc-400 font-mono text-xs bg-black/40 rounded-xl border border-zinc-800 space-y-2">
+    <div className="animate-pulse text-amber-400 font-bold">TUNING DECK ENGINE...</div>
+    <div className="text-zinc-500">Loading module telemetry and digital processors</div>
+  </div>
+);
 
 export const App: React.FC = () => {
   // Navigation / View Tabs
   const [activeTab, setActiveTab] = useState<ViewTab>('VFO_SDR');
-
-  type WorkspaceCategory =
-    | 'TRANSCEIVER'
-    | 'FM_BROADCAST'
-    | 'SCAN_ALERTS'
-    | 'VOICE_AUDIO'
-    | 'DIGITAL_WX'
-    | 'HARDWARE_LAB';
-
-  const getCategoryForTab = (tab: ViewTab): WorkspaceCategory => {
-    switch (tab) {
-      case 'VFO_SDR':
-        return 'TRANSCEIVER';
-      case 'FM_RADIO':
-      case 'INTERNET_RADIO':
-        return 'FM_BROADCAST';
-      case 'SCANNER':
-      case 'NOAA_EAS':
-        return 'SCAN_ALERTS';
-      case 'BLACK_BOX':
-      case 'TRAFFIC_LOG':
-        return 'VOICE_AUDIO';
-      case 'DIGITAL_MODES':
-      case 'PROPAGATION':
-      case 'ADIF_LOG':
-        return 'DIGITAL_WX';
-      case 'HARDWARE_RIG':
-      case 'LAB_SUITE':
-        return 'HARDWARE_LAB';
-    }
-  };
-
-  const activeCategory = getCategoryForTab(activeTab);
 
   // Multi-Band VFO & Band Plan State (100 kHz - 1.75 GHz)
   const [currentBand, setCurrentBand] = useState<BandPlan>(() => MASTER_BAND_PLANS[0]);
@@ -151,7 +106,7 @@ export const App: React.FC = () => {
     stereoDetected: true,
   }));
 
-  // Classic CB Channel Selector Compatibility
+  // Operator Identification
   const [channel, setChannel] = useState<number>(19);
   const corridorId = 'I-80';
   const [operatorHandle, setOperatorHandle] = useState<string>('HESHRADIO-19');
@@ -358,9 +313,10 @@ export const App: React.FC = () => {
     ctcssToneHz,
     ctcssSquelchEnabled,
     cwBfoPitchHz,
+    scanEngine,
   ]);
 
-  // Frequency change handler (coordinates VFO A/B, RigController, RTL-SDR Bridge)
+  // Frequency Tuning Handler
   const handleFrequencyChange = useCallback(
     (newFreqMhz: number) => {
       setFrequencyMhz(newFreqMhz);
@@ -395,6 +351,7 @@ export const App: React.FC = () => {
     [activeVfo, currentBand]
   );
 
+  // Band Selection Handler
   const handleSelectBand = useCallback((band: BandPlan) => {
     setCurrentBand(band);
     setFrequencyMhz(band.centerFrequencyMhz);
@@ -417,6 +374,38 @@ export const App: React.FC = () => {
     }
   }, [activeVfo]);
 
+  // Mode Selection Handler
+  const handleModeChange = useCallback((newMode: ModulationModeExtended) => {
+    setMode(newMode);
+    if (rigControllerRef.current) {
+      rigControllerRef.current.setMode(newMode);
+    }
+  }, []);
+
+  // VFO Switcher Handler
+  const handleVfoSwitch = useCallback(() => {
+    const nextVfo = activeVfo === 'VFO_A' ? 'VFO_B' : 'VFO_A';
+    setActiveVfo(nextVfo);
+    const targetFreq = nextVfo === 'VFO_A' ? vfoAFreqMhz : vfoBFreqMhz;
+    setFrequencyMhz(targetFreq);
+    if (rigControllerRef.current) {
+      rigControllerRef.current.switchActiveVfo();
+    }
+  }, [activeVfo, vfoAFreqMhz, vfoBFreqMhz]);
+
+  // VFO Copy Handler (A->B or B->A)
+  const handleVfoCopy = useCallback(() => {
+    if (activeVfo === 'VFO_A') {
+      setVfoBFreqMhz(vfoAFreqMhz);
+    } else {
+      setVfoAFreqMhz(vfoBFreqMhz);
+    }
+    if (rigControllerRef.current) {
+      rigControllerRef.current.copyVfoAtoB();
+    }
+  }, [activeVfo, vfoAFreqMhz, vfoBFreqMhz]);
+
+  // Direct Tune from FM Directory to VFO
   const handleTuneFmToVfo = useCallback((targetFreqMhz: number) => {
     const fmBand =
       findBandPlanForFrequency(targetFreqMhz) ||
@@ -435,34 +424,6 @@ export const App: React.FC = () => {
       rigControllerRef.current.setMode('WFM');
     }
   }, []);
-
-  const handleModeChange = useCallback((newMode: ModulationModeExtended) => {
-    setMode(newMode);
-    if (rigControllerRef.current) {
-      rigControllerRef.current.setMode(newMode);
-    }
-  }, []);
-
-  const handleVfoSwitch = useCallback(() => {
-    const nextVfo = activeVfo === 'VFO_A' ? 'VFO_B' : 'VFO_A';
-    setActiveVfo(nextVfo);
-    const targetFreq = nextVfo === 'VFO_A' ? vfoAFreqMhz : vfoBFreqMhz;
-    setFrequencyMhz(targetFreq);
-    if (rigControllerRef.current) {
-      rigControllerRef.current.switchActiveVfo();
-    }
-  }, [activeVfo, vfoAFreqMhz, vfoBFreqMhz]);
-
-  const handleVfoCopy = useCallback(() => {
-    if (activeVfo === 'VFO_A') {
-      setVfoBFreqMhz(vfoAFreqMhz);
-    } else {
-      setVfoAFreqMhz(vfoBFreqMhz);
-    }
-    if (rigControllerRef.current) {
-      rigControllerRef.current.copyVfoAtoB();
-    }
-  }, [activeVfo, vfoAFreqMhz, vfoBFreqMhz]);
 
   // Fail-Safe PTT Start & Stop with Hardware TOT Watchdog
   const startPtt = useCallback(async () => {
@@ -488,7 +449,7 @@ export const App: React.FC = () => {
     pttStartTimestampRef.current = performance.now();
     setTotRemainingSec(180);
     setPttActive(true);
-  }, [pttActive, talkbackEnabled, mode, cwBfoPitchHz]);
+  }, [pttActive, talkbackEnabled, mode, cwBfoPitchHz, scanEngine]);
 
   const stopPtt = useCallback(
     (spokenOverride?: string) => {
@@ -568,6 +529,21 @@ export const App: React.FC = () => {
     stopPtt('[PANIC UNKEY ARMED]');
   }, [stopPtt]);
 
+  // TOT (Time-Out-Timer) Watchdog Loop
+  useEffect(() => {
+    if (!pttActive) return;
+    const interval = window.setInterval(() => {
+      const elapsedSec = Math.floor((performance.now() - pttStartTimestampRef.current) / 1000);
+      const remaining = Math.max(0, 180 - elapsedSec);
+      setTotRemainingSec(remaining);
+      if (remaining === 0) {
+        console.warn('[TOT Watchdog] 180s Time-Out Exceeded! Fail-safe unkey.');
+        stopPtt('[TOT 180s TIMEOUT]');
+      }
+    }, 250);
+    return () => window.clearInterval(interval);
+  }, [pttActive, stopPtt]);
+
   // Digital Mode Modem Audio Transmit & Hardware CAT PTT Automation
   const handleTransmitDigitalAudio = useCallback(async (samples: Float32Array) => {
     if (!dspRef.current) return;
@@ -596,7 +572,7 @@ export const App: React.FC = () => {
     }
   }, []);
 
-  // Automatic ADIF 3.1.4 Logging from Digital Modes Suite
+  // Automatic ADIF 3.1.4 Logging
   const handleLogDigitalQso = useCallback((contact: { call: string; band: string; freq: string; mode: string; rst: string; grid: string }) => {
     const logger = new AdifLogger();
     const now = new Date();
@@ -614,30 +590,44 @@ export const App: React.FC = () => {
       gridSquare: contact.grid,
       myGridSquare,
       operator: operatorHandle,
-      comment: 'Logged from HeshRadio Digital Modes Suite',
+      comment: 'Logged from HeshRadio Tactical Suite',
     });
   }, [myGridSquare, operatorHandle]);
 
+  // One-click Promote Highway Dispatch Spot to ADIF
+  const handlePromoteSpotToAdif = useCallback((spot: TrafficLogEntry) => {
+    const band = frequencyMhz < 30 ? (frequencyMhz < 28 ? '11m' : '10m') : frequencyMhz < 150 ? '2m' : '70cm';
+    handleLogDigitalQso({
+      call: spot.handle,
+      band,
+      freq: spot.freqMhz,
+      mode: spot.mode,
+      rst: spot.rstOrSignal.includes('S') ? '59' : '599',
+      grid: myGridSquare,
+    });
+    alert(`Logged spot from "${spot.handle}" at ${spot.freqMhz} MHz to ADIF Logbook!`);
+  }, [frequencyMhz, handleLogDigitalQso, myGridSquare]);
+
   // Memory Channel Quick Tuning
-  const handleTuneMemoryChannel = useCallback((channel: MemoryChannel) => {
-    handleFrequencyChange(channel.frequencyMhz);
-    setMode(channel.mode);
-    if (channel.ctcssToneHz) {
-      setCtcssToneHz(channel.ctcssToneHz);
+  const handleTuneMemoryChannel = useCallback((ch: MemoryChannel) => {
+    handleFrequencyChange(ch.frequencyMhz);
+    setMode(ch.mode);
+    if (ch.ctcssToneHz) {
+      setCtcssToneHz(ch.ctcssToneHz);
       setCtcssSquelchEnabled(true);
     } else {
       setCtcssToneHz(null);
       setCtcssSquelchEnabled(false);
     }
-    if (channel.repeaterOffsetMhz !== 0) {
-      setRepeaterOffsetMhz(Math.abs(channel.repeaterOffsetMhz));
-      setRepeaterOffsetMode(channel.repeaterOffsetMhz > 0 ? 'PLUS_OFFSET' : 'MINUS_OFFSET');
+    if (ch.repeaterOffsetMhz !== 0) {
+      setRepeaterOffsetMhz(Math.abs(ch.repeaterOffsetMhz));
+      setRepeaterOffsetMode(ch.repeaterOffsetMhz > 0 ? 'PLUS_OFFSET' : 'MINUS_OFFSET');
     } else {
       setRepeaterOffsetMode('SIMPLEX');
     }
   }, [handleFrequencyChange]);
 
-  // Audio Buffer Playback Handler (for Replay, NOAA EAS, and Laboratory Suite)
+  // Audio Buffer Playback Handler
   const handlePlayBufferAudio = useCallback(async (samples: Float32Array) => {
     if (!dspRef.current) return;
     try {
@@ -663,17 +653,13 @@ export const App: React.FC = () => {
   // Spacebar Push-To-Talk
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
-      const tag = (e.target as HTMLElement)?.tagName;
-      if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
-      if (e.code === 'Space' && !e.repeat) {
+      if (e.code === 'Space' && !e.repeat && !(e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement)) {
         e.preventDefault();
         startPtt();
       }
     };
     const onKeyUp = (e: KeyboardEvent) => {
-      const tag = (e.target as HTMLElement)?.tagName;
-      if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
-      if (e.code === 'Space') {
+      if (e.code === 'Space' && !(e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement)) {
         e.preventDefault();
         stopPtt();
       }
@@ -686,367 +672,68 @@ export const App: React.FC = () => {
     };
   }, [startPtt, stopPtt]);
 
+  // Quick Dispatch Spot Submission
+  const handleSendQuickSpot = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!quickMessage.trim()) return;
+    const textToSend = quickMessage.trim();
+    setQuickMessage('');
+    if (dspRef.current) {
+      await dspRef.current.initAudioContext();
+      dspRef.current.playRogerBeepAndSquelchTail(rogerBeep, masterVolume);
+    }
+    const entry: TrafficLogEntry = {
+      id: 'msg-' + Date.now(),
+      utcTime: new Date().toISOString().slice(11, 19) + 'Z',
+      handle: operatorHandle,
+      corridor: HIGHWAY_CORRIDORS.find((c) => c.id === corridorId)?.code || 'I-80 TRANSCON',
+      channelLabel: `${frequencyMhz.toFixed(3)} MHz`,
+      freqMhz: frequencyMhz.toFixed(3),
+      mode,
+      rstOrSignal: 'TX 4.0W',
+      message: textToSend,
+      isSelf: true,
+    };
+    setTrafficLog((prev) => [entry, ...prev.slice(0, 39)]);
+    if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
+      wsRef.current.send(
+        JSON.stringify({
+          type: 'CB_TRANSMISSION',
+          handle: operatorHandle,
+          corridor: entry.corridor,
+          channel,
+          freqMhz: frequencyMhz.toFixed(3),
+          mode,
+          text: textToSend,
+        })
+      );
+    }
+  };
+
   return (
     <div className="heshradio-shell">
       {/* 1. TOP TACTICAL TELEMETRY HEADER */}
-      <header className="top-telemetry-bar">
-        <div className="brand-cluster">
-          <div className={`tx-rx-beacon ${pttActive ? 'tx' : squelchOpen ? 'rx-open' : 'rx-stby'}`}>
-            {pttActive ? 'TX ON AIR' : squelchOpen ? (activeRxHandle ? `RX: ${activeRxHandle}` : 'RX SQUELCH OPEN') : 'RX GUARD'}
-          </div>
-          <div>
-            <div className="flex items-center gap-2">
-              <h1 className="app-logo">HESHRADIO</h1>
-              <span className="px-3.5 py-1.5 rounded-lg text-[10px] font-mono font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40 tracking-wider shadow-sm">
-                {CURRENT_VERSION}
-              </span>
-            </div>
-            <div className="app-subtitle">
-              WIDEBAND SDR (100kHz–1.75GHz) • RTL-SDR USB BRIDGE • CAT RIG CONTROLLER • AUTO-DUCKING
-            </div>
-          </div>
-        </div>
-
-        {/* Global Tactical Header Pills */}
-        <div className="header-telemetry-pills">
-          <div className="telemetry-pill">
-            <span className="pill-label">OPERATOR CALL / HANDLE</span>
-            <input
-              type="text"
-              value={operatorHandle}
-              onChange={(e) => setOperatorHandle(e.target.value.toUpperCase())}
-              className="handle-input font-mono font-bold"
-              aria-label="Operator Call or Handle"
-            />
-          </div>
-
-          <div className="telemetry-pill">
-            <span className="pill-label">HARDWARE SDR</span>
-            <span
-              className={`pill-value font-bold ${
-                sdrStatus.connected ? 'text-emerald-400' : 'text-amber-400'
-              }`}
-            >
-              {sdrStatus.mode === 'WEBUSB'
-                ? 'RTL-SDR USB'
-                : sdrStatus.mode === 'RTL_TCP'
-                ? 'RTL_TCP NET'
-                : 'SIMULATED / WebSDR'}
-            </span>
-          </div>
-
-          <div className="telemetry-pill">
-            <span className="pill-label">CAT RIG CONTROL</span>
-            <span
-              className={`pill-value font-bold ${
-                rigStatus.connected ? 'text-emerald-400' : 'text-zinc-500'
-              }`}
-            >
-              {rigStatus.connected ? rigStatus.protocol : 'DIRECT SDR'}
-            </span>
-          </div>
-
-          <div className="telemetry-pill">
-            <span className="pill-label">UTC CLOCK</span>
-            <span className="pill-value">{utcClock}</span>
-          </div>
-
-          {/* Emergency Panic Unkey Button */}
-          <button
-            type="button"
-            onClick={triggerPanicUnkey}
-            className="px-3.5 py-2 bg-gradient-to-b from-red-600 to-red-800 hover:from-red-500 hover:to-red-700 text-white border border-red-500/60 rounded-lg text-xs font-mono font-bold flex items-center gap-2 shadow-lg shadow-red-950/60 active:scale-95 transition-all cursor-pointer"
-            title="Immediate Fail-Safe Panic Unkey"
-          >
-            <Zap className="w-3.5 h-3.5 text-red-200 animate-pulse shrink-0" /> PANIC UNKEY
-          </button>
-        </div>
-      </header>
+      <TacticalHeader
+        pttActive={pttActive}
+        squelchOpen={squelchOpen}
+        activeRxHandle={activeRxHandle}
+        operatorHandle={operatorHandle}
+        onOperatorHandleChange={setOperatorHandle}
+        sdrStatus={sdrStatus}
+        rigStatus={rigStatus}
+        utcClock={utcClock}
+        onPanicUnkey={triggerPanicUnkey}
+      />
 
       {/* 2. MODERN 2-TIER WORKSPACE NAVIGATION */}
-      <nav className="panel nav-panel flex flex-col gap-2.5" aria-label="Tactical Workspace Navigation">
-        {/* Tier 1: 5 Clean Segmented Workspaces */}
-        <div className="flex flex-wrap items-center justify-between gap-2">
-          <div className="flex flex-wrap items-center gap-2">
-            {/* 1. TRANSCEIVER */}
-            <button
-              type="button"
-              onClick={() => setActiveTab('VFO_SDR')}
-              className={`px-4 py-2.5 rounded-lg text-xs font-mono font-bold flex items-center gap-2.5 transition-all duration-150 cursor-pointer select-none border active:scale-[0.98] ${
-                activeCategory === 'TRANSCEIVER'
-                  ? 'bg-gradient-to-b from-amber-500/25 to-amber-600/10 text-amber-300 border-amber-500/60 shadow-lg shadow-amber-500/15'
-                  : 'bg-zinc-900/60 text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/70 border-zinc-800/80'
-              }`}
-            >
-              <Radio className={`w-3.5 h-3.5 shrink-0 ${activeCategory === 'TRANSCEIVER' ? 'text-amber-400 animate-pulse' : 'text-zinc-500'}`} />
-              <span>TRANSCEIVER</span>
-            </button>
-
-            {/* 2. FM BROADCAST */}
-            <button
-              type="button"
-              onClick={() => {
-                if (activeTab !== 'FM_RADIO' && activeTab !== 'INTERNET_RADIO') {
-                  setActiveTab('FM_RADIO');
-                }
-              }}
-              className={`px-4 py-2.5 rounded-lg text-xs font-mono font-bold flex items-center gap-2.5 transition-all duration-150 cursor-pointer select-none border active:scale-[0.98] ${
-                activeCategory === 'FM_BROADCAST'
-                  ? 'bg-gradient-to-b from-pink-500/25 to-pink-600/10 text-pink-300 border-pink-500/60 shadow-lg shadow-pink-500/15'
-                  : 'bg-zinc-900/60 text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/70 border-zinc-800/80'
-              }`}
-            >
-              <Music className={`w-3.5 h-3.5 shrink-0 ${activeCategory === 'FM_BROADCAST' ? 'text-pink-400 animate-pulse' : 'text-zinc-500'}`} />
-              <span>FM BROADCAST</span>
-            </button>
-
-            {/* 3. SCAN & ALERTS */}
-            <button
-              type="button"
-              onClick={() => {
-                if (activeTab !== 'SCANNER' && activeTab !== 'NOAA_EAS') {
-                  setActiveTab('SCANNER');
-                }
-              }}
-              className={`px-4 py-2.5 rounded-lg text-xs font-mono font-bold flex items-center gap-2.5 transition-all duration-150 cursor-pointer select-none border active:scale-[0.98] ${
-                activeCategory === 'SCAN_ALERTS'
-                  ? 'bg-gradient-to-b from-emerald-500/25 to-emerald-600/10 text-emerald-300 border-emerald-500/60 shadow-lg shadow-emerald-500/15'
-                  : 'bg-zinc-900/60 text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/70 border-zinc-800/80'
-              }`}
-            >
-              <FastForward className={`w-3.5 h-3.5 shrink-0 ${activeCategory === 'SCAN_ALERTS' ? 'text-emerald-400' : 'text-zinc-500'}`} />
-              <span>SCAN &amp; ALERTS</span>
-            </button>
-
-            {/* 4. VOICE & SPOTS */}
-            <button
-              type="button"
-              onClick={() => {
-                if (activeTab !== 'BLACK_BOX' && activeTab !== 'TRAFFIC_LOG') {
-                  setActiveTab('BLACK_BOX');
-                }
-              }}
-              className={`px-4 py-2.5 rounded-lg text-xs font-mono font-bold flex items-center gap-2.5 transition-all duration-150 cursor-pointer select-none border active:scale-[0.98] ${
-                activeCategory === 'VOICE_AUDIO'
-                  ? 'bg-gradient-to-b from-orange-500/25 to-orange-600/10 text-orange-300 border-orange-500/60 shadow-lg shadow-orange-500/15'
-                  : 'bg-zinc-900/60 text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/70 border-zinc-800/80'
-              }`}
-            >
-              <HardDrive className={`w-3.5 h-3.5 shrink-0 ${activeCategory === 'VOICE_AUDIO' ? 'text-orange-400' : 'text-zinc-500'}`} />
-              <span>VOICE &amp; SPOTS</span>
-            </button>
-
-            {/* 4. DIGITAL MODES */}
-            <button
-              type="button"
-              onClick={() => {
-                if (activeTab !== 'DIGITAL_MODES' && activeTab !== 'PROPAGATION' && activeTab !== 'ADIF_LOG') {
-                  setActiveTab('DIGITAL_MODES');
-                }
-              }}
-              className={`px-4 py-2.5 rounded-lg text-xs font-mono font-bold flex items-center gap-2.5 transition-all duration-150 cursor-pointer select-none border active:scale-[0.98] ${
-                activeCategory === 'DIGITAL_WX'
-                  ? 'bg-gradient-to-b from-purple-500/25 to-purple-600/10 text-purple-300 border-purple-500/60 shadow-lg shadow-purple-500/15'
-                  : 'bg-zinc-900/60 text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/70 border-zinc-800/80'
-              }`}
-            >
-              <Activity className={`w-3.5 h-3.5 shrink-0 ${activeCategory === 'DIGITAL_WX' ? 'text-purple-400' : 'text-zinc-500'}`} />
-              <span>DIGITAL MODES</span>
-            </button>
-
-            {/* 5. RIG & LAB */}
-            <button
-              type="button"
-              onClick={() => {
-                if (activeTab !== 'HARDWARE_RIG' && activeTab !== 'LAB_SUITE') {
-                  setActiveTab('HARDWARE_RIG');
-                }
-              }}
-              className={`px-4 py-2.5 rounded-lg text-xs font-mono font-bold flex items-center gap-2.5 transition-all duration-150 cursor-pointer select-none border active:scale-[0.98] ${
-                activeCategory === 'HARDWARE_LAB'
-                  ? 'bg-gradient-to-b from-cyan-500/25 to-cyan-600/10 text-cyan-300 border-cyan-500/60 shadow-lg shadow-cyan-500/15'
-                  : 'bg-zinc-900/60 text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/70 border-zinc-800/80'
-              }`}
-            >
-              <Cpu className={`w-3.5 h-3.5 shrink-0 ${activeCategory === 'HARDWARE_LAB' ? 'text-cyan-400' : 'text-zinc-500'}`} />
-              <span>RIG &amp; LAB</span>
-            </button>
-          </div>
-
-          <div className="flex items-center gap-2 text-xs font-mono text-zinc-400">
-            <span className="text-zinc-500">IARU S9 REF:</span>
-            <span className="text-amber-400 font-bold bg-amber-950/40 border border-amber-800/40 px-3.5 py-2 rounded-lg">
-              {frequencyMhz > 30 ? '-93 dBm (VHF/UHF)' : '-73 dBm (HF)'}
-            </span>
-          </div>
-        </div>
-
-        {/* Tier 2: Sleek Sub-Tabs (Clean, Spacious, Never Touching Borders) */}
-        <div className="flex flex-wrap items-center gap-2.5 pt-2.5 border-t border-zinc-800/60">
-          {activeCategory === 'TRANSCEIVER' && (
-            <div className="flex flex-wrap items-center gap-2.5 text-xs font-mono">
-              <span className="px-4.5 py-2.5 rounded-lg bg-amber-500 text-black font-bold flex items-center gap-2 shadow-sm">
-                <Radio className="w-3.5 h-3.5 shrink-0" /> VFO &amp; 120Hz WATERFALL
-              </span>
-              <span className="text-zinc-400 text-xs px-3.5 py-2 bg-zinc-900/60 rounded-lg border border-zinc-800">
-                Tuned: <strong className="text-amber-300">{frequencyMhz.toFixed(4)} MHz</strong> ({mode}) • <span className="text-zinc-300">{currentBand.name}</span>
-              </span>
-            </div>
-          )}
-
-          {activeCategory === 'FM_BROADCAST' && (
-            <div className="flex flex-wrap items-center gap-2.5 text-xs font-mono">
-              <button
-                type="button"
-                onClick={() => setActiveTab('FM_RADIO')}
-                className={`px-4.5 py-2.5 rounded-lg font-bold flex items-center gap-2.5 transition-all cursor-pointer border ${
-                  activeTab === 'FM_RADIO'
-                    ? 'bg-pink-500 text-black border-pink-400 shadow-md shadow-pink-500/30'
-                    : 'bg-zinc-800/90 text-zinc-400 hover:text-zinc-200 border-zinc-700 hover:bg-zinc-700'
-                }`}
-              >
-                <Radio className="w-3.5 h-3.5 shrink-0" /> FM RADIO TUNER (87.5 – 108.0 MHz)
-              </button>
-
-              <button
-                type="button"
-                onClick={() => setActiveTab('INTERNET_RADIO')}
-                className={`px-4.5 py-2.5 rounded-lg font-bold flex items-center gap-2.5 transition-all cursor-pointer border ${
-                  activeTab === 'INTERNET_RADIO'
-                    ? 'bg-emerald-500 text-black border-emerald-400 shadow-md shadow-emerald-500/30'
-                    : 'bg-zinc-800/90 text-zinc-400 hover:text-zinc-200 border-zinc-700 hover:bg-zinc-700'
-                }`}
-              >
-                <Music className="w-3.5 h-3.5 shrink-0" /> TRUCKER WEB STREAMS (AUTO-DUCKER)
-              </button>
-            </div>
-          )}
-
-          {activeCategory === 'SCAN_ALERTS' && (
-            <div className="flex flex-wrap items-center gap-2.5 text-xs font-mono">
-              <button
-                type="button"
-                onClick={() => setActiveTab('SCANNER')}
-                className={`px-4.5 py-2.5 rounded-lg font-bold flex items-center gap-2.5 transition-all cursor-pointer border ${
-                  activeTab === 'SCANNER'
-                    ? 'bg-emerald-500 text-black border-emerald-400 shadow-md shadow-emerald-500/30'
-                    : 'bg-zinc-800/90 text-zinc-400 hover:text-zinc-200 border-zinc-700 hover:bg-zinc-700'
-                }`}
-              >
-                <FastForward className="w-3.5 h-3.5 shrink-0" /> TACTICAL SCANNER (100 ch/s)
-              </button>
-
-              <button
-                type="button"
-                onClick={() => setActiveTab('NOAA_EAS')}
-                className={`px-4.5 py-2.5 rounded-lg font-bold flex items-center gap-2.5 transition-all cursor-pointer border ${
-                  activeTab === 'NOAA_EAS'
-                    ? 'bg-red-500 text-white border-red-400 shadow-md shadow-red-500/30'
-                    : 'bg-zinc-800/90 text-zinc-400 hover:text-zinc-200 border-zinc-700 hover:bg-zinc-700'
-                }`}
-              >
-                <ShieldAlert className="w-3.5 h-3.5 shrink-0" /> NOAA EAS SAME ALERTS
-              </button>
-            </div>
-          )}
-
-          {activeCategory === 'VOICE_AUDIO' && (
-            <div className="flex flex-wrap items-center gap-2.5 text-xs font-mono">
-              <button
-                type="button"
-                onClick={() => setActiveTab('BLACK_BOX')}
-                className={`px-4.5 py-2.5 rounded-lg font-bold flex items-center gap-2.5 transition-all cursor-pointer border ${
-                  activeTab === 'BLACK_BOX'
-                    ? 'bg-orange-500 text-black border-orange-400 shadow-md shadow-orange-500/30'
-                    : 'bg-zinc-800/90 text-zinc-400 hover:text-zinc-200 border-zinc-700 hover:bg-zinc-700'
-                }`}
-              >
-                <HardDrive className="w-3.5 h-3.5 shrink-0" /> 60s BLACK BOX REPLAY
-              </button>
-
-              <button
-                type="button"
-                onClick={() => setActiveTab('TRAFFIC_LOG')}
-                className={`px-4.5 py-2.5 rounded-lg font-bold flex items-center gap-2.5 transition-all cursor-pointer border ${
-                  activeTab === 'TRAFFIC_LOG'
-                    ? 'bg-amber-500 text-black border-amber-400 shadow-md shadow-amber-500/30'
-                    : 'bg-zinc-800/90 text-zinc-400 hover:text-zinc-200 border-zinc-700 hover:bg-zinc-700'
-                }`}
-              >
-                <ListFilter className="w-3.5 h-3.5 shrink-0" /> HIGHWAY SPOTS ({trafficLog.length})
-              </button>
-            </div>
-          )}
-
-          {activeCategory === 'DIGITAL_WX' && (
-            <div className="flex flex-wrap items-center gap-2.5 text-xs font-mono">
-              <button
-                type="button"
-                onClick={() => setActiveTab('DIGITAL_MODES')}
-                className={`px-4.5 py-2.5 rounded-lg font-bold flex items-center gap-2.5 transition-all cursor-pointer border ${
-                  activeTab === 'DIGITAL_MODES'
-                    ? 'bg-purple-500 text-white border-purple-400 shadow-md shadow-purple-500/30'
-                    : 'bg-zinc-800/90 text-zinc-400 hover:text-zinc-200 border-zinc-700 hover:bg-zinc-700'
-                }`}
-              >
-                <Activity className="w-3.5 h-3.5 shrink-0" /> APRS / FT8 / SSTV
-              </button>
-
-              <button
-                type="button"
-                onClick={() => setActiveTab('PROPAGATION')}
-                className={`px-4.5 py-2.5 rounded-lg font-bold flex items-center gap-2.5 transition-all cursor-pointer border ${
-                  activeTab === 'PROPAGATION'
-                    ? 'bg-yellow-500 text-black border-yellow-400 shadow-md shadow-yellow-500/30'
-                    : 'bg-zinc-800/90 text-zinc-400 hover:text-zinc-200 border-zinc-700 hover:bg-zinc-700'
-                }`}
-              >
-                <Sun className="w-3.5 h-3.5 shrink-0" /> SOLAR WX &amp; GREYLINE
-              </button>
-
-              <button
-                type="button"
-                onClick={() => setActiveTab('ADIF_LOG')}
-                className={`px-4.5 py-2.5 rounded-lg font-bold flex items-center gap-2.5 transition-all cursor-pointer border ${
-                  activeTab === 'ADIF_LOG'
-                    ? 'bg-blue-500 text-white border-blue-400 shadow-md shadow-blue-500/30'
-                    : 'bg-zinc-800/90 text-zinc-400 hover:text-zinc-200 border-zinc-700 hover:bg-zinc-700'
-                }`}
-              >
-                <BookOpen className="w-3.5 h-3.5 shrink-0" /> ADIF 3.1.4 LOGBOOK
-              </button>
-            </div>
-          )}
-
-          {activeCategory === 'HARDWARE_LAB' && (
-            <div className="flex flex-wrap items-center gap-2.5 text-xs font-mono">
-              <button
-                type="button"
-                onClick={() => setActiveTab('HARDWARE_RIG')}
-                className={`px-4.5 py-2.5 rounded-lg font-bold flex items-center gap-2.5 transition-all cursor-pointer border ${
-                  activeTab === 'HARDWARE_RIG'
-                    ? 'bg-cyan-500 text-black border-cyan-400 shadow-md shadow-cyan-500/30'
-                    : 'bg-zinc-800/90 text-zinc-400 hover:text-zinc-200 border-zinc-700 hover:bg-zinc-700'
-                }`}
-              >
-                <Cpu className="w-3.5 h-3.5 shrink-0" /> RTL-SDR &amp; CAT RIG CONTROLLER
-              </button>
-
-              <button
-                type="button"
-                onClick={() => setActiveTab('LAB_SUITE')}
-                className={`px-4.5 py-2.5 rounded-lg font-bold flex items-center gap-2.5 transition-all cursor-pointer border ${
-                  activeTab === 'LAB_SUITE'
-                    ? 'bg-teal-500 text-black border-teal-400 shadow-md shadow-teal-500/30'
-                    : 'bg-zinc-800/90 text-zinc-400 hover:text-zinc-200 border-zinc-700 hover:bg-zinc-700'
-                }`}
-              >
-                <Wrench className="w-3.5 h-3.5 shrink-0" /> CALIBRATION &amp; SIGNAL LAB
-              </button>
-            </div>
-          )}
-        </div>
-      </nav>
+      <CategoryTabBar
+        activeTab={activeTab}
+        onSelectTab={setActiveTab}
+        frequencyMhz={frequencyMhz}
+        mode={mode}
+        currentBandName={currentBand.name}
+        trafficSpotsCount={trafficLog.length}
+      />
 
       {/* 3. MAIN WORKSPACE CONTENT */}
       <main className="flex flex-col gap-4">
@@ -1179,82 +866,107 @@ export const App: React.FC = () => {
           </div>
         )}
 
+        {/* TAB: FM & ONLINE RADIO PLAYER */}
+        {activeTab === 'FM_RADIO' && (
+          <FmRadioPlayerDeck
+            duckGain={duckGain}
+            autoDuckEnabled={autoDuckEnabled}
+            onToggleAutoDuck={() => setAutoDuckEnabled((v) => !v)}
+            onTuneTransceiverVfo={handleTuneFmToVfo}
+          />
+        )}
+
         {/* TAB: TACTICAL HIGH-SPEED SCANNER & MEMORY BANKS */}
         {activeTab === 'SCANNER' && (
-          <TacticalScannerDeck
-            scanEngine={scanEngine}
-            currentFreqMhz={frequencyMhz}
-            onTuneChannel={handleTuneMemoryChannel}
-          />
+          <Suspense fallback={<DeckLoadingFallback />}>
+            <TacticalScannerDeck
+              scanEngine={scanEngine}
+              currentFreqMhz={frequencyMhz}
+              onTuneChannel={handleTuneMemoryChannel}
+            />
+          </Suspense>
         )}
 
         {/* TAB: NOAA WEATHER ALL-HAZARDS & EAS SAME DECODER */}
         {activeTab === 'NOAA_EAS' && (
-          <NoaaEmergencyDeck
-            onTransmitAudio={handlePlayBufferAudio}
-            onTuneNoaaChannel={(freq) => handleFrequencyChange(freq)}
-          />
+          <Suspense fallback={<DeckLoadingFallback />}>
+            <NoaaEmergencyDeck
+              onTransmitAudio={handlePlayBufferAudio}
+              onTuneNoaaChannel={(freq) => handleFrequencyChange(freq)}
+            />
+          </Suspense>
         )}
 
         {/* TAB: COCKPIT BLACK BOX RECORDER & INSTANT REPLAY */}
         {activeTab === 'BLACK_BOX' && (
-          <BlackBoxRecorderDeck
-            recorder={blackBoxRef.current}
-            onPlayBuffer={handlePlayBufferAudio}
-          />
+          <Suspense fallback={<DeckLoadingFallback />}>
+            <BlackBoxRecorderDeck
+              recorder={blackBoxRef.current}
+              onPlayBuffer={handlePlayBufferAudio}
+            />
+          </Suspense>
         )}
 
         {/* TAB: RF & AUDIO LABORATORY CALIBRATION SUITE */}
         {activeTab === 'LAB_SUITE' && (
-          <LaboratorySignalDeck
-            onPlayBuffer={handlePlayBufferAudio}
-          />
+          <Suspense fallback={<DeckLoadingFallback />}>
+            <LaboratorySignalDeck
+              onPlayBuffer={handlePlayBufferAudio}
+            />
+          </Suspense>
         )}
 
         {/* TAB: DIGITAL MODES (APRS / FT8 / SSTV) */}
         {activeTab === 'DIGITAL_MODES' && (
-          <DigitalModesDeck
-            myCallsign={operatorHandle}
-            myGridSquare={myGridSquare}
-            currentFreqMhz={frequencyMhz}
-            onTransmitAudio={handleTransmitDigitalAudio}
-            onLogQso={handleLogDigitalQso}
-          />
+          <Suspense fallback={<DeckLoadingFallback />}>
+            <DigitalModesDeck
+              myCallsign={operatorHandle}
+              myGridSquare={myGridSquare}
+              currentFreqMhz={frequencyMhz}
+              onTransmitAudio={handleTransmitDigitalAudio}
+              onLogQso={handleLogDigitalQso}
+            />
+          </Suspense>
         )}
 
         {/* TAB: SPACE WEATHER & IONOSPHERIC PROPAGATION */}
         {activeTab === 'PROPAGATION' && (
-          <SolarPropagationDeck
-            myGridSquare={myGridSquare}
-            onMyGridChange={setMyGridSquare}
-          />
+          <Suspense fallback={<DeckLoadingFallback />}>
+            <SolarPropagationDeck
+              myGridSquare={myGridSquare}
+              onMyGridChange={setMyGridSquare}
+            />
+          </Suspense>
         )}
 
         {/* TAB: ADIF 3.1.4 ELECTRONIC QSO LOGBOOK */}
         {activeTab === 'ADIF_LOG' && (
-          <AdifQsoLogDeck
-            currentFreqMhz={frequencyMhz}
-            currentMode={mode}
-            myGridSquare={myGridSquare}
-            operatorHandle={operatorHandle}
-          />
+          <Suspense fallback={<DeckLoadingFallback />}>
+            <AdifQsoLogDeck
+              currentFreqMhz={frequencyMhz}
+              currentMode={mode}
+              myGridSquare={myGridSquare}
+              operatorHandle={operatorHandle}
+            />
+          </Suspense>
         )}
 
-        {/* TAB 2: HARDWARE RTL-SDR & RIG CONTROLLER */}
+        {/* TAB: HARDWARE RTL-SDR & RIG CONTROLLER */}
         {activeTab === 'HARDWARE_RIG' && (
           <div className="flex flex-col gap-4">
-            <RtlSdrControlPanel
-              sdrBridge={sdrBridgeRef.current!}
-              sdrStatus={sdrStatus}
-              onStatusChange={setSdrStatus}
-            />
-
-            <RigControllerPanel
-              rigController={rigControllerRef.current!}
-              rigStatus={rigStatus}
-              onStatusChange={setRigStatus}
-              onPanicUnkey={triggerPanicUnkey}
-            />
+            <Suspense fallback={<DeckLoadingFallback />}>
+              <RtlSdrControlPanel
+                sdrBridge={sdrBridgeRef.current!}
+                sdrStatus={sdrStatus}
+                onStatusChange={setSdrStatus}
+              />
+              <RigControllerPanel
+                rigController={rigControllerRef.current!}
+                rigStatus={rigStatus}
+                onStatusChange={setRigStatus}
+                onPanicUnkey={triggerPanicUnkey}
+              />
+            </Suspense>
 
             {/* Hardware Interface Reference Diagram */}
             <section className="panel hardware-ref-panel font-mono text-xs text-zinc-300 space-y-2" aria-label="Hardware Wiring Reference">
@@ -1266,19 +978,19 @@ export const App: React.FC = () => {
                 <span className="badge-mono">WINDOWS &amp; ANDROID USB-OTG</span>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-[11px] text-zinc-400 pt-1">
-                <div className="p-3 bg-black/40 rounded-xl border border-zinc-800/80">
+                <div className="p-3.5 bg-black/40 rounded-xl border border-zinc-800/80">
                   <div className="text-zinc-200 font-bold mb-1">RTL-SDR V4 / V3 Dongle</div>
                   <div>• Windows: Plug into any USB 2.0/3.0 port (Direct WebUSB pairing in Chrome/Edge).</div>
                   <div>• Android (Samsung S26 Ultra): USB-C OTG cable; direct device descriptor.</div>
                   <div>• Sample Rate: 2.048 MS/s zero-drop baseband.</div>
                 </div>
-                <div className="p-3 bg-black/40 rounded-xl border border-zinc-800/80">
+                <div className="p-3.5 bg-black/40 rounded-xl border border-zinc-800/80">
                   <div className="text-zinc-200 font-bold mb-1">Digirig Mobile &amp; SignaLink</div>
                   <div>• PTT Keying: Serial RTS pin high on TX, low on RX.</div>
                   <div>• Audio: 300–3000 Hz USB soundcard with 4:1 soft-knee Dynamike compressor.</div>
                   <div>• CM108 GPIO3: Hardware pin 13 bit 2 toggle for zero-VOX latency.</div>
                 </div>
-                <div className="p-3 bg-black/40 rounded-xl border border-zinc-800/80">
+                <div className="p-3.5 bg-black/40 rounded-xl border border-zinc-800/80">
                   <div className="text-zinc-200 font-bold mb-1">Hamlib rigctld &amp; CAT</div>
                   <div>• Default rigctld TCP: 127.0.0.1:4532 via embedded bridge.</div>
                   <div>• Kenwood/Elecraft/Xiegu: 38400 baud, 8N1 ASCII FA;/MD;/TX;.</div>
@@ -1289,230 +1001,30 @@ export const App: React.FC = () => {
           </div>
         )}
 
-        {/* TAB: FM BROADCAST RADIO PLAYER */}
-        {activeTab === 'FM_RADIO' && (
-          <FmRadioPlayerDeck
-            duckGain={duckGain}
-            autoDuckEnabled={autoDuckEnabled}
-            onToggleAutoDuck={() => setAutoDuckEnabled((v) => !v)}
-            onTuneTransceiverVfo={handleTuneFmToVfo}
+        {/* TAB: HIGHWAY QSO & TRAFFIC LOG */}
+        {activeTab === 'TRAFFIC_LOG' && (
+          <HighwayDispatchDeck
+            trafficLog={trafficLog}
+            quickMessage={quickMessage}
+            onQuickMessageChange={setQuickMessage}
+            onSendSpot={handleSendQuickSpot}
+            frequencyMhz={frequencyMhz}
+            mode={mode}
+            onLogQso={handlePromoteSpotToAdif}
           />
         )}
 
-        {/* TAB 3: INTERNET RADIO AUTO-DUCKER */}
-        {activeTab === 'INTERNET_RADIO' && (
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
-            <div className="lg:col-span-8">
-              <InternetRadioDeck
-                duckGain={duckGain}
-                autoDuckEnabled={autoDuckEnabled}
-                onToggleAutoDuck={() => setAutoDuckEnabled((v) => !v)}
-                currentCbChannel={channel}
-                currentFreqMhz={frequencyMhz}
-              />
-            </div>
-            <section className="panel sidechain-panel lg:col-span-4 space-y-3 font-mono text-xs" aria-label="Auto-Ducking Sidechain Specs">
-              <div className="panel-header">
-                <div className="panel-title-group">
-                  <span className="status-led led-emerald" />
-                  <h2 className="panel-title">AUTO-DUCKING SIDECHAIN SPECS</h2>
-                </div>
-                <span className="badge-mono">-18 dB RF PRIORITY</span>
-              </div>
-              <p className="text-zinc-400 text-[11px] leading-relaxed">
-                When active RF voice is detected (carrier squelch breaks threshold or PTT is held),
-                the background Internet Radio stream automatically ducks by -18 dB (gain 0.125) within
-                15 ms.
-              </p>
-              <p className="text-zinc-400 text-[11px] leading-relaxed">
-                After transmission ceases, audio holds for 600 ms to absorb speech pauses, then smoothly
-                restores to 100% volume over 400 ms.
-              </p>
-              <div className="p-3 bg-black/50 rounded-xl border border-zinc-800">
-                <div className="flex justify-between text-[11px]">
-                  <span>Current Ducker Multiplier:</span>
-                  <span className="text-amber-300 font-bold">{(duckGain * 100).toFixed(0)}%</span>
-                </div>
-                <div className="w-full bg-zinc-800 h-1.5 rounded-full mt-1.5 overflow-hidden">
-                  <div
-                    className="bg-emerald-400 h-full transition-all duration-75"
-                    style={{ width: `${duckGain * 100}%` }}
-                  />
-                </div>
-              </div>
-            </section>
-          </div>
-        )}
-
-        {/* TAB 4: HIGHWAY QSO & TRAFFIC LOG */}
-        {activeTab === 'TRAFFIC_LOG' && (
-          <section className="panel traffic-log-panel" aria-label="Highway Trucker Comms Log">
-            <div className="panel-header">
-              <div className="panel-title-group">
-                <span className="status-led led-emerald" />
-                <h2 className="panel-title">LIVE HIGHWAY, REPEATER &amp; QSO SPOTS LOG</h2>
-              </div>
-              <span className="badge-mono">{trafficLog.length} SPOTS RECORDED</span>
-            </div>
-
-            <form
-              className="quick-dispatch-form"
-              onSubmit={async (e) => {
-                e.preventDefault();
-                if (!quickMessage.trim()) return;
-                const textToSend = quickMessage.trim();
-                setQuickMessage('');
-                if (dspRef.current) {
-                  await dspRef.current.initAudioContext();
-                  dspRef.current.playRogerBeepAndSquelchTail(rogerBeep, masterVolume);
-                }
-                const entry: TrafficLogEntry = {
-                  id: 'msg-' + Date.now(),
-                  utcTime: new Date().toISOString().slice(11, 19) + 'Z',
-                  handle: operatorHandle,
-                  corridor: HIGHWAY_CORRIDORS.find((c) => c.id === corridorId)?.code || 'I-80 TRANSCON',
-                  channelLabel: `${frequencyMhz.toFixed(3)} MHz`,
-                  freqMhz: frequencyMhz.toFixed(3),
-                  mode,
-                  rstOrSignal: 'TX 4.0W',
-                  message: textToSend,
-                  isSelf: true,
-                };
-                setTrafficLog((prev) => [entry, ...prev.slice(0, 39)]);
-                if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
-                  wsRef.current.send(
-                    JSON.stringify({
-                      type: 'CB_TRANSMISSION',
-                      handle: operatorHandle,
-                      corridor: entry.corridor,
-                      channel,
-                      freqMhz: frequencyMhz.toFixed(3),
-                      mode,
-                      text: textToSend,
-                    })
-                  );
-                }
-              }}
-            >
-              <input
-                type="text"
-                placeholder={`Broadcast traffic spot on ${frequencyMhz.toFixed(3)} MHz ${mode}...`}
-                value={quickMessage}
-                onChange={(e) => setQuickMessage(e.target.value)}
-                className="dispatch-input"
-              />
-              <button type="submit" className="dispatch-send-btn">
-                SEND SPOT
-              </button>
-            </form>
-
-            <div className="traffic-log-list">
-              {trafficLog.map((item) => (
-                <article
-                  key={item.id}
-                  className={`traffic-card ${item.isSelf ? 'traffic-self' : ''}`}
-                >
-                  <div className="traffic-card-top">
-                    <span className="t-handle">{item.handle}</span>
-                    <span className="t-corridor">{item.corridor}</span>
-                    <span className="t-freq">
-                      {item.channelLabel} ({item.freqMhz} {item.mode})
-                    </span>
-                    <span className="t-sig">{item.rstOrSignal}</span>
-                    <span className="t-time">{item.utcTime}</span>
-                  </div>
-                  <p className="traffic-card-msg">&ldquo;{item.message}&rdquo;</p>
-                </article>
-              ))}
-            </div>
-          </section>
-        )}
-
         {/* 4. FRONT-PANEL ANALOG CONTROLS (Always visible at bottom) */}
-        <section className="panel knobs-panel" aria-label="Front-Panel Analog Audio and RF Controls">
-          <div className="panel-header">
-            <div className="panel-title-group">
-              <span className="status-led led-cyan" />
-              <h2 className="panel-title">FRONT-PANEL ANALOG &amp; DSP CONTROLS</h2>
-            </div>
-            <span className="badge-mono">4-CHANNEL ANALOG POTENTIOMETERS</span>
-          </div>
-          <div className="knobs-grid">
-            <div className="knob-card">
-              <div className="knob-header">
-                <label htmlFor="vol-range">AF VOLUME</label>
-                <span className="knob-val">{Math.round(masterVolume * 100)}%</span>
-              </div>
-              <input
-                id="vol-range"
-                type="range"
-                min={0}
-                max={1}
-                step={0.02}
-                value={masterVolume}
-                onChange={(e) => setMasterVolume(parseFloat(e.target.value))}
-                className="tactical-slider"
-              />
-              <span className="knob-sub">Master Receiver Audio</span>
-            </div>
-
-            <div className="knob-card">
-              <div className="knob-header">
-                <label htmlFor="sql-range">SQUELCH (3dB HYST)</label>
-                <span className="knob-val">{squelchDbm} dBm</span>
-              </div>
-              <input
-                id="sql-range"
-                type="range"
-                min={-125}
-                max={-55}
-                step={1}
-                value={squelchDbm}
-                onChange={(e) => setSquelchDbm(parseInt(e.target.value, 10))}
-                className="tactical-slider"
-              />
-              <span className="knob-sub">
-                {squelchDbm <= -114 ? 'OPEN (HEAR RF STATIC)' : 'GATED CARRIER THRESHOLD'}
-              </span>
-            </div>
-
-            <div className="knob-card">
-              <div className="knob-header">
-                <label htmlFor="rfg-range">RF GAIN</label>
-                <span className="knob-val">{rfGainPct}%</span>
-              </div>
-              <input
-                id="rfg-range"
-                type="range"
-                min={20}
-                max={100}
-                step={2}
-                value={rfGainPct}
-                onChange={(e) => setRfGainPct(parseInt(e.target.value, 10))}
-                className="tactical-slider"
-              />
-              <span className="knob-sub">Front-End LNA Attenuator</span>
-            </div>
-
-            <div className="knob-card">
-              <div className="knob-header">
-                <label htmlFor="dyn-range">DYNAMIKE (4:1 COMP)</label>
-                <span className="knob-val">{dynamikePct}%</span>
-              </div>
-              <input
-                id="dyn-range"
-                type="range"
-                min={20}
-                max={100}
-                step={5}
-                value={dynamikePct}
-                onChange={(e) => setDynamikePct(parseInt(e.target.value, 10))}
-                className="tactical-slider"
-              />
-              <span className="knob-sub">Speech Compressor &amp; Limiter</span>
-            </div>
-          </div>
-        </section>
+        <AnalogControlKnobs
+          masterVolume={masterVolume}
+          onMasterVolumeChange={setMasterVolume}
+          squelchDbm={squelchDbm}
+          onSquelchDbmChange={setSquelchDbm}
+          rfGainPct={rfGainPct}
+          onRfGainPctChange={setRfGainPct}
+          dynamikePct={dynamikePct}
+          onDynamikePctChange={setDynamikePct}
+        />
       </main>
 
       {/* 5. SAMSUNG GALAXY S26 ULTRA MOBILE TACTICAL COCKPIT & OVERSIZED THUMB PTT */}

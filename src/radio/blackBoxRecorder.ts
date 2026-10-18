@@ -7,6 +7,8 @@
  * 3. Standard RIFF WAV (16-bit PCM Mono 48 kHz) file encoder and export.
  */
 
+import { downloadBlob } from '../utils/fileExport';
+
 export interface RecordedTransmissionClip {
   id: string;
   utcTimestamp: string;
@@ -199,13 +201,7 @@ export class BlackBoxRecorder {
    */
   public static downloadClip(clip: RecordedTransmissionClip): void {
     const blob = this.createWavBlob(clip.samples, 48000);
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `HeshRadio_${clip.channelLabel.replace(/\s+/g, '_')}_${clip.frequencyMhz.toFixed(3)}MHz_${clip.utcTimestamp.replace(/:/g, '')}.wav`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+    const filename = `HeshRadio_${clip.channelLabel.replace(/\s+/g, '_')}_${clip.frequencyMhz.toFixed(3)}MHz_${clip.utcTimestamp.replace(/:/g, '')}.wav`;
+    downloadBlob(blob, filename);
   }
 }

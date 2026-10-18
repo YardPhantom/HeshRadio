@@ -16,6 +16,8 @@ import {
   Unlock,
   Download,
 } from 'lucide-react';
+import { downloadTextFile } from '../utils/fileExport';
+import { TacticalModal } from './common/TacticalModal';
 
 interface TacticalScannerDeckProps {
   scanEngine: ScanEngine;
@@ -109,13 +111,7 @@ export const TacticalScannerDeck: React.FC<TacticalScannerDeckProps> = ({
 
   const handleExportJson = () => {
     const data = scanEngine.exportJson();
-    const blob = new Blob([data], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `HeshRadio_MemoryBanks_${Date.now()}.json`;
-    a.click();
-    URL.revokeObjectURL(url);
+    downloadTextFile(data, `HeshRadio_MemoryBanks_${Date.now()}.json`, 'application/json');
   };
 
   return (
@@ -335,87 +331,83 @@ export const TacticalScannerDeck: React.FC<TacticalScannerDeckProps> = ({
       </div>
 
       {/* Add Channel Modal */}
-      {showAddModal && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-          <form
-            onSubmit={handleAddChannel}
-            className="bg-[#0f1722] border border-zinc-700 rounded-xl p-5 max-w-md w-full space-y-4 shadow-2xl"
-          >
-            <h3 className="text-sm font-bold text-amber-400 flex items-center gap-1.5">
-              <Plus className="w-4 h-4" /> ADD MEMORY CHANNEL TO {activeBank.name}
-            </h3>
-
-            <div className="grid grid-cols-2 gap-3 text-xs">
-              <div>
-                <label className="text-zinc-400 text-[11px]">CHANNEL LABEL</label>
-                <input
-                  type="text"
-                  placeholder="e.g. CH 21 / TACOMA RPT"
-                  value={newLabel}
-                  onChange={(e) => setNewLabel(e.target.value)}
-                  className="w-full bg-black/60 border border-zinc-700 rounded-lg px-3.5 py-2 mt-1 text-white font-mono focus:outline-none"
-                  required
-                />
-              </div>
-
-              <div>
-                <label className="text-zinc-400 text-[11px]">FREQUENCY (MHz)</label>
-                <input
-                  type="number"
-                  step="0.0001"
-                  value={newFreq}
-                  onChange={(e) => setNewFreq(e.target.value)}
-                  className="w-full bg-black/60 border border-zinc-700 rounded-lg px-3.5 py-2 mt-1 text-amber-300 font-mono focus:outline-none"
-                  required
-                />
-              </div>
-
-              <div>
-                <label className="text-zinc-400 text-[11px]">MODULATION MODE</label>
-                <select
-                  value={newMode}
-                  onChange={(e) => setNewMode(e.target.value as ModulationModeExtended)}
-                  className="w-full bg-black/60 border border-zinc-700 rounded-lg px-3.5 py-2 mt-1 text-white focus:outline-none cursor-pointer"
-                >
-                  <option value="AM">AM (Amplitude Mod)</option>
-                  <option value="NFM">NFM (Narrowband FM)</option>
-                  <option value="WFM">WFM (Broadcast FM)</option>
-                  <option value="USB">USB (Upper Sideband)</option>
-                  <option value="LSB">LSB (Lower Sideband)</option>
-                  <option value="CW">CW (Continuous Wave)</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="text-zinc-400 text-[11px]">ALPHA TAG / DESCRIPTION</label>
-                <input
-                  type="text"
-                  placeholder="e.g. Local Club Net / Highway"
-                  value={newAlpha}
-                  onChange={(e) => setNewAlpha(e.target.value)}
-                  className="w-full bg-black/60 border border-zinc-700 rounded-lg px-3.5 py-2 mt-1 text-white focus:outline-none"
-                />
-              </div>
+      <TacticalModal
+        isOpen={showAddModal}
+        onClose={() => setShowAddModal(false)}
+        title={`ADD MEMORY CHANNEL TO ${activeBank.name}`}
+        icon={<Plus className="w-4 h-4 text-amber-400" />}
+      >
+        <form onSubmit={handleAddChannel} className="space-y-4">
+          <div className="grid grid-cols-2 gap-3 text-xs">
+            <div>
+              <label className="text-zinc-400 text-[11px]">CHANNEL LABEL</label>
+              <input
+                type="text"
+                placeholder="e.g. CH 21 / TACOMA RPT"
+                value={newLabel}
+                onChange={(e) => setNewLabel(e.target.value)}
+                className="w-full bg-black/60 border border-zinc-700 rounded-lg px-3.5 py-2 mt-1 text-white font-mono focus:outline-none"
+                required
+              />
             </div>
 
-            <div className="flex justify-end gap-2 pt-2 border-t border-zinc-800">
-              <button
-                type="button"
-                onClick={() => setShowAddModal(false)}
-                className="px-3.5 py-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 rounded-lg text-xs cursor-pointer"
-              >
-                CANCEL
-              </button>
-              <button
-                type="submit"
-                className="px-4 py-2 bg-amber-500 hover:bg-amber-400 text-black font-bold rounded-lg text-xs cursor-pointer shadow-md"
-              >
-                SAVE CHANNEL
-              </button>
+            <div>
+              <label className="text-zinc-400 text-[11px]">FREQUENCY (MHz)</label>
+              <input
+                type="number"
+                step="0.0001"
+                value={newFreq}
+                onChange={(e) => setNewFreq(e.target.value)}
+                className="w-full bg-black/60 border border-zinc-700 rounded-lg px-3.5 py-2 mt-1 text-amber-300 font-mono focus:outline-none"
+                required
+              />
             </div>
-          </form>
-        </div>
-      )}
+
+            <div>
+              <label className="text-zinc-400 text-[11px]">MODULATION MODE</label>
+              <select
+                value={newMode}
+                onChange={(e) => setNewMode(e.target.value as ModulationModeExtended)}
+                className="w-full bg-black/60 border border-zinc-700 rounded-lg px-3.5 py-2 mt-1 text-white focus:outline-none cursor-pointer"
+              >
+                <option value="AM">AM (Amplitude Mod)</option>
+                <option value="NFM">NFM (Narrowband FM)</option>
+                <option value="WFM">WFM (Broadcast FM)</option>
+                <option value="USB">USB (Upper Sideband)</option>
+                <option value="LSB">LSB (Lower Sideband)</option>
+                <option value="CW">CW (Continuous Wave)</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="text-zinc-400 text-[11px]">ALPHA TAG / DESCRIPTION</label>
+              <input
+                type="text"
+                placeholder="e.g. Local Club Net / Highway"
+                value={newAlpha}
+                onChange={(e) => setNewAlpha(e.target.value)}
+                className="w-full bg-black/60 border border-zinc-700 rounded-lg px-3.5 py-2 mt-1 text-white focus:outline-none"
+              />
+            </div>
+          </div>
+
+          <div className="flex justify-end gap-2 pt-2 border-t border-zinc-800">
+            <button
+              type="button"
+              onClick={() => setShowAddModal(false)}
+              className="px-3.5 py-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 rounded-lg text-xs cursor-pointer"
+            >
+              CANCEL
+            </button>
+            <button
+              type="submit"
+              className="px-4 py-2 bg-amber-500 hover:bg-amber-400 text-black font-bold rounded-lg text-xs cursor-pointer shadow-md"
+            >
+              SAVE CHANNEL
+            </button>
+          </div>
+        </form>
+      </TacticalModal>
     </section>
   );
 };

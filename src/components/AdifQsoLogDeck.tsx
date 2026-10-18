@@ -15,12 +15,13 @@ import {
   Compass,
   CheckCircle,
   Copy,
-  X,
   Cloud,
   Zap,
   Activity,
   Globe,
 } from 'lucide-react';
+import { downloadTextFile } from '../utils/fileExport';
+import { TacticalModal } from './common/TacticalModal';
 
 interface AdifQsoLogDeckProps {
   currentFreqMhz: number;
@@ -180,13 +181,7 @@ export const AdifQsoLogDeck: React.FC<AdifQsoLogDeckProps> = ({
   // Export ADIF .adi file download
   const handleExportAdif = () => {
     const text = logger.exportAdifString();
-    const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `HeshRadio_Log_${new Date().toISOString().slice(0, 10)}.adi`;
-    link.click();
-    URL.revokeObjectURL(url);
+    downloadTextFile(text, `HeshRadio_Log_${new Date().toISOString().slice(0, 10)}.adi`);
   };
 
   // Import ADIF file
@@ -700,25 +695,16 @@ export const AdifQsoLogDeck: React.FC<AdifQsoLogDeckProps> = ({
       </div>
 
       {/* AutoQSL Card Modal */}
-      {selectedQsoForQsl && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-zinc-950 border border-amber-500/40 rounded-2xl max-w-4xl w-full p-6 shadow-2xl space-y-4 font-mono text-xs animate-scale-in">
-            {/* Modal Header */}
-            <div className="flex items-center justify-between border-b border-zinc-800 pb-3">
-              <div className="flex items-center gap-2">
-                <Award className="w-5 h-5 text-amber-400" />
-                <h3 className="text-sm font-bold text-amber-400 tracking-wider">
-                  AUTO-QSL POSTCARD CONFIRMATION // {selectedQsoForQsl.call}
-                </h3>
-              </div>
-              <button
-                onClick={() => setSelectedQsoForQsl(null)}
-                className="text-zinc-400 hover:text-white p-1 rounded-lg hover:bg-zinc-800 cursor-pointer transition-colors"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
+      <TacticalModal
+        isOpen={Boolean(selectedQsoForQsl)}
+        onClose={() => setSelectedQsoForQsl(null)}
+        title={`AUTO-QSL POSTCARD CONFIRMATION // ${selectedQsoForQsl?.call || ''}`}
+        icon={<Award className="w-5 h-5 text-amber-400" />}
+        maxWidth="4xl"
+        borderColorClass="border-amber-500/40"
+      >
+        {selectedQsoForQsl && (
+          <>
             {/* Canvas Preview Container */}
             <div className="bg-black/60 rounded-xl p-2 border border-zinc-800 flex justify-center items-center overflow-hidden">
               <canvas
@@ -734,6 +720,7 @@ export const AdifQsoLogDeck: React.FC<AdifQsoLogDeckProps> = ({
               </div>
               <div className="flex items-center gap-2">
                 <button
+                  type="button"
                   onClick={() => {
                     const text = `${selectedQsoForQsl.call} QSO on ${selectedQsoForQsl.band} (${selectedQsoForQsl.mode}) confirmed by ${operatorHandle}`;
                     if (navigator.clipboard) navigator.clipboard.writeText(text);
@@ -745,6 +732,7 @@ export const AdifQsoLogDeck: React.FC<AdifQsoLogDeckProps> = ({
                   <Copy className="w-3.5 h-3.5 text-cyan-400" /> COPY SUMMARY
                 </button>
                 <button
+                  type="button"
                   onClick={handleDownloadQslPng}
                   className="px-4 py-2 bg-emerald-500 hover:bg-emerald-400 text-black font-bold rounded-lg shadow-lg flex items-center gap-1.5 transition-all cursor-pointer"
                 >
@@ -752,109 +740,97 @@ export const AdifQsoLogDeck: React.FC<AdifQsoLogDeckProps> = ({
                 </button>
               </div>
             </div>
-          </div>
-        </div>
-      )}
+          </>
+        )}
+      </TacticalModal>
 
       {/* World Radio League Cloud Sync Modal */}
-      {showWrlModal && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-zinc-950 border border-cyan-500/40 rounded-2xl max-w-lg w-full p-6 shadow-2xl space-y-4 font-mono text-xs animate-scale-in">
-            {/* Modal Header */}
-            <div className="flex items-center justify-between border-b border-zinc-800 pb-3">
-              <div className="flex items-center gap-2">
-                <Cloud className="w-5 h-5 text-cyan-400" />
-                <h3 className="text-sm font-bold text-cyan-400 tracking-wider">
-                  WORLD RADIO LEAGUE CLOUD SYNC
-                </h3>
-              </div>
-              <button
-                onClick={() => setShowWrlModal(false)}
-                className="text-zinc-400 hover:text-white p-1 rounded-lg hover:bg-zinc-800 cursor-pointer transition-colors"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
+      <TacticalModal
+        isOpen={showWrlModal}
+        onClose={() => setShowWrlModal(false)}
+        title="WORLD RADIO LEAGUE CLOUD SYNC"
+        icon={<Cloud className="w-5 h-5 text-cyan-400" />}
+        titleColorClass="text-cyan-400"
+        borderColorClass="border-cyan-500/40"
+        maxWidth="lg"
+      >
+        <p className="text-zinc-300 text-[11px] leading-relaxed">
+          Connect HeshRadio directly to your free account on{' '}
+          <a
+            href="https://worldradioleague.com"
+            target="_blank"
+            rel="noreferrer"
+            className="text-cyan-400 underline"
+          >
+            WorldRadioLeague.com
+          </a>{' '}
+          to auto-sync contacts, track awards, and participate in live contesting.
+        </p>
 
-            <p className="text-zinc-300 text-[11px] leading-relaxed">
-              Connect HeshRadio directly to your free account on{' '}
-              <a
-                href="https://worldradioleague.com"
-                target="_blank"
-                rel="noreferrer"
-                className="text-cyan-400 underline"
-              >
-                WorldRadioLeague.com
-              </a>{' '}
-              to auto-sync contacts, track awards, and participate in live contesting.
-            </p>
-
-            <div className="space-y-1.5">
-              <label className="text-zinc-400 text-[10px] block font-bold">
-                WRL DEVELOPER API KEY:
-              </label>
-              <input
-                type="password"
-                placeholder="wrl_live_..."
-                value={wrlApiKey}
-                onChange={(e) => setWrlApiKey(e.target.value)}
-                className="w-full bg-zinc-900 border border-zinc-700 text-cyan-300 px-3.5 py-2.5 rounded-lg font-mono focus:outline-none focus:border-cyan-500"
-              />
-              <div className="text-[10px] text-zinc-500">
-                Obtain your key in WRL under Integrations &gt; Developer API.
-              </div>
-            </div>
-
-            {wrlStatusMsg && (
-              <div className="bg-zinc-900 border border-zinc-800 p-3 rounded-lg text-[11px] text-zinc-300 leading-relaxed">
-                {wrlStatusMsg}
-              </div>
-            )}
-
-            {syncProgress && (
-              <div className="space-y-1">
-                <div className="flex justify-between text-[10px] text-zinc-400">
-                  <span>Uploading contacts...</span>
-                  <span>{syncProgress.current} / {syncProgress.total}</span>
-                </div>
-                <div className="w-full bg-zinc-900 h-2 rounded-full overflow-hidden">
-                  <div
-                    className="bg-cyan-500 h-full transition-all duration-200"
-                    style={{ width: `${(syncProgress.current / syncProgress.total) * 100}%` }}
-                  />
-                </div>
-              </div>
-            )}
-
-            <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-zinc-800">
-              <button
-                type="button"
-                onClick={handleTestWrlConnection}
-                className="px-3.5 py-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 border border-zinc-700 rounded-lg cursor-pointer"
-              >
-                TEST CONNECTION
-              </button>
-              <div className="flex items-center gap-2">
-                <button
-                  type="button"
-                  onClick={() => setShowWrlModal(false)}
-                  className="px-3.5 py-2 bg-zinc-850 hover:bg-zinc-800 text-zinc-400 hover:text-zinc-200 rounded-lg cursor-pointer"
-                >
-                  CLOSE
-                </button>
-                <button
-                  type="button"
-                  disabled={isSyncingWrl}
-                  onClick={handleSyncToWrl}
-                  className="px-4 py-2 bg-cyan-500 hover:bg-cyan-400 disabled:opacity-50 text-black font-bold rounded-lg shadow-md cursor-pointer flex items-center gap-1.5"
-                >
-                  <Cloud className="w-3.5 h-3.5" /> SYNC ALL QSOS
-                </button>
-              </div>
-            </div>
+        <div className="space-y-1.5">
+          <label className="text-zinc-400 text-[10px] block font-bold">
+            WRL DEVELOPER API KEY:
+          </label>
+          <input
+            type="password"
+            placeholder="wrl_live_..."
+            value={wrlApiKey}
+            onChange={(e) => setWrlApiKey(e.target.value)}
+            className="w-full bg-zinc-900 border border-zinc-700 text-cyan-300 px-3.5 py-2.5 rounded-lg font-mono focus:outline-none focus:border-cyan-500"
+          />
+          <div className="text-[10px] text-zinc-500">
+            Obtain your key in WRL under Integrations &gt; Developer API.
           </div>
         </div>
-      )}
+
+        {wrlStatusMsg && (
+          <div className="bg-zinc-900 border border-zinc-800 p-3 rounded-lg text-[11px] text-zinc-300 leading-relaxed">
+            {wrlStatusMsg}
+          </div>
+        )}
+
+        {syncProgress && (
+          <div className="space-y-1">
+            <div className="flex justify-between text-[10px] text-zinc-400">
+              <span>Uploading contacts...</span>
+              <span>{syncProgress.current} / {syncProgress.total}</span>
+            </div>
+            <div className="w-full bg-zinc-900 h-2 rounded-full overflow-hidden">
+              <div
+                className="bg-cyan-500 h-full transition-all duration-200"
+                style={{ width: `${(syncProgress.current / syncProgress.total) * 100}%` }}
+              />
+            </div>
+          </div>
+        )}
+
+        <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t border-zinc-800">
+          <button
+            type="button"
+            onClick={handleTestWrlConnection}
+            className="px-3.5 py-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 border border-zinc-700 rounded-lg cursor-pointer"
+          >
+            TEST CONNECTION
+          </button>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setShowWrlModal(false)}
+              className="px-3.5 py-2 bg-zinc-850 hover:bg-zinc-800 text-zinc-400 hover:text-zinc-200 rounded-lg cursor-pointer"
+            >
+              CLOSE
+            </button>
+            <button
+              type="button"
+              disabled={isSyncingWrl}
+              onClick={handleSyncToWrl}
+              className="px-4 py-2 bg-cyan-500 hover:bg-cyan-400 disabled:opacity-50 text-black font-bold rounded-lg shadow-md cursor-pointer flex items-center gap-1.5"
+            >
+              <Cloud className="w-3.5 h-3.5" /> SYNC ALL QSOS
+            </button>
+          </div>
+        </div>
+      </TacticalModal>
     </section>
   );
 };
