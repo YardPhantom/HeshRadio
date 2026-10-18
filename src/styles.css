@@ -584,6 +584,59 @@ body {
   outline: 1px solid rgba(245, 158, 11, 0.3);
 }
 
+/* Tactical Card (13 chars <= 20 max) */
+.tactical-card {
+  padding: 1.15rem 1.25rem;
+  border-radius: 12px;
+  border: 1px solid rgba(63, 63, 70, 0.45);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 0.85rem;
+  transition: all 0.15s ease;
+  background: rgba(0, 0, 0, 0.45);
+  box-sizing: border-box;
+}
+
+.tactical-card:hover {
+  border-color: #52525b;
+}
+
+.tactical-card.active {
+  background: rgba(245, 158, 11, 0.12);
+  border-color: rgba(245, 158, 11, 0.55);
+  box-shadow: 0 4px 14px -2px rgba(245, 158, 11, 0.18);
+  outline: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+/* Tactical Metric Tile (13 chars <= 20 max) */
+.tactical-tile {
+  padding: 0.95rem 1.1rem;
+  border-radius: 12px;
+  border: 1px solid rgba(63, 63, 70, 0.4);
+  background: rgba(0, 0, 0, 0.4);
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+/* High-Performance 120Hz List Containment */
+.traffic-log-list,
+.overflow-x-auto,
+.station-presets-grid {
+  contain: content;
+}
+
+/* Universal Focus-Visible Hygiene (WCAG 2.2 AA) */
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid var(--accent-cyan) !important;
+  outline-offset: 2px !important;
+}
+
 .net-controls-row {
   display: flex;
   flex-wrap: wrap;

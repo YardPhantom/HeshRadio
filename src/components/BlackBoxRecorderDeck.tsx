@@ -62,6 +62,7 @@ export const BlackBoxRecorderDeck: React.FC<BlackBoxRecorderDeckProps> = ({
         badgeVariant="amber"
         actions={
           <button
+            type="button"
             onClick={handleClear}
             className="px-3.5 py-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-400 hover:text-red-300 rounded-lg text-xs flex items-center gap-1.5 border border-zinc-700 transition-colors cursor-pointer font-bold"
           >
@@ -72,7 +73,7 @@ export const BlackBoxRecorderDeck: React.FC<BlackBoxRecorderDeckProps> = ({
 
       {/* Instant 30s "Say Again" Replay Bar */}
       <div className="bg-gradient-to-r from-amber-950/40 via-zinc-900 to-black p-4 rounded-xl border border-amber-500/30 flex flex-col md:flex-row items-center justify-between gap-4">
-        <div className="space-y-1">
+        <div className="space-y-1 px-1">
           <div className="text-amber-400 font-bold text-sm flex items-center gap-2">
             <RotateCcw className={`w-4 h-4 ${isPlayingReplay ? 'animate-spin' : ''}`} />
             ROLLING 30-SECOND COCKPIT VOICE BUFFER
@@ -84,6 +85,7 @@ export const BlackBoxRecorderDeck: React.FC<BlackBoxRecorderDeckProps> = ({
         </div>
 
         <button
+          type="button"
           onClick={handleReplayLast30Seconds}
           disabled={isPlayingReplay}
           className={`px-6 py-3 rounded-xl font-bold text-xs flex items-center gap-2 shadow-lg transition-all shrink-0 cursor-pointer ${
@@ -99,7 +101,7 @@ export const BlackBoxRecorderDeck: React.FC<BlackBoxRecorderDeckProps> = ({
 
       {/* Squelch-Triggered Recorded Transmission Clips */}
       <div className="space-y-2">
-        <div className="flex items-center justify-between text-xs font-bold text-zinc-300">
+        <div className="flex items-center justify-between text-xs font-bold text-zinc-300 px-0.5">
           <span>AUTOMATIC SQUELCH-TRIGGERED TRANSMISSION CLIPS ({clips.length})</span>
           <span className="text-zinc-500 text-[11px]">48 kHz 16-BIT PCM WAV EXPORT</span>
         </div>
@@ -145,6 +147,7 @@ export const BlackBoxRecorderDeck: React.FC<BlackBoxRecorderDeckProps> = ({
                       <td className="py-2.5 px-3.5 font-mono text-emerald-400">{clip.peakDbm} dBm</td>
                       <td className="py-2.5 px-3.5 text-right space-x-2">
                         <button
+                          type="button"
                           onClick={() => handlePlayClip(clip)}
                           disabled={isPlaying}
                           className="px-3.5 py-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-200 rounded-lg text-xs inline-flex items-center gap-1.5 font-bold cursor-pointer transition-colors"
@@ -153,6 +156,7 @@ export const BlackBoxRecorderDeck: React.FC<BlackBoxRecorderDeckProps> = ({
                           {isPlaying ? 'PLAYING' : 'PLAY'}
                         </button>
                         <button
+                          type="button"
                           onClick={() => handleDownload(clip)}
                           className="px-3.5 py-2 bg-emerald-600/30 hover:bg-emerald-600/50 text-emerald-300 border border-emerald-500/30 rounded-lg text-xs inline-flex items-center gap-1.5 font-bold cursor-pointer transition-colors"
                           title="Download 16-bit WAV"

@@ -215,6 +215,7 @@ export const DigitalModesDeck: React.FC<DigitalModesDeckProps> = ({
         actions={
           <div className="flex gap-2 font-mono text-xs font-bold">
             <button
+              type="button"
               onClick={() => setActiveSubMode('APRS')}
               className={`px-3.5 py-2 rounded-lg transition-all flex items-center gap-2 cursor-pointer ${
                 activeSubMode === 'APRS'
@@ -225,6 +226,7 @@ export const DigitalModesDeck: React.FC<DigitalModesDeckProps> = ({
               <MapPin className="w-3.5 h-3.5" /> APRS TACTICAL RADAR
             </button>
             <button
+              type="button"
               onClick={() => setActiveSubMode('FT8')}
               className={`px-3.5 py-2 rounded-lg transition-all flex items-center gap-2 cursor-pointer ${
                 activeSubMode === 'FT8'
@@ -235,6 +237,7 @@ export const DigitalModesDeck: React.FC<DigitalModesDeckProps> = ({
               <Clock className="w-3.5 h-3.5" /> FT8 / JS8 WEAK-SIGNAL
             </button>
             <button
+              type="button"
               onClick={() => setActiveSubMode('SSTV')}
               className={`px-3.5 py-2 rounded-lg transition-all flex items-center gap-2 cursor-pointer ${
                 activeSubMode === 'SSTV'
@@ -253,23 +256,31 @@ export const DigitalModesDeck: React.FC<DigitalModesDeckProps> = ({
         <div className="space-y-4">
           {/* Tactical APRS Status & Beacon Control Bar */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-3 text-xs font-mono">
-            <div className="bg-black/50 p-3.5 rounded-xl border border-zinc-800 space-y-1">
-              <div className="text-[10px] text-zinc-500 uppercase">APRS Frequency</div>
-              <div className="text-cyan-300 font-bold">144.390 MHz (NA Primary)</div>
-            </div>
-            <div className="bg-black/50 p-3.5 rounded-xl border border-zinc-800 space-y-1">
-              <div className="text-[10px] text-zinc-500 uppercase">APRS-IS Passcode</div>
-              <div className="text-amber-300 font-bold">
-                {myCallsign}: <span className="text-white font-mono">{aprsPasscode}</span>
+            <div className="tactical-tile">
+              <div className="px-0.5 space-y-1">
+                <div className="text-[10px] text-zinc-500 uppercase">APRS Frequency</div>
+                <div className="text-cyan-300 font-bold">144.390 MHz (NA Primary)</div>
               </div>
             </div>
-            <div className="bg-black/50 p-3.5 rounded-xl border border-zinc-800 space-y-1">
-              <div className="text-[10px] text-zinc-500 uppercase">Modem Standard</div>
-              <div className="text-zinc-200 font-bold">Bell 202 AFSK (1200 Baud)</div>
+            <div className="tactical-tile">
+              <div className="px-0.5 space-y-1">
+                <div className="text-[10px] text-zinc-500 uppercase">APRS-IS Passcode</div>
+                <div className="text-amber-300 font-bold">
+                  {myCallsign}: <span className="text-white font-mono">{aprsPasscode}</span>
+                </div>
+              </div>
             </div>
-            <div className="bg-black/50 p-3.5 rounded-xl border border-zinc-800 space-y-1">
-              <div className="text-[10px] text-zinc-500 uppercase">Path / Digipeaters</div>
-              <div className="text-zinc-300 font-bold">WIDE1-1, WIDE2-1</div>
+            <div className="tactical-tile">
+              <div className="px-0.5 space-y-1">
+                <div className="text-[10px] text-zinc-500 uppercase">Modem Standard</div>
+                <div className="text-zinc-200 font-bold">Bell 202 AFSK (1200 Baud)</div>
+              </div>
+            </div>
+            <div className="tactical-tile">
+              <div className="px-0.5 space-y-1">
+                <div className="text-[10px] text-zinc-500 uppercase">Path / Digipeaters</div>
+                <div className="text-zinc-300 font-bold">WIDE1-1, WIDE2-1</div>
+              </div>
             </div>
           </div>
 
@@ -283,6 +294,7 @@ export const DigitalModesDeck: React.FC<DigitalModesDeckProps> = ({
               className="flex-1 bg-zinc-900 border border-zinc-700 text-zinc-100 px-3.5 py-2 rounded-lg focus:outline-none"
             />
             <button
+              type="button"
               onClick={handleSendAprsBeacon}
               className="px-4 py-2 bg-cyan-600 hover:bg-cyan-500 text-black font-bold rounded-lg flex items-center gap-2 shadow-md transition-all cursor-pointer"
             >
@@ -442,6 +454,7 @@ export const DigitalModesDeck: React.FC<DigitalModesDeckProps> = ({
 
                   {!msg.isTx && (
                     <button
+                      type="button"
                       onClick={() => {
                         const parts = msg.message.split(' ');
                         if (parts[1]) setFt8SelectedTarget(parts[1]);
@@ -462,8 +475,8 @@ export const DigitalModesDeck: React.FC<DigitalModesDeckProps> = ({
       {activeSubMode === 'SSTV' && (
         <div className="grid grid-cols-1 md:grid-cols-12 gap-4 font-mono text-xs">
           {/* Left Canvas Preview */}
-          <div className="md:col-span-7 flex flex-col items-center gap-2 bg-black/60 p-3.5 rounded-xl border border-zinc-800">
-            <div className="flex justify-between w-full text-zinc-400 text-xs">
+          <div className="md:col-span-7 flex flex-col items-center gap-2 tactical-card">
+            <div className="flex justify-between w-full text-zinc-400 text-xs px-0.5">
               <span className="font-bold flex items-center gap-1.5">
                 <ImageIcon className="w-3.5 h-3.5 text-emerald-400" /> SSTV SCANLINE MONITOR
               </span>
@@ -474,7 +487,7 @@ export const DigitalModesDeck: React.FC<DigitalModesDeckProps> = ({
               ref={sstvCanvasRef}
               width={320}
               height={240}
-              className="rounded-lg border border-zinc-700 max-w-full shadow-inner"
+              className="block rounded-lg border border-zinc-700 max-w-full shadow-inner"
             />
 
             {sstvTransmitting && (
@@ -494,9 +507,9 @@ export const DigitalModesDeck: React.FC<DigitalModesDeckProps> = ({
           </div>
 
           {/* Right Controls */}
-          <div className="md:col-span-5 flex flex-col gap-3 bg-black/40 p-3.5 rounded-xl border border-zinc-800">
+          <div className="md:col-span-5 flex flex-col gap-3 tactical-card">
             <div>
-              <label className="text-zinc-400 text-[11px] block mb-1">SELECT SSTV PROTOCOL:</label>
+              <label className="text-zinc-400 text-[11px] block mb-1 px-0.5">SELECT SSTV PROTOCOL:</label>
               <div className="space-y-1.5">
                 {(Object.keys(SSTV_MODES) as SstvMode[]).map((modeKey) => {
                   const m = SSTV_MODES[modeKey];
@@ -504,6 +517,7 @@ export const DigitalModesDeck: React.FC<DigitalModesDeckProps> = ({
                   return (
                     <button
                       key={modeKey}
+                      type="button"
                       onClick={() => setSstvMode(modeKey)}
                       className={`w-full text-left p-3 px-3.5 rounded-lg border transition-all cursor-pointer ${
                         active
@@ -511,11 +525,11 @@ export const DigitalModesDeck: React.FC<DigitalModesDeckProps> = ({
                           : 'bg-zinc-900 text-zinc-400 border-zinc-800 hover:text-zinc-200'
                       }`}
                     >
-                      <div className="flex justify-between">
+                      <div className="flex justify-between px-0.5">
                         <span>{m.name}</span>
                         <span className="text-[10px] text-zinc-500">{m.durationSec}s</span>
                       </div>
-                      <div className="text-[10px] text-zinc-500">
+                      <div className="text-[10px] text-zinc-500 px-0.5">
                         {m.width}x{m.height} • VIS 0x{m.visCode.toString(16).toUpperCase()}
                       </div>
                     </button>
@@ -526,6 +540,7 @@ export const DigitalModesDeck: React.FC<DigitalModesDeckProps> = ({
 
             <div className="pt-2 border-t border-zinc-800">
               <button
+                type="button"
                 onClick={handleTransmitSstv}
                 disabled={sstvTransmitting}
                 className="w-full py-2.5 px-4 bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 text-black font-bold rounded-lg flex items-center justify-center gap-2 shadow-lg transition-all cursor-pointer"

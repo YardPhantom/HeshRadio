@@ -65,6 +65,7 @@ export const RtlSdrControlPanel: React.FC<RtlSdrControlPanelProps> = ({
         actions={
           sdrStatus.connected ? (
             <button
+              type="button"
               onClick={handleDisconnect}
               className="text-xs px-3.5 py-1.5 bg-red-950/80 hover:bg-red-900 text-red-300 rounded-lg font-mono font-bold border border-red-800 cursor-pointer"
             >
@@ -73,6 +74,7 @@ export const RtlSdrControlPanel: React.FC<RtlSdrControlPanelProps> = ({
           ) : (
             <div className="flex gap-2">
               <button
+                type="button"
                 onClick={handleConnectWebUsb}
                 disabled={connecting}
                 className="text-xs px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-black rounded-lg font-mono font-bold transition-all shadow-md flex items-center gap-1.5 cursor-pointer"
@@ -82,6 +84,7 @@ export const RtlSdrControlPanel: React.FC<RtlSdrControlPanelProps> = ({
                 {connecting ? 'PAIRING...' : 'CONNECT USB'}
               </button>
               <button
+                type="button"
                 onClick={handleConnectRtlTcp}
                 disabled={connecting}
                 className="text-xs px-3.5 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-cyan-300 rounded-lg font-mono font-bold border border-zinc-700 flex items-center gap-1.5 cursor-pointer"
@@ -96,42 +99,51 @@ export const RtlSdrControlPanel: React.FC<RtlSdrControlPanelProps> = ({
 
       {/* Hardware Telemetry Grid */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-xs font-mono">
-        <div className="bg-black/40 p-3 rounded-lg border border-zinc-800">
-          <div className="text-[10px] text-zinc-500 uppercase">Device Hardware</div>
-          <div className="text-zinc-200 font-bold truncate" title={sdrStatus.dongleName}>
-            {sdrStatus.dongleName}
+        <div className="tactical-tile">
+          <div className="px-0.5 space-y-0.5">
+            <div className="text-[10px] text-zinc-500 uppercase">Device Hardware</div>
+            <div className="text-zinc-200 font-bold truncate" title={sdrStatus.dongleName}>
+              {sdrStatus.dongleName}
+            </div>
           </div>
         </div>
-        <div className="bg-black/40 p-3 rounded-lg border border-zinc-800">
-          <div className="text-[10px] text-zinc-500 uppercase">Tuner Architecture</div>
-          <div className="text-cyan-300 font-bold">{sdrStatus.tunerType}</div>
-        </div>
-        <div className="bg-black/40 p-3 rounded-lg border border-zinc-800">
-          <div className="text-[10px] text-zinc-500 uppercase">IQ Sample Rate</div>
-          <div className="text-amber-300 font-bold">
-            {(sdrStatus.sampleRateHz / 1e6).toFixed(3)} MS/s
+        <div className="tactical-tile">
+          <div className="px-0.5 space-y-0.5">
+            <div className="text-[10px] text-zinc-500 uppercase">Tuner Architecture</div>
+            <div className="text-cyan-300 font-bold">{sdrStatus.tunerType}</div>
           </div>
         </div>
-        <div className="bg-black/40 p-3 rounded-lg border border-zinc-800">
-          <div className="text-[10px] text-zinc-500 uppercase">Direct Sampling</div>
-          <div className="text-zinc-300 font-bold">
-            {sdrStatus.directSampling === 2
-              ? 'Q-Branch (HF)'
-              : sdrStatus.directSampling === 1
-              ? 'I-Branch'
-              : 'Off (PLL)'}
+        <div className="tactical-tile">
+          <div className="px-0.5 space-y-0.5">
+            <div className="text-[10px] text-zinc-500 uppercase">IQ Sample Rate</div>
+            <div className="text-amber-300 font-bold">
+              {(sdrStatus.sampleRateHz / 1e6).toFixed(3)} MS/s
+            </div>
+          </div>
+        </div>
+        <div className="tactical-tile">
+          <div className="px-0.5 space-y-0.5">
+            <div className="text-[10px] text-zinc-500 uppercase">Direct Sampling</div>
+            <div className="text-zinc-300 font-bold">
+              {sdrStatus.directSampling === 2
+                ? 'Q-Branch (HF)'
+                : sdrStatus.directSampling === 1
+                ? 'I-Branch'
+                : 'Off (PLL)'}
+            </div>
           </div>
         </div>
       </div>
 
       {/* Controls & Fallback Status Bar */}
-      <div className="flex flex-wrap items-center justify-between gap-3 text-xs font-mono bg-black/50 p-3 rounded-xl border border-zinc-800">
+      <div className="tactical-card flex-row flex-wrap items-center justify-between gap-3 text-xs font-mono">
         {/* Gain Controls */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-3 px-0.5">
           <span className="text-zinc-400 flex items-center gap-1.5">
             <Sliders className="w-3.5 h-3.5 text-amber-400" /> TUNER GAIN:
           </span>
           <button
+            type="button"
             onClick={() => handleGainChange(sdrStatus.gainDb, sdrStatus.gainMode !== 'AUTO')}
             className={`px-3 py-1 rounded-md text-[11px] font-bold border cursor-pointer ${
               sdrStatus.gainMode === 'AUTO'

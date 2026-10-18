@@ -88,6 +88,7 @@ export const NoaaEmergencyDeck: React.FC<NoaaEmergencyDeckProps> = ({
         badgeVariant="red"
         actions={
           <button
+            type="button"
             onClick={handleSimulateAlert}
             disabled={simulating}
             className="px-4 py-2 bg-red-600 hover:bg-red-500 disabled:opacity-50 text-white font-bold rounded-lg text-xs flex items-center gap-2 shadow-lg shadow-red-600/30 transition-all cursor-pointer"
@@ -102,7 +103,7 @@ export const NoaaEmergencyDeck: React.FC<NoaaEmergencyDeckProps> = ({
       {isAlertActive && (
         <div className="bg-red-950/80 border-2 border-red-500 p-4 rounded-xl flex items-center gap-3 animate-pulse">
           <AlertTriangle className="w-8 h-8 text-red-400 shrink-0" />
-          <div>
+          <div className="px-1">
             <div className="text-red-300 font-bold text-sm">
               EMERGENCY ALERT SYSTEM (EAS) ACTIVATED!
             </div>
@@ -116,12 +117,12 @@ export const NoaaEmergencyDeck: React.FC<NoaaEmergencyDeckProps> = ({
       {/* 1050 Hz Detector Telemetry & NOAA Channels Grid */}
       <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
         {/* Detector Status */}
-        <div className="md:col-span-5 bg-black/40 border border-zinc-800 rounded-xl p-3.5 space-y-3">
-          <div className="text-xs font-bold text-amber-400 flex items-center gap-1.5">
+        <div className="md:col-span-5 tactical-card space-y-3">
+          <div className="text-xs font-bold text-amber-400 flex items-center gap-1.5 px-0.5">
             <Radio className="w-4 h-4" /> 1050 Hz GOERTZEL WARNING ALARM DETECTOR
           </div>
 
-          <div className="space-y-1.5 text-xs">
+          <div className="space-y-1.5 text-xs px-0.5">
             <div className="flex justify-between">
               <span className="text-zinc-400">1050 Hz Relative Energy:</span>
               <span
@@ -157,8 +158,8 @@ export const NoaaEmergencyDeck: React.FC<NoaaEmergencyDeckProps> = ({
         </div>
 
         {/* NOAA 7-Channel Quick Selector */}
-        <div className="md:col-span-7 bg-black/40 border border-zinc-800 rounded-xl p-3.5 space-y-2">
-          <div className="text-xs font-bold text-cyan-400 flex items-center justify-between">
+        <div className="md:col-span-7 tactical-card space-y-2">
+          <div className="text-xs font-bold text-cyan-400 flex items-center justify-between px-0.5">
             <span className="flex items-center gap-1.5">
               <Volume2 className="w-4 h-4" /> NWS ALL-HAZARDS FREQUENCIES (162.400 - 162.550 MHz)
             </span>
@@ -169,20 +170,21 @@ export const NoaaEmergencyDeck: React.FC<NoaaEmergencyDeckProps> = ({
             {noaaChannels.map((ch) => (
               <button
                 key={ch.freq}
+                type="button"
                 onClick={() => onTuneNoaaChannel && onTuneNoaaChannel(ch.freq)}
-                className="p-3 px-3.5 bg-zinc-900 hover:bg-cyan-950/40 border border-zinc-800 hover:border-cyan-500/50 rounded-xl text-center transition-all group cursor-pointer"
+                className="p-3 px-3.5 bg-zinc-900 hover:bg-cyan-950/40 border border-zinc-800 hover:border-cyan-500/50 rounded-xl text-center transition-all group cursor-pointer focus-visible:outline-none"
               >
-                <div className="text-zinc-400 group-hover:text-cyan-300 font-bold text-xs">
+                <div className="text-zinc-400 group-hover:text-cyan-300 font-bold text-xs px-0.5">
                   {ch.label}
                 </div>
-                <div className="text-zinc-500 group-hover:text-cyan-400 font-mono text-[10px]">
+                <div className="text-zinc-500 group-hover:text-cyan-400 font-mono text-[10px] px-0.5">
                   {ch.freq.toFixed(3)} MHz
                 </div>
               </button>
             ))}
           </div>
 
-          <div className="text-[10px] text-zinc-500 pt-1">
+          <div className="text-[10px] text-zinc-500 pt-1 px-0.5">
             Click any channel to immediately tune receiver VFO and engage NFM 1050 Hz guard.
           </div>
         </div>

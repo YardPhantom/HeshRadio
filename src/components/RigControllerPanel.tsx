@@ -90,6 +90,7 @@ export const RigControllerPanel: React.FC<RigControllerPanelProps> = ({
         actions={
           rigStatus.connected ? (
             <button
+              type="button"
               onClick={handleDisconnect}
               className="text-xs px-3.5 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 rounded-lg font-mono font-bold border border-zinc-700 cursor-pointer"
             >
@@ -98,6 +99,7 @@ export const RigControllerPanel: React.FC<RigControllerPanelProps> = ({
           ) : (
             <div className="flex flex-wrap gap-2">
               <button
+                type="button"
                 onClick={handleConnectSerial}
                 disabled={connecting}
                 className="text-xs px-3.5 py-1.5 bg-red-600 hover:bg-red-500 text-white rounded-lg font-mono font-bold transition-all shadow-md flex items-center gap-1.5 cursor-pointer"
@@ -107,6 +109,7 @@ export const RigControllerPanel: React.FC<RigControllerPanelProps> = ({
                 {connecting ? 'PAIRING...' : 'SERIAL CAT / DIGIRIG'}
               </button>
               <button
+                type="button"
                 onClick={handleConnectHamlib}
                 disabled={connecting}
                 className="text-xs px-3.5 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 rounded-lg font-mono font-bold border border-zinc-700 cursor-pointer"
@@ -115,6 +118,7 @@ export const RigControllerPanel: React.FC<RigControllerPanelProps> = ({
                 HAMLIB
               </button>
               <button
+                type="button"
                 onClick={handleConnectCm108}
                 disabled={connecting}
                 className="text-xs px-3.5 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 rounded-lg font-mono font-bold border border-zinc-700 cursor-pointer"
@@ -130,8 +134,8 @@ export const RigControllerPanel: React.FC<RigControllerPanelProps> = ({
       {/* Protocol & PTT Configuration Grid */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs font-mono">
         {/* CAT Protocol Selection */}
-        <div className="bg-black/40 p-3 rounded-lg border border-zinc-800 space-y-2">
-          <div className="text-[10px] text-zinc-400 font-bold uppercase flex items-center justify-between">
+        <div className="tactical-card space-y-2">
+          <div className="text-[10px] text-zinc-400 font-bold uppercase flex items-center justify-between px-0.5">
             <span>CAT Protocol Engine</span>
             <span className="text-amber-400 font-bold">{rigStatus.protocol}</span>
           </div>
@@ -145,7 +149,7 @@ export const RigControllerPanel: React.FC<RigControllerPanelProps> = ({
             <option value="ICOM_CIV">Icom CI-V Bus (0xFE 0xFE BCD 0xFD)</option>
             <option value="HAMLIB_RIGCTLD">Hamlib rigctld (TCP Client)</option>
           </select>
-          <div className="flex items-center justify-between text-[11px] text-zinc-500 pt-1">
+          <div className="flex items-center justify-between text-[11px] text-zinc-500 pt-1 px-0.5">
             <span>Baud Rate:</span>
             <select
               value={baudRate}
@@ -161,8 +165,8 @@ export const RigControllerPanel: React.FC<RigControllerPanelProps> = ({
         </div>
 
         {/* Hardware PTT Mechanism */}
-        <div className="bg-black/40 p-3 rounded-lg border border-zinc-800 space-y-2">
-          <div className="text-[10px] text-zinc-400 font-bold uppercase flex items-center justify-between">
+        <div className="tactical-card space-y-2">
+          <div className="text-[10px] text-zinc-400 font-bold uppercase flex items-center justify-between px-0.5">
             <span>Hardware PTT Keying</span>
             <span className="text-red-400 font-bold">{rigStatus.pttMechanism}</span>
           </div>
@@ -177,7 +181,7 @@ export const RigControllerPanel: React.FC<RigControllerPanelProps> = ({
             <option value="CAT_COMMAND">CAT Software Command (TX;/RX; or CI-V)</option>
             <option value="VOX">VOX Audio Keying</option>
           </select>
-          <div className="text-[10px] text-zinc-500 pt-1">
+          <div className="text-[10px] text-zinc-500 pt-1 px-0.5">
             {rigStatus.pttMechanism === 'SERIAL_RTS'
               ? 'Asserts RTS line on USB-Serial interface for opto-isolated PTT.'
               : rigStatus.pttMechanism === 'CM108_GPIO'
@@ -187,8 +191,8 @@ export const RigControllerPanel: React.FC<RigControllerPanelProps> = ({
         </div>
 
         {/* Fail-Safe TOT & Panic Unkey Watchdog */}
-        <div className="bg-black/40 p-3 rounded-lg border border-red-900/50 space-y-2">
-          <div className="text-[10px] text-zinc-400 font-bold uppercase flex items-center justify-between">
+        <div className="tactical-card border-red-900/50 space-y-2">
+          <div className="text-[10px] text-zinc-400 font-bold uppercase flex items-center justify-between px-0.5">
             <span className="flex items-center gap-1.5 text-red-400 font-bold">
               <ShieldAlert className="w-3.5 h-3.5" /> TOT SAFETY WATCHDOG
             </span>
@@ -201,7 +205,7 @@ export const RigControllerPanel: React.FC<RigControllerPanelProps> = ({
             </span>
           </div>
 
-          <div className="flex items-center justify-between text-xs text-zinc-400">
+          <div className="flex items-center justify-between text-xs text-zinc-400 px-0.5">
             <span>Timeout Limit:</span>
             <select
               value={rigStatus.totConfiguredSec}
@@ -217,6 +221,7 @@ export const RigControllerPanel: React.FC<RigControllerPanelProps> = ({
           </div>
 
           <button
+            type="button"
             onClick={onPanicUnkey}
             className="w-full py-2 px-3 text-xs font-bold bg-red-950 hover:bg-red-900 text-red-200 border border-red-700 rounded-lg flex items-center justify-center gap-2 transition-all cursor-pointer shadow-md"
             title="Immediately unkeys transmitter and resets all hardware control lines"

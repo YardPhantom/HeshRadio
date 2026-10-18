@@ -126,6 +126,7 @@ export const TacticalScannerDeck: React.FC<TacticalScannerDeckProps> = ({
         actions={
           <>
             <button
+              type="button"
               onClick={handleExportJson}
               className="px-3.5 py-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 rounded-lg text-xs flex items-center gap-1.5 border border-zinc-700 cursor-pointer transition-colors font-bold"
               title="Export Memory Banks to JSON"
@@ -133,6 +134,7 @@ export const TacticalScannerDeck: React.FC<TacticalScannerDeckProps> = ({
               <Download className="w-3.5 h-3.5" /> EXPORT JSON
             </button>
             <button
+              type="button"
               onClick={() => setShowAddModal(true)}
               className="px-3.5 py-2 bg-amber-500 hover:bg-amber-400 text-black font-bold rounded-lg text-xs flex items-center gap-1.5 cursor-pointer transition-colors shadow-sm"
             >
@@ -143,10 +145,11 @@ export const TacticalScannerDeck: React.FC<TacticalScannerDeckProps> = ({
       />
 
       {/* Scanner Control Bar */}
-      <div className="grid grid-cols-1 md:grid-cols-12 gap-3 bg-black/40 p-4 rounded-xl border border-zinc-800/80 items-center">
+      <div className="tactical-card md:grid md:grid-cols-12 md:gap-3 items-center space-y-3 md:space-y-0">
         {/* Play/Stop Button */}
         <div className="md:col-span-3">
           <button
+            type="button"
             onClick={handleToggleScan}
             className={`w-full py-2.5 px-4 rounded-lg font-bold text-xs flex items-center justify-center gap-2 shadow-lg transition-all cursor-pointer ${
               scanStatus.isScanning
@@ -234,6 +237,7 @@ export const TacticalScannerDeck: React.FC<TacticalScannerDeckProps> = ({
         {banks.map((bank) => (
           <button
             key={bank.id}
+            type="button"
             onClick={() => handleBankChange(bank.id)}
             className={`px-3.5 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer ${
               activeBankId === bank.id
@@ -305,6 +309,7 @@ export const TacticalScannerDeck: React.FC<TacticalScannerDeckProps> = ({
                     </td>
                     <td className="py-3 px-4 text-center">
                       <button
+                        type="button"
                         onClick={() => handleToggleSkip(chan.id)}
                         className={`p-1.5 rounded cursor-pointer ${
                           chan.skip
@@ -318,12 +323,14 @@ export const TacticalScannerDeck: React.FC<TacticalScannerDeckProps> = ({
                     </td>
                     <td className="py-3 px-4 text-right space-x-1.5">
                       <button
+                        type="button"
                         onClick={() => onTuneChannel(chan)}
                         className="px-3.5 py-1.5 rounded-lg bg-amber-500/20 hover:bg-amber-500/40 text-amber-300 border border-amber-500/30 text-[10px] font-bold cursor-pointer transition-colors"
                       >
                         TUNE
                       </button>
                       <button
+                        type="button"
                         onClick={() => handleDeleteChannel(chan.id)}
                         className="px-3.5 py-1.5 rounded-lg bg-red-950/40 hover:bg-red-900/60 text-red-400 text-[10px] cursor-pointer transition-colors border border-red-800/40"
                         title="Delete Memory"
