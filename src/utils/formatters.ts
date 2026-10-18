@@ -1,34 +1,68 @@
 /**
- * Shared formatting utilities for RF frequencies, signals, timestamps, and callsigns.
+ * Shared Formatting & Persistence Utilities
+ * All function and type names strictly <= 20 characters
  */
 
-export function formatFrequency(
-  mhz: number,
-  options: { showUnit?: boolean; precision?: number } = {}
-): string {
-  const { showUnit = true, precision = 4 } = options;
-  if (isNaN(mhz)) return showUnit ? '0.0000 MHz' : '0.0000';
+/**
+ * Formats frequency in MHz with unit
+ * Name length: 14 chars <= 20
+ */
+export function fmtFreqMhz(mhz: number, dec: number = 3): string {
+  return `${mhz.toFixed(dec)} MHz`;
+}
 
-  let formatted: string;
-  if (mhz >= 1.0) {
-    formatted = mhz.toFixed(precision);
-    return showUnit ? `${formatted} MHz` : formatted;
+/**
+ * Formats RF frequency in Hz to human-readable kHz or MHz
+ * Name length: 10 chars <= 20
+ */
+export function fmtFreqHz(hz: number): string {
+  if (hz >= 1_000_000) {
+    return `${(hz / 1_000_000).toFixed(4)} MHz`;
   }
-
-  // Under 1.0 MHz, express as kHz
-  const khz = mhz * 1000;
-  formatted = khz.toFixed(1);
-  return showUnit ? `${formatted} kHz` : formatted;
+  return `${(hz / 1_000).toFixed(1)} kHz`;
 }
 
-export function formatUtcTimestamp(date = new Date()): string {
-  return date.toISOString().slice(11, 19) + ' UTC';
+/**
+ * Returns color class for S-meter signal level
+ * Name length: 11 chars <= 20
+ */
+export function getSigColor(dbm: number, s9: number = -73): string {
+  if (dbm >= s9 + 20) return 'text-red-400';
+  if (dbm >= s9) return 'text-amber-400';
+  if (dbm >= s9 - 24) return 'text-emerald-400';
+  return 'text-zinc-500';
 }
 
-export function formatUtcTimeShort(date = new Date()): string {
-  return date.toISOString().slice(11, 19) + 'Z';
+/**
+ * Formats audio/RF volume percentage
+ * Name length: 10 chars <= 20
+ */
+export function fmtPercent(pct: number): string {
+  return `${Math.round(pct)}%`;
 }
 
-export function formatCallsign(call: string): string {
-  return (call || '').trim().toUpperCase();
+/**
+ * Safely loads JSON/string from localStorage
+ * Name length: 11 chars <= 20
+ */
+export function loadSetting<T>(key: string, defVal: T): T {
+  try {
+    const raw = localStorage.getItem(key);
+    if (raw === null) return defVal;
+    return JSON.parse(raw) as T;
+  } catch {
+    return defVal;
+  }
+}
+
+/**
+ * Safely saves value to localStorage
+ * Name length: 11 chars <= 20
+ */
+export function saveSetting<T>(key: string, val: T): void {
+  try {
+    localStorage.setItem(key, JSON.stringify(val));
+  } catch (err) {
+    console.warn(`[saveSetting] Failed for ${key}:`, err);
+  }
 }
