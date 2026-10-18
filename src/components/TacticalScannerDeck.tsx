@@ -280,7 +280,7 @@ export const TacticalScannerDeck: React.FC<TacticalScannerDeckProps> = ({
                     {chan.frequencyMhz.toFixed(4)} MHz
                   </td>
                   <td className="py-2.5 px-3.5">
-                    <span className="px-3.5 py-1 rounded-md bg-zinc-800 text-[10px] text-zinc-300 font-bold inline-block border border-zinc-700/60">
+                    <span className="px-3.5 py-1.5 rounded-lg bg-zinc-800 text-[10px] text-zinc-300 font-bold inline-block border border-zinc-700/60 leading-none">
                       {chan.mode}
                     </span>
                   </td>

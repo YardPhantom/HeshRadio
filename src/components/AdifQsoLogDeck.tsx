@@ -298,7 +298,7 @@ export const AdifQsoLogDeck: React.FC<AdifQsoLogDeckProps> = ({
             <Cloud className="w-3.5 h-3.5 text-cyan-400" />
             <span>WRL SYNC</span>
             {stats.unsyncedCount > 0 && (
-              <span className="px-2 py-0.5 text-[10px] bg-amber-500 text-black rounded-full font-black font-mono">
+              <span className="px-2.5 py-0.5 text-[10px] min-w-[20px] inline-flex items-center justify-center bg-amber-500 text-black rounded-full font-black font-mono leading-none shadow-sm">
                 {stats.unsyncedCount}
               </span>
             )}
@@ -655,11 +655,11 @@ export const AdifQsoLogDeck: React.FC<AdifQsoLogDeckProps> = ({
                     </td>
                     <td className="px-3.5 py-2.5">
                       {r.potaRef ? (
-                        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-[10px] font-bold bg-pink-950/80 text-pink-300 border border-pink-700/50">
-                          <Trees className="w-3 h-3 text-pink-400" /> {r.potaRef}
+                        <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[10px] font-bold bg-pink-950/80 text-pink-300 border border-pink-700/50 leading-none">
+                          <Trees className="w-3 h-3 text-pink-400 shrink-0" /> {r.potaRef}
                         </span>
                       ) : r.sotaRef ? (
-                        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-[10px] font-bold bg-amber-950/80 text-amber-300 border border-amber-700/50">
+                        <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[10px] font-bold bg-amber-950/80 text-amber-300 border border-amber-700/50 leading-none">
                           ⛰️ {r.sotaRef}
                         </span>
                       ) : (
@@ -673,10 +673,10 @@ export const AdifQsoLogDeck: React.FC<AdifQsoLogDeckProps> = ({
                     <td className="px-3.5 py-2.5 text-right space-x-1.5 whitespace-nowrap">
                       <button
                         onClick={() => setSelectedQsoForQsl(r)}
-                        className="px-2.5 py-1 bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 rounded text-[11px] font-bold inline-flex items-center gap-1 transition-colors cursor-pointer"
+                        className="px-3 py-1.5 bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 rounded-lg text-[11px] font-bold inline-flex items-center gap-1.5 transition-colors cursor-pointer leading-none shadow-sm"
                         title="Generate graphical AutoQSL confirmation card"
                       >
-                        <Award className="w-3 h-3 text-amber-400" /> AUTO-QSL
+                        <Award className="w-3 h-3 text-amber-400 shrink-0" /> AUTO-QSL
                       </button>
                       <button
                         onClick={() => handleDelete(r.id)}

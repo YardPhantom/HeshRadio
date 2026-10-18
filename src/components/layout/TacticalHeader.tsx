@@ -42,7 +42,7 @@ export const TacticalHeader: React.FC<TacticalHeaderProps> = ({
         <div>
           <div className="flex items-center gap-2">
             <h1 className="app-logo">HESHRADIO</h1>
-            <span className="px-3.5 py-1.5 rounded-lg text-[10px] font-mono font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40 tracking-wider shadow-sm">
+            <span className="px-3.5 py-1.5 rounded-lg text-[10px] font-mono font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40 tracking-wider shadow-sm leading-none">
               {CURRENT_VERSION}
             </span>
           </div>

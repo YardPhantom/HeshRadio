@@ -76,15 +76,15 @@ export const CategoryTabBar: React.FC<CategoryTabBarProps> = ({
   const activeCategory = getCategoryForTab(activeTab);
 
   return (
-    <nav className="panel nav-panel flex flex-col gap-2.5" aria-label="Tactical Workspace Navigation">
+    <nav className="panel nav-panel flex flex-col gap-3.5" aria-label="Tactical Workspace Navigation">
       {/* Tier 1: 6 Segmented Workspaces */}
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <div className="flex flex-wrap items-center gap-2">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex flex-wrap items-center gap-2.5">
           {/* 1. TRANSCEIVER */}
           <button
             type="button"
             onClick={() => onSelectTab('VFO_SDR')}
-            className={`px-4 py-2.5 rounded-lg text-xs font-mono font-bold flex items-center gap-2.5 transition-all duration-150 cursor-pointer select-none border active:scale-[0.98] ${
+            className={`px-4.5 py-2.5 rounded-lg text-xs font-mono font-bold flex items-center gap-2.5 transition-all duration-150 cursor-pointer select-none border leading-none active:scale-[0.98] ${
               activeCategory === 'TRANSCEIVER'
                 ? 'bg-gradient-to-b from-amber-500/25 to-amber-600/10 text-amber-300 border-amber-500/60 shadow-lg shadow-amber-500/15'
                 : 'bg-zinc-900/60 text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/70 border-zinc-800/80'
@@ -208,20 +208,20 @@ export const CategoryTabBar: React.FC<CategoryTabBarProps> = ({
         {/* IARU Standard Calibration Reference Badge */}
         <div className="flex items-center gap-2 text-xs font-mono text-zinc-400">
           <span className="text-zinc-500">IARU S9 REF:</span>
-          <span className="text-amber-400 font-bold bg-amber-950/40 border border-amber-800/40 px-3.5 py-2 rounded-lg">
+          <span className="text-amber-400 font-bold bg-amber-950/40 border border-amber-800/40 px-3.5 py-2 rounded-lg leading-none shadow-sm">
             {frequencyMhz > 30 ? '-93 dBm (VHF/UHF)' : '-73 dBm (HF)'}
           </span>
         </div>
       </div>
 
       {/* Tier 2: Sleek Sub-Tabs */}
-      <div className="flex flex-wrap items-center gap-2.5 pt-2.5 border-t border-zinc-800/60">
+      <div className="flex flex-wrap items-center gap-3 pt-3 border-t border-zinc-800/60">
         {activeCategory === 'TRANSCEIVER' && (
-          <div className="flex flex-wrap items-center gap-2.5 text-xs font-mono">
-            <span className="px-4.5 py-2.5 rounded-lg bg-amber-500 text-black font-bold flex items-center gap-2 shadow-sm">
+          <div className="flex flex-wrap items-center gap-3 text-xs font-mono">
+            <span className="px-4.5 py-2.5 rounded-lg bg-amber-500 text-black font-bold flex items-center gap-2 shadow-sm leading-none">
               <Radio className="w-3.5 h-3.5 shrink-0" /> VFO &amp; 120Hz WATERFALL
             </span>
-            <span className="text-zinc-400 text-xs px-3.5 py-2 bg-zinc-900/60 rounded-lg border border-zinc-800">
+            <span className="text-zinc-400 text-xs px-3.5 py-2 bg-zinc-900/60 rounded-lg border border-zinc-800 leading-none">
               Tuned: <strong className="text-amber-300">{frequencyMhz.toFixed(4)} MHz</strong> ({mode}) •{' '}
               <span className="text-zinc-300">{currentBandName}</span>
             </span>
@@ -229,11 +229,11 @@ export const CategoryTabBar: React.FC<CategoryTabBarProps> = ({
         )}
 
         {activeCategory === 'FM_BROADCAST' && (
-          <div className="flex flex-wrap items-center gap-2.5 text-xs font-mono">
-            <span className="px-4.5 py-2.5 rounded-lg bg-pink-500 text-black font-bold flex items-center gap-2 shadow-sm">
+          <div className="flex flex-wrap items-center gap-3 text-xs font-mono">
+            <span className="px-4.5 py-2.5 rounded-lg bg-pink-500 text-black font-bold flex items-center gap-2 shadow-sm leading-none">
               <Radio className="w-3.5 h-3.5 shrink-0" /> 87.5–108.0 MHz FM &amp; 40,000+ WORLDWIDE STREAMS
             </span>
-            <span className="text-zinc-400 text-xs px-3.5 py-2 bg-zinc-900/60 rounded-lg border border-zinc-800">
+            <span className="text-zinc-400 text-xs px-3.5 py-2 bg-zinc-900/60 rounded-lg border border-zinc-800 leading-none">
               Sidechain S9 Auto-Ducker Active • Presets P1–P8
             </span>
           </div>

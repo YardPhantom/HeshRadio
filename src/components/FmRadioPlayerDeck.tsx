@@ -338,13 +338,13 @@ export const FmRadioPlayerDeck: React.FC<FmRadioPlayerDeckProps> = ({
         {/* Top Info Readout Row */}
         <div className="flex flex-wrap items-center justify-between gap-3 border-b border-zinc-800/80 pb-3">
           <div className="flex items-center gap-2">
-            <span className="px-3 py-1.5 rounded-md text-[10px] font-bold bg-red-950/80 text-red-400 border border-red-700 animate-pulse">
+            <span className="px-3.5 py-1.5 rounded-lg text-[10px] font-bold bg-red-950/80 text-red-400 border border-red-700 animate-pulse leading-none shadow-sm">
               ● LIVE ON AIR
             </span>
-            <span className="px-3 py-1.5 rounded-md text-[10px] font-bold bg-zinc-800 text-zinc-300 border border-zinc-700">
+            <span className="px-3.5 py-1.5 rounded-lg text-[10px] font-bold bg-zinc-800 text-zinc-300 border border-zinc-700 leading-none shadow-sm">
               FM STEREO
             </span>
-            <span className="px-3 py-1.5 rounded-md text-[10px] font-bold bg-cyan-950 text-cyan-300 border border-cyan-800 flex items-center gap-1.5">
+            <span className="px-3.5 py-1.5 rounded-lg text-[10px] font-bold bg-cyan-950 text-cyan-300 border border-cyan-800 flex items-center gap-1.5 leading-none shadow-sm">
               <Sparkles className="w-3 h-3 text-cyan-400 shrink-0" /> RDS ACTIVE
             </span>
           </div>
@@ -353,7 +353,7 @@ export const FmRadioPlayerDeck: React.FC<FmRadioPlayerDeckProps> = ({
           <div className="flex items-center gap-2">
             <span className="text-[11px] text-zinc-400 font-bold">SIDECHAIN DUCKER:</span>
             <span
-              className={`px-3 py-1.5 rounded-md text-[10px] font-bold border transition-all ${
+              className={`px-3.5 py-1.5 rounded-lg text-[10px] font-bold border transition-all leading-none shadow-sm ${
                 isCurrentlyDucked
                   ? 'bg-amber-500/20 text-amber-300 border-amber-500/50 shadow-md animate-pulse'
                   : 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30'
@@ -825,11 +825,11 @@ export const FmRadioPlayerDeck: React.FC<FmRadioPlayerDeckProps> = ({
                       </span>
                       <div className="flex items-center gap-1.5 overflow-hidden">
                         {st.votes !== undefined && st.votes > 0 && (
-                          <span className="text-[10px] px-2.5 py-1 rounded-md bg-zinc-900 text-amber-300 font-bold border border-zinc-800 shrink-0">
+                          <span className="text-[10px] px-3 py-1 rounded-lg bg-zinc-900 text-amber-300 font-bold border border-zinc-800 shrink-0 leading-none">
                             ★ {st.votes > 1000 ? `${(st.votes / 1000).toFixed(1)}k` : st.votes}
                           </span>
                         )}
-                        <span className="text-[10px] px-2.5 py-1 rounded-md bg-zinc-800 text-zinc-300 font-bold border border-zinc-700/80 shrink-0">
+                        <span className="text-[10px] px-3 py-1 rounded-lg bg-zinc-800 text-zinc-300 font-bold border border-zinc-700/80 shrink-0 leading-none">
                           {st.bitrate}
                         </span>
                       </div>
@@ -842,7 +842,7 @@ export const FmRadioPlayerDeck: React.FC<FmRadioPlayerDeckProps> = ({
 
                     {/* Genre / Format Badge */}
                     <div className="flex items-center gap-1.5">
-                      <span className="text-[11px] px-2.5 py-1 rounded-md bg-cyan-950/50 text-cyan-300 font-semibold border border-cyan-800/40 truncate" title={st.genre}>
+                      <span className="text-[11px] px-3 py-1.5 rounded-lg bg-cyan-950/50 text-cyan-300 font-semibold border border-cyan-800/40 truncate leading-none" title={st.genre}>
                         {st.genre}
                       </span>
                     </div>

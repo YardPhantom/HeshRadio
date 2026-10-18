@@ -201,8 +201,8 @@ export const RigControllerPanel: React.FC<RigControllerPanelProps> = ({
               <ShieldAlert className="w-3.5 h-3.5" /> TOT SAFETY WATCHDOG
             </span>
             <span
-              className={`font-bold font-mono px-2 py-0.5 rounded-md ${
-                rigStatus.txActive ? 'bg-red-900/80 text-white animate-pulse' : 'text-zinc-400'
+              className={`font-bold font-mono px-3 py-1.5 rounded-lg border leading-none ${
+                rigStatus.txActive ? 'bg-red-900/80 text-white border-red-700 animate-pulse' : 'bg-zinc-800/80 text-zinc-300 border-zinc-700/70'
               }`}
             >
               {rigStatus.txActive ? `${rigStatus.totRemainingSec}s LEFT` : 'ARMED'}

@@ -75,10 +75,10 @@ export const HighwayDispatchDeck: React.FC<HighwayDispatchDeckProps> = ({
                 <button
                   type="button"
                   onClick={() => onLogQso(item)}
-                  className="px-2.5 py-1 bg-amber-500/20 hover:bg-amber-500/40 text-amber-300 border border-amber-500/40 rounded text-[10px] font-bold inline-flex items-center gap-1 cursor-pointer transition-colors"
+                  className="px-3 py-1.5 bg-amber-500/20 hover:bg-amber-500/40 text-amber-300 border border-amber-500/40 rounded-lg text-[10px] font-bold inline-flex items-center gap-1.5 cursor-pointer transition-colors leading-none shadow-sm"
                   title="Promote and save this contact to ADIF QSO Logbook"
                 >
-                  <BookOpen className="w-3 h-3 text-amber-400" /> LOG TO ADIF
+                  <BookOpen className="w-3 h-3 text-amber-400 shrink-0" /> LOG TO ADIF
                 </button>
               )}
             </div>

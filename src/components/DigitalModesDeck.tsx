@@ -309,7 +309,7 @@ export const DigitalModesDeck: React.FC<DigitalModesDeckProps> = ({
                     <div className="flex items-center gap-2">
                       <span className="font-bold text-cyan-400">{pkt.sourceCall}</span>
                       <span className="text-zinc-500">▶ {pkt.destCall}</span>
-                      <span className="px-3 py-1 rounded-md bg-zinc-800 text-zinc-300 text-[10px] font-bold border border-zinc-700/80">
+                      <span className="px-3.5 py-1.5 rounded-lg bg-zinc-800 text-zinc-300 text-[10px] font-bold border border-zinc-700/80 leading-none">
                         {pkt.payloadType}
                       </span>
                     </div>
@@ -347,7 +347,7 @@ export const DigitalModesDeck: React.FC<DigitalModesDeckProps> = ({
               </span>
               <div className="flex items-center gap-3">
                 <span
-                  className={`px-3 py-1 rounded-md text-[10px] font-bold ${
+                  className={`px-3.5 py-1.5 rounded-lg text-[10px] font-bold leading-none ${
                     ft8Cycle.isTxWindow
                       ? 'bg-red-500/20 text-red-400 border border-red-500/40 animate-pulse'
                       : 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40'
@@ -432,7 +432,7 @@ export const DigitalModesDeck: React.FC<DigitalModesDeckProps> = ({
                   <div className="flex items-center gap-3">
                     <span className="text-zinc-500">{msg.utcTime}</span>
                     <span
-                      className={`px-3 py-1 rounded-md text-[10px] font-bold border border-zinc-700/60 ${
+                      className={`px-3.5 py-1.5 rounded-lg text-[10px] font-bold border border-zinc-700/60 leading-none ${
                         msg.snrDb >= 0 ? 'bg-emerald-950 text-emerald-400' : 'bg-zinc-800 text-zinc-400'
                       }`}
                     >
