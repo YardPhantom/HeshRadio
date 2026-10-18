@@ -805,8 +805,17 @@ select:focus-visible,
   outline-offset: 2px !important;
 }
 
-/* Buttons will have safe internal padding so content never overlaps outlines or borders */
+/* Buttons will have safe internal padding and perimeter clearance so they NEVER touch borders/outlines of parent divs or spans */
 button {
+  box-sizing: border-box;
+  margin: 0.15rem 0.2rem;
+  outline-offset: 2px;
+}
+
+/* Ensure any div or span holding buttons enforces protective perimeter padding */
+div:has(> button),
+span:has(> button) {
+  padding: 0.25rem 0.35rem;
   box-sizing: border-box;
 }
 
