@@ -1,4 +1,6 @@
 import React from 'react';
+import { DeckHeader } from '../common/DeckHeader';
+import { TacticalSlider } from '../common/TacticalSlider';
 
 export interface AnalogControlKnobsProps {
   masterVolume: number;
@@ -23,92 +25,65 @@ export const AnalogControlKnobs: React.FC<AnalogControlKnobsProps> = ({
 }) => {
   return (
     <section className="panel knobs-panel" aria-label="Front-Panel Analog Audio and RF Controls">
-      <div className="panel-header">
-        <div className="panel-title-group">
-          <span className="status-led led-cyan" />
-          <h2 className="panel-title">FRONT-PANEL ANALOG &amp; DSP CONTROLS</h2>
-        </div>
-        <span className="badge-mono">4-CHANNEL ANALOG POTENTIOMETERS</span>
-      </div>
+      <DeckHeader
+        statusLed="cyan"
+        title="FRONT-PANEL ANALOG & DSP CONTROLS"
+        badgeText="4-CHANNEL ANALOG POTENTIOMETERS"
+        badgeVariant="cyan"
+      />
 
       <div className="knobs-grid">
-        {/* Knob 1: AF Volume */}
-        <div className="knob-card">
-          <div className="knob-header">
-            <label htmlFor="vol-range">AF VOLUME</label>
-            <span className="knob-val">{Math.round(masterVolume * 100)}%</span>
-          </div>
-          <input
-            id="vol-range"
-            type="range"
-            min={0}
-            max={1}
-            step={0.02}
-            value={masterVolume}
-            onChange={(e) => onMasterVolumeChange(parseFloat(e.target.value))}
-            className="tactical-slider"
-          />
-          <span className="knob-sub">Master Receiver Audio</span>
-        </div>
+        <TacticalSlider
+          id="vol-range"
+          label="AF VOLUME"
+          valueReadout={`${Math.round(masterVolume * 100)}%`}
+          min={0}
+          max={1}
+          step={0.02}
+          value={masterVolume}
+          onChange={onMasterVolumeChange}
+          subLabel="Master Receiver Audio"
+          accentColor="cyan"
+        />
 
-        {/* Knob 2: Squelch Threshold */}
-        <div className="knob-card">
-          <div className="knob-header">
-            <label htmlFor="sql-range">SQUELCH (3dB HYST)</label>
-            <span className="knob-val">{squelchDbm} dBm</span>
-          </div>
-          <input
-            id="sql-range"
-            type="range"
-            min={-125}
-            max={-55}
-            step={1}
-            value={squelchDbm}
-            onChange={(e) => onSquelchDbmChange(parseInt(e.target.value, 10))}
-            className="tactical-slider"
-          />
-          <span className="knob-sub">
-            {squelchDbm <= -114 ? 'OPEN (HEAR RF STATIC)' : 'GATED CARRIER THRESHOLD'}
-          </span>
-        </div>
+        <TacticalSlider
+          id="sql-range"
+          label="SQUELCH (3dB HYST)"
+          valueReadout={`${squelchDbm} dBm`}
+          min={-125}
+          max={-55}
+          step={1}
+          value={squelchDbm}
+          onChange={(val) => onSquelchDbmChange(Math.round(val))}
+          subLabel={squelchDbm <= -114 ? 'OPEN (HEAR RF STATIC)' : 'GATED CARRIER THRESHOLD'}
+          accentColor="amber"
+        />
 
-        {/* Knob 3: RF Gain */}
-        <div className="knob-card">
-          <div className="knob-header">
-            <label htmlFor="rfg-range">RF GAIN</label>
-            <span className="knob-val">{rfGainPct}%</span>
-          </div>
-          <input
-            id="rfg-range"
-            type="range"
-            min={20}
-            max={100}
-            step={2}
-            value={rfGainPct}
-            onChange={(e) => onRfGainPctChange(parseInt(e.target.value, 10))}
-            className="tactical-slider"
-          />
-          <span className="knob-sub">Front-End LNA Attenuator</span>
-        </div>
+        <TacticalSlider
+          id="rfg-range"
+          label="RF GAIN"
+          valueReadout={`${rfGainPct}%`}
+          min={20}
+          max={100}
+          step={2}
+          value={rfGainPct}
+          onChange={(val) => onRfGainPctChange(Math.round(val))}
+          subLabel="Front-End LNA Attenuator"
+          accentColor="emerald"
+        />
 
-        {/* Knob 4: Dynamike Speech Compressor */}
-        <div className="knob-card">
-          <div className="knob-header">
-            <label htmlFor="dyn-range">DYNAMIKE (4:1 COMP)</label>
-            <span className="knob-val">{dynamikePct}%</span>
-          </div>
-          <input
-            id="dyn-range"
-            type="range"
-            min={20}
-            max={100}
-            step={5}
-            value={dynamikePct}
-            onChange={(e) => onDynamikePctChange(parseInt(e.target.value, 10))}
-            className="tactical-slider"
-          />
-          <span className="knob-sub">Speech Compressor &amp; Limiter</span>
-        </div>
+        <TacticalSlider
+          id="dyn-range"
+          label="DYNAMIKE (4:1 COMP)"
+          valueReadout={`${dynamikePct}%`}
+          min={20}
+          max={100}
+          step={5}
+          value={dynamikePct}
+          onChange={(val) => onDynamikePctChange(Math.round(val))}
+          subLabel="Speech Compressor & Limiter"
+          accentColor="cyan"
+        />
       </div>
     </section>
   );

@@ -11,6 +11,7 @@ import {
   CheckCircle2,
   Zap,
 } from 'lucide-react';
+import { DeckHeader } from './common/DeckHeader';
 
 interface RigControllerPanelProps {
   rigController: RigController;
@@ -81,25 +82,16 @@ export const RigControllerPanel: React.FC<RigControllerPanelProps> = ({
   return (
     <section className="panel rig-panel space-y-3 font-mono" aria-label="CAT Transceiver Rig Controller &amp; Hardware PTT">
       {/* Header */}
-      <div className="panel-header">
-        <div className="panel-title-group">
-          <span className={`status-led ${rigStatus.connected ? 'led-emerald' : 'led-red'}`} />
-          <h2 className="panel-title">TRANSCEIVER CAT RIG CONTROL &amp; HARDWARE PTT</h2>
-          <span
-            className={`badge-mono font-bold ${
-              rigStatus.connected ? 'text-emerald-400' : 'text-zinc-400'
-            }`}
-          >
-            {rigStatus.connected ? 'RIG ONLINE' : 'DIRECT SDR MODE'}
-          </span>
-        </div>
-
-        {/* Connect / Disconnect Buttons */}
-        <div className="flex items-center gap-2">
-          {rigStatus.connected ? (
+      <DeckHeader
+        statusLed={rigStatus.connected ? 'emerald' : 'red'}
+        title="TRANSCEIVER CAT RIG CONTROL & HARDWARE PTT"
+        badgeText={rigStatus.connected ? 'RIG ONLINE' : 'DIRECT SDR MODE'}
+        badgeVariant={rigStatus.connected ? 'emerald' : 'zinc'}
+        actions={
+          rigStatus.connected ? (
             <button
               onClick={handleDisconnect}
-              className="text-xs px-3.5 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 rounded-md font-mono font-bold border border-zinc-700 cursor-pointer"
+              className="text-xs px-3.5 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 rounded-lg font-mono font-bold border border-zinc-700 cursor-pointer"
             >
               DISCONNECT RIG
             </button>
@@ -108,7 +100,7 @@ export const RigControllerPanel: React.FC<RigControllerPanelProps> = ({
               <button
                 onClick={handleConnectSerial}
                 disabled={connecting}
-                className="text-xs px-3.5 py-1.5 bg-red-600 hover:bg-red-500 text-white rounded-md font-mono font-bold transition-all shadow-md flex items-center gap-1.5 cursor-pointer"
+                className="text-xs px-3.5 py-1.5 bg-red-600 hover:bg-red-500 text-white rounded-lg font-mono font-bold transition-all shadow-md flex items-center gap-1.5 cursor-pointer"
                 title="Connect Digirig or Serial CAT COM port (WebSerial)"
               >
                 <Cable className="w-3.5 h-3.5" />
@@ -117,7 +109,7 @@ export const RigControllerPanel: React.FC<RigControllerPanelProps> = ({
               <button
                 onClick={handleConnectHamlib}
                 disabled={connecting}
-                className="text-xs px-3.5 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 rounded-md font-mono font-bold border border-zinc-700 cursor-pointer"
+                className="text-xs px-3.5 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 rounded-lg font-mono font-bold border border-zinc-700 cursor-pointer"
                 title="Connect Hamlib rigctld (127.0.0.1:4532)"
               >
                 HAMLIB
@@ -125,15 +117,15 @@ export const RigControllerPanel: React.FC<RigControllerPanelProps> = ({
               <button
                 onClick={handleConnectCm108}
                 disabled={connecting}
-                className="text-xs px-3.5 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 rounded-md font-mono font-bold border border-zinc-700 cursor-pointer"
+                className="text-xs px-3.5 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 rounded-lg font-mono font-bold border border-zinc-700 cursor-pointer"
                 title="Connect C-Media CM108 / CM119 USB Audio GPIO PTT"
               >
                 CM108 HID
               </button>
             </div>
-          )}
-        </div>
-      </div>
+          )
+        }
+      />
 
       {/* Protocol & PTT Configuration Grid */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs font-mono">

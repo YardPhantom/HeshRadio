@@ -9,6 +9,7 @@ import {
   Download,
   Trash2,
 } from 'lucide-react';
+import { DeckHeader } from './common/DeckHeader';
 
 interface BlackBoxRecorderDeckProps {
   recorder: BlackBoxRecorder;
@@ -54,20 +55,20 @@ export const BlackBoxRecorderDeck: React.FC<BlackBoxRecorderDeckProps> = ({
   return (
     <section className="panel blackbox-panel font-mono space-y-4" aria-label="Cockpit Black Box Recorder &amp; Instant Replay">
       {/* Header */}
-      <div className="panel-header">
-        <div className="panel-title-group">
-          <span className="status-led led-amber" />
-          <h2 className="panel-title">COCKPIT &ldquo;BLACK BOX&rdquo; RECORDER &amp; REPLAY</h2>
-          <span className="badge-mono hidden sm:inline-block">60s RING BUFFER</span>
-        </div>
-
-        <button
-          onClick={handleClear}
-          className="px-3.5 py-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-400 hover:text-red-300 rounded-lg text-xs flex items-center gap-1.5 border border-zinc-700 transition-colors cursor-pointer font-bold"
-        >
-          <Trash2 className="w-3.5 h-3.5" /> CLEAR CLIPS
-        </button>
-      </div>
+      <DeckHeader
+        statusLed="amber"
+        title="COCKPIT “BLACK BOX” RECORDER & REPLAY"
+        badgeText="60s RING BUFFER"
+        badgeVariant="amber"
+        actions={
+          <button
+            onClick={handleClear}
+            className="px-3.5 py-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-400 hover:text-red-300 rounded-lg text-xs flex items-center gap-1.5 border border-zinc-700 transition-colors cursor-pointer font-bold"
+          >
+            <Trash2 className="w-3.5 h-3.5" /> CLEAR CLIPS
+          </button>
+        }
+      />
 
       {/* Instant 30s "Say Again" Replay Bar */}
       <div className="bg-gradient-to-r from-amber-950/40 via-zinc-900 to-black p-4 rounded-xl border border-amber-500/30 flex flex-col md:flex-row items-center justify-between gap-4">

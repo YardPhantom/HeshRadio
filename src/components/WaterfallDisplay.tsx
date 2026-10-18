@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { BandPlan } from '../radio/bandPlans';
 import { CB_CHANNELS, ModulationMode } from '../radio/cbChannels';
 import { ModulationModeExtended } from '../radio/bandPlans';
+import { DeckHeader } from './common/DeckHeader';
 
 export type WaterfallPalette = 'PHOSPHOR' | 'KIWISDR' | 'INFERNO' | 'MATRIX_CYAN';
 
@@ -351,34 +352,33 @@ export const WaterfallDisplay: React.FC<WaterfallDisplayProps> = ({
 
   return (
     <section className="panel waterfall-panel" aria-label="RF Spectrum and Waterfall Analyzer">
-      <div className="panel-header">
-        <div className="panel-title-group">
-          <span className="status-led led-cyan" />
-          <h2 className="panel-title">
-            {band?.name || 'WIDEBAND RF SPECTRUM'} // {(spanStartMhz).toFixed(3)} – {(spanStartMhz + effectiveSpanMhz).toFixed(3)} MHz
-          </h2>
-          <span className="badge-mono">512-PT BLACKMAN-HARRIS FFT</span>
-        </div>
-        <div className="waterfall-controls">
-          <button
-            type="button"
-            className={`chip-btn ${showPeakHold ? 'active' : ''}`}
-            onClick={() => setShowPeakHold((v) => !v)}
-          >
-            PEAK HOLD
-          </button>
-          {(['KIWISDR', 'PHOSPHOR', 'INFERNO', 'MATRIX_CYAN'] as WaterfallPalette[]).map((p) => (
+      <DeckHeader
+        statusLed="cyan"
+        title={`${band?.name || 'WIDEBAND RF SPECTRUM'} // ${spanStartMhz.toFixed(3)} – ${(spanStartMhz + effectiveSpanMhz).toFixed(3)} MHz`}
+        badgeText="512-PT BLACKMAN-HARRIS FFT"
+        badgeVariant="cyan"
+        actions={
+          <div className="waterfall-controls">
             <button
-              key={p}
               type="button"
-              className={`chip-btn ${palette === p ? 'active' : ''}`}
-              onClick={() => setPalette(p)}
+              className={`chip-btn ${showPeakHold ? 'active' : ''}`}
+              onClick={() => setShowPeakHold((v) => !v)}
             >
-              {p}
+              PEAK HOLD
             </button>
-          ))}
-        </div>
-      </div>
+            {(['KIWISDR', 'PHOSPHOR', 'INFERNO', 'MATRIX_CYAN'] as WaterfallPalette[]).map((p) => (
+              <button
+                key={p}
+                type="button"
+                className={`chip-btn ${palette === p ? 'active' : ''}`}
+                onClick={() => setPalette(p)}
+              >
+                {p}
+              </button>
+            ))}
+          </div>
+        }
+      />
 
       <div className="waterfall-canvas-stack" title="Click anywhere on spectrum or waterfall to QSY (tune) frequency">
         <canvas

@@ -11,6 +11,7 @@ import {
   Volume2,
   Zap,
 } from 'lucide-react';
+import { DeckHeader } from './common/DeckHeader';
 
 interface NoaaEmergencyDeckProps {
   onTransmitAudio?: (samples: Float32Array) => void;
@@ -80,22 +81,22 @@ export const NoaaEmergencyDeck: React.FC<NoaaEmergencyDeckProps> = ({
   return (
     <section className="panel noaa-panel font-mono space-y-4" aria-label="NOAA Weather Radio All-Hazards &amp; EAS SAME Decoder">
       {/* Header */}
-      <div className="panel-header">
-        <div className="panel-title-group">
-          <span className="status-led led-red" />
-          <h2 className="panel-title">NOAA WEATHER RADIO ALL-HAZARDS &amp; EAS SAME DECODER</h2>
-          <span className="badge-mono hidden sm:inline-block">1050 Hz / AFSK</span>
-        </div>
-
-        <button
-          onClick={handleSimulateAlert}
-          disabled={simulating}
-          className="px-4 py-2 bg-red-600 hover:bg-red-500 disabled:opacity-50 text-white font-bold rounded-lg text-xs flex items-center gap-2 shadow-lg shadow-red-600/30 transition-all cursor-pointer"
-        >
-          <Zap className="w-3.5 h-3.5" />
-          {simulating ? 'RUNNING EMERGENCY TEST...' : 'SIMULATE NWS 1050Hz & SAME ALERT'}
-        </button>
-      </div>
+      <DeckHeader
+        statusLed="red"
+        title="NOAA WEATHER RADIO ALL-HAZARDS & EAS SAME DECODER"
+        badgeText="1050 Hz / AFSK"
+        badgeVariant="red"
+        actions={
+          <button
+            onClick={handleSimulateAlert}
+            disabled={simulating}
+            className="px-4 py-2 bg-red-600 hover:bg-red-500 disabled:opacity-50 text-white font-bold rounded-lg text-xs flex items-center gap-2 shadow-lg shadow-red-600/30 transition-all cursor-pointer"
+          >
+            <Zap className="w-3.5 h-3.5" />
+            {simulating ? 'RUNNING EMERGENCY TEST...' : 'SIMULATE NWS 1050Hz & SAME ALERT'}
+          </button>
+        }
+      />
 
       {/* Emergency Active Alert Banner */}
       {isAlertActive && (
@@ -197,47 +198,55 @@ export const NoaaEmergencyDeck: React.FC<NoaaEmergencyDeckProps> = ({
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs border-collapse">
             <thead>
-              <tr className="border-b border-zinc-800 text-zinc-500 text-[11px]">
-                <th className="py-2.5 px-3.5">SEVERITY</th>
-                <th className="py-2.5 px-3.5">EVENT</th>
-                <th className="py-2.5 px-3.5">ISSUED</th>
-                <th className="py-2.5 px-3.5">EXPIRES</th>
-                <th className="py-2.5 px-3.5">AFFECTED AREAS (FIPS)</th>
-                <th className="py-2.5 px-3.5">ORIGINATOR</th>
-                <th className="py-2.5 px-3.5">RAW SAME PACKET</th>
+              <tr className="bg-black/40 border-b border-zinc-800 text-zinc-400 text-[11px] font-mono font-bold uppercase tracking-wider">
+                <th className="py-3 px-4">SEVERITY</th>
+                <th className="py-3 px-4">EVENT</th>
+                <th className="py-3 px-4">ISSUED</th>
+                <th className="py-3 px-4">EXPIRES</th>
+                <th className="py-3 px-4">AFFECTED AREAS (FIPS)</th>
+                <th className="py-3 px-4">ORIGINATOR</th>
+                <th className="py-3 px-4">RAW SAME PACKET</th>
               </tr>
             </thead>
             <tbody>
-              {alerts.map((alert) => (
-                <tr
-                  key={alert.id}
-                  className="border-b border-zinc-800/40 hover:bg-zinc-900/50 text-zinc-300"
-                >
-                  <td className="py-2.5 px-3.5">
-                    <span
-                      className={`px-3.5 py-1.5 rounded-lg text-[10px] font-bold inline-block leading-none ${
-                        alert.severity === 'WARNING' || alert.severity === 'EMERGENCY'
-                          ? 'bg-red-950 text-red-300 border border-red-700'
-                          : alert.severity === 'WATCH'
-                          ? 'bg-amber-950 text-amber-300 border border-amber-700'
-                          : 'bg-blue-950 text-blue-300 border border-blue-700'
-                      }`}
-                    >
-                      {alert.severity}
-                    </span>
-                  </td>
-                  <td className="py-2.5 px-3.5 font-bold text-zinc-100">{alert.eventName}</td>
-                  <td className="py-2.5 px-3.5 font-mono text-zinc-400">{alert.issueTimeUtc}</td>
-                  <td className="py-2.5 px-3.5 font-mono text-amber-400">{alert.expireTimeUtc}</td>
-                  <td className="py-2.5 px-3.5 text-zinc-300 truncate max-w-xs">
-                    {alert.fipsCodes.join(', ')}
-                  </td>
-                  <td className="py-2.5 px-3.5 text-zinc-400">{alert.originatorLabel}</td>
-                  <td className="py-2.5 px-3.5 font-mono text-zinc-500 text-[10px] max-w-xs truncate">
-                    {alert.rawString}
+              {alerts.length === 0 ? (
+                <tr>
+                  <td colSpan={7} className="py-8 px-4 text-center text-zinc-500 font-mono text-xs">
+                    No emergency alert messages decoded yet. Receiver listening for NWS SAME FSK headers.
                   </td>
                 </tr>
-              ))}
+              ) : (
+                alerts.map((alert) => (
+                  <tr
+                    key={alert.id}
+                    className="border-b border-zinc-800/40 hover:bg-zinc-900/50 transition-colors text-zinc-300"
+                  >
+                    <td className="py-3 px-4">
+                      <span
+                        className={`px-3.5 py-1.5 rounded-lg text-[10px] font-bold inline-block leading-none ${
+                          alert.severity === 'WARNING' || alert.severity === 'EMERGENCY'
+                            ? 'bg-red-950 text-red-300 border border-red-700'
+                            : alert.severity === 'WATCH'
+                            ? 'bg-amber-950 text-amber-300 border border-amber-700'
+                            : 'bg-blue-950 text-blue-300 border border-blue-700'
+                        }`}
+                      >
+                        {alert.severity}
+                      </span>
+                    </td>
+                    <td className="py-3 px-4 font-bold text-zinc-100">{alert.eventName}</td>
+                    <td className="py-3 px-4 font-mono text-zinc-400">{alert.issueTimeUtc}</td>
+                    <td className="py-3 px-4 font-mono text-amber-400">{alert.expireTimeUtc}</td>
+                    <td className="py-3 px-4 text-zinc-300 truncate max-w-xs">
+                      {alert.fipsCodes.join(', ')}
+                    </td>
+                    <td className="py-3 px-4 text-zinc-400">{alert.originatorLabel}</td>
+                    <td className="py-3 px-4 font-mono text-zinc-500 text-[10px] max-w-xs truncate">
+                      {alert.rawString}
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>

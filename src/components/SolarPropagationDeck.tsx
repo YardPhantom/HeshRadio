@@ -13,6 +13,7 @@ import {
   Globe,
   RefreshCw,
 } from 'lucide-react';
+import { DeckHeader } from './common/DeckHeader';
 
 interface SolarPropagationDeckProps {
   myGridSquare: string;
@@ -168,24 +169,22 @@ export const SolarPropagationDeck: React.FC<SolarPropagationDeckProps> = ({
   return (
     <section className="panel solar-panel space-y-4" aria-label="Space Weather, Ionospheric Skip &amp; Geodesy">
       {/* Header */}
-      <div className="panel-header">
-        <div className="panel-title-group">
-          <span className="status-led led-amber" />
-          <h2 className="panel-title">SPACE WEATHER, IONOSPHERIC SKIP &amp; GEODESY</h2>
-          <span className="badge-mono hidden sm:inline-block">
-            NOAA SWPC LIVE TELEMETRY
-          </span>
-        </div>
-
-        <button
-          onClick={handleRefresh}
-          disabled={refreshing}
-          className="text-xs px-3.5 py-2 bg-zinc-800 hover:bg-zinc-700 text-amber-300 rounded-lg font-mono font-bold border border-zinc-700 flex items-center gap-2 transition-all cursor-pointer"
-        >
-          <RefreshCw className={`w-3.5 h-3.5 ${refreshing ? 'animate-spin' : ''}`} />
-          {refreshing ? 'REFRESHING...' : 'POLL NOAA SWPC'}
-        </button>
-      </div>
+      <DeckHeader
+        statusLed="amber"
+        title="SPACE WEATHER, IONOSPHERIC SKIP & GEODESY"
+        badgeText="NOAA SWPC LIVE TELEMETRY"
+        badgeVariant="amber"
+        actions={
+          <button
+            onClick={handleRefresh}
+            disabled={refreshing}
+            className="text-xs px-3.5 py-2 bg-zinc-800 hover:bg-zinc-700 text-amber-300 rounded-lg font-mono font-bold border border-zinc-700 flex items-center gap-2 transition-all cursor-pointer"
+          >
+            <RefreshCw className={`w-3.5 h-3.5 ${refreshing ? 'animate-spin' : ''}`} />
+            {refreshing ? 'REFRESHING...' : 'POLL NOAA SWPC'}
+          </button>
+        }
+      />
 
       {/* 1. Solar Weather Telemetry Gauges */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs font-mono">

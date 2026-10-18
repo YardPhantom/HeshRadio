@@ -7,6 +7,10 @@ import {
 } from '../radio/bandPlans';
 import { CTCSS_TONES_HZ, CtcssDetectionResult } from '../radio/ctcssTones';
 import { RdsStationData } from '../radio/demodulators';
+import { DeckHeader } from './common/DeckHeader';
+import { FrequencyReadout } from './common/FrequencyReadout';
+import { TacticalModal } from './common/TacticalModal';
+import { TacticalSlider } from './common/TacticalSlider';
 import {
   Split,
   Layers,
@@ -81,12 +85,6 @@ export const MultiBandVfoDeck: React.FC<MultiBandVfoDeckProps> = ({
   const [showKeypad, setShowKeypad] = useState(false);
   const [keypadInput, setKeypadInput] = useState('');
 
-  // Format frequency to 6 decimal places: e.g. "146.520000" or "027.185000"
-  const formattedFreq = frequencyMhz.toFixed(6).padStart(10, '0');
-  const mhzPart = formattedFreq.slice(0, -7);
-  const khzPart = formattedFreq.slice(-7, -4);
-  const hzPart = formattedFreq.slice(-4);
-
   const handleStepTune = (multiplier: number) => {
     const deltaMhz = (stepHz / 1e6) * multiplier;
     const newFreq = Math.max(0.1, Math.min(1750.0, frequencyMhz + deltaMhz));
@@ -110,69 +108,67 @@ export const MultiBandVfoDeck: React.FC<MultiBandVfoDeckProps> = ({
 
   return (
     <section className="panel vfo-panel flex flex-col gap-4" aria-label="Multi-Band VFO &amp; Demodulator Deck">
-      {/* 1. Header & Streamlined Band Switcher */}
-      <div className="panel-header">
-        <div className="panel-title-group">
-          <span className="status-led led-amber" />
-          <h2 className="panel-title">MULTI-BAND VFO &amp; SDR TRANSCEIVER</h2>
-          <span className="badge-mono hidden sm:inline-block">100 kHz – 1.75 GHz</span>
-        </div>
+      <DeckHeader
+        statusLed="amber"
+        title="MULTI-BAND VFO &amp; SDR TRANSCEIVER"
+        badgeText="100 kHz – 1.75 GHz"
+        badgeVariant="amber"
+        actions={
+          <div className="flex flex-wrap items-center gap-2">
+            {/* Popular Band Quick Pills */}
+            <div className="flex flex-wrap items-center gap-1.5">
+              {MASTER_BAND_PLANS.filter((b) => POPULAR_BAND_IDS.includes(b.id)).map((b) => {
+                const isSelected = b.id === currentBand.id;
+                const shortName = b.name.split(' ')[0];
+                return (
+                  <button
+                    key={b.id}
+                    type="button"
+                    onClick={() => onSelectBand(b)}
+                    className={`text-xs px-3.5 py-2 rounded-lg font-mono font-bold transition-all cursor-pointer border ${
+                      isSelected
+                        ? 'bg-amber-500 text-black border-amber-400 shadow-md shadow-amber-500/20'
+                        : 'bg-zinc-800/80 text-zinc-300 border-zinc-700/80 hover:bg-zinc-700 hover:text-amber-300'
+                    }`}
+                    title={b.description}
+                  >
+                    {shortName}
+                  </button>
+                );
+              })}
+            </div>
 
-        {/* Streamlined Band Selector: Quick Popular Pills + All Bands Dropdown */}
-        <div className="flex flex-wrap items-center gap-2">
-          {/* Popular Band Quick Pills */}
-          <div className="flex flex-wrap items-center gap-1.5">
-            {MASTER_BAND_PLANS.filter((b) => POPULAR_BAND_IDS.includes(b.id)).map((b) => {
-              const isSelected = b.id === currentBand.id;
-              const shortName = b.name.split(' ')[0];
-              return (
-                <button
-                  key={b.id}
-                  type="button"
-                  onClick={() => onSelectBand(b)}
-                  className={`text-xs px-3.5 py-2 rounded-lg font-mono font-bold transition-all cursor-pointer border ${
-                    isSelected
-                      ? 'bg-amber-500 text-black border-amber-400 shadow-md shadow-amber-500/20'
-                      : 'bg-zinc-800/80 text-zinc-300 border-zinc-700/80 hover:bg-zinc-700 hover:text-amber-300'
-                  }`}
-                  title={b.description}
-                >
-                  {shortName}
-                </button>
-              );
-            })}
+            {/* All Bands Dropdown */}
+            <div className="flex items-center gap-2 bg-zinc-900 border border-zinc-700/90 rounded-lg px-3.5 py-2">
+              <span className="text-[10px] font-mono text-zinc-500 uppercase font-bold">ALL BANDS:</span>
+              <select
+                value={currentBand.id}
+                onChange={(e) => {
+                  const found = MASTER_BAND_PLANS.find((b) => b.id === e.target.value);
+                  if (found) onSelectBand(found);
+                }}
+                className="bg-transparent text-amber-300 text-xs font-mono font-bold focus:outline-none cursor-pointer pr-1"
+                aria-label="Select RF Band"
+              >
+                <optgroup label="HF & 11-Meter CB" className="bg-zinc-900 text-zinc-300">
+                  {MASTER_BAND_PLANS.filter((b) => b.frequencyMaxMhz <= 30).map((b) => (
+                    <option key={b.id} value={b.id}>
+                      {b.name}
+                    </option>
+                  ))}
+                </optgroup>
+                <optgroup label="VHF & UHF Bands" className="bg-zinc-900 text-zinc-300">
+                  {MASTER_BAND_PLANS.filter((b) => b.frequencyMaxMhz > 30).map((b) => (
+                    <option key={b.id} value={b.id}>
+                      {b.name}
+                    </option>
+                  ))}
+                </optgroup>
+              </select>
+            </div>
           </div>
-
-          {/* All Bands Dropdown (eliminates clutter of 18 separate buttons) */}
-          <div className="flex items-center gap-2 bg-zinc-900 border border-zinc-700/90 rounded-lg px-3.5 py-2">
-            <span className="text-[10px] font-mono text-zinc-500 uppercase font-bold">ALL BANDS:</span>
-            <select
-              value={currentBand.id}
-              onChange={(e) => {
-                const found = MASTER_BAND_PLANS.find((b) => b.id === e.target.value);
-                if (found) onSelectBand(found);
-              }}
-              className="bg-transparent text-amber-300 text-xs font-mono font-bold focus:outline-none cursor-pointer pr-1"
-              aria-label="Select RF Band"
-            >
-              <optgroup label="HF & 11-Meter CB" className="bg-zinc-900 text-zinc-300">
-                {MASTER_BAND_PLANS.filter((b) => b.frequencyMaxMhz <= 30).map((b) => (
-                  <option key={b.id} value={b.id}>
-                    {b.name}
-                  </option>
-                ))}
-              </optgroup>
-              <optgroup label="VHF & UHF Bands" className="bg-zinc-900 text-zinc-300">
-                {MASTER_BAND_PLANS.filter((b) => b.frequencyMaxMhz > 30).map((b) => (
-                  <option key={b.id} value={b.id}>
-                    {b.name}
-                  </option>
-                ))}
-              </optgroup>
-            </select>
-          </div>
-        </div>
-      </div>
+        }
+      />
 
       {/* 2. Main High-Precision Tactical Frequency Display & VFO Controls */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-3.5 items-stretch">
@@ -320,14 +316,13 @@ export const MultiBandVfoDeck: React.FC<MultiBandVfoDeckProps> = ({
             </button>
           </div>
 
-          {/* Large Digit Readout (Cleanly Isolated) */}
-          <div className="font-mono text-amber-400 font-black tracking-tight flex items-baseline select-none py-3 text-3xl sm:text-4xl lg:text-5xl whitespace-nowrap">
-            <span className="text-amber-200">{mhzPart}</span>
-            <span className="text-zinc-400 mx-0.5">.</span>
-            <span className="text-amber-300">{khzPart}</span>
-            <span className="text-amber-500/80 text-xl sm:text-2xl lg:text-3xl ml-0.5">{hzPart}</span>
-            <span className="text-xs sm:text-sm text-zinc-400 ml-2.5 font-sans font-bold">MHz</span>
-          </div>
+          {/* Large Digit Readout (Cleanly Isolated via FrequencyReadout) */}
+          <FrequencyReadout
+            frequencyMhz={frequencyMhz}
+            size="xl"
+            subColor="amber"
+            className="py-3"
+          />
 
           {/* Step Tuning Controls (Cleanly Aligned with proper symbols and uniform padding) */}
           <div className="w-full flex flex-wrap items-center justify-center gap-2 pt-2.5 border-t border-zinc-900">
@@ -418,24 +413,18 @@ export const MultiBandVfoDeck: React.FC<MultiBandVfoDeckProps> = ({
 
           {/* Demodulator Mode Details */}
           {mode === 'CW' && (
-            <div className="bg-zinc-900/90 p-3.5 rounded-xl border border-zinc-800 space-y-2">
-              <div className="flex justify-between text-xs font-mono text-zinc-400">
-                <span>CW BFO PITCH:</span>
-                <span className="text-amber-300 font-bold">{cwBfoPitchHz} Hz</span>
-              </div>
-              <input
-                type="range"
-                min="400"
-                max="900"
-                step="10"
-                value={cwBfoPitchHz}
-                onChange={(e) => onCwBfoPitchChange(parseInt(e.target.value, 10))}
-                className="w-full h-1.5 bg-zinc-700 rounded-lg appearance-none cursor-pointer accent-amber-500"
-              />
-              <div className="text-[10px] text-zinc-500 text-center font-mono">
-                250 Hz DSP Filter Active
-              </div>
-            </div>
+            <TacticalSlider
+              id="cw-bfo-slider"
+              label="CW BFO PITCH"
+              valueReadout={`${cwBfoPitchHz} Hz`}
+              min={400}
+              max={900}
+              step={10}
+              value={cwBfoPitchHz}
+              onChange={(val) => onCwBfoPitchChange(Math.round(val))}
+              subLabel="250 Hz DSP Filter Active"
+              accentColor="amber"
+            />
           )}
 
           {mode === 'WFM' && (
@@ -570,67 +559,56 @@ export const MultiBandVfoDeck: React.FC<MultiBandVfoDeckProps> = ({
       </div>
 
       {/* Direct Keypad Entry Modal */}
-      {showKeypad && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-zinc-900 border border-amber-500/40 rounded-xl p-5 max-w-sm w-full space-y-4 shadow-2xl">
-            <div className="flex justify-between items-center border-b border-zinc-800 pb-2">
-              <span className="font-mono font-bold text-amber-400 text-sm">
-                DIRECT FREQUENCY ENTRY
-              </span>
-              <button
-                type="button"
-                onClick={() => setShowKeypad(false)}
-                className="text-zinc-400 hover:text-zinc-100 text-sm font-bold px-2.5 py-1 rounded-md cursor-pointer"
-              >
-                ✕
-              </button>
-            </div>
-            <form onSubmit={handleKeypadSubmit} className="space-y-3">
-              <div>
-                <label className="text-xs font-mono text-zinc-400 block mb-1">
-                  ENTER FREQUENCY IN MHz (0.100 – 1750.000):
-                </label>
-                <input
-                  type="number"
-                  step="0.0001"
-                  autoFocus
-                  placeholder="e.g. 146.520 or 27.185"
-                  value={keypadInput}
-                  onChange={(e) => setKeypadInput(e.target.value)}
-                  className="w-full bg-black border border-zinc-700 text-amber-300 px-3.5 py-2 rounded-lg font-mono text-lg font-bold focus:outline-none focus:border-amber-400"
-                />
-              </div>
-              <div className="grid grid-cols-3 gap-2">
-                {['146.520', '446.000', '27.185', '121.500', '156.800', '14.225'].map((quick) => (
-                  <button
-                    key={quick}
-                    type="button"
-                    onClick={() => setKeypadInput(quick)}
-                    className="text-xs px-3 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 rounded-md font-mono font-bold cursor-pointer transition-colors"
-                  >
-                    {quick}
-                  </button>
-                ))}
-              </div>
-              <div className="flex justify-end gap-2 pt-2">
-                <button
-                  type="button"
-                  onClick={() => setShowKeypad(false)}
-                  className="px-3.5 py-1.5 rounded-md text-xs font-mono text-zinc-400 hover:text-zinc-200 cursor-pointer"
-                >
-                  CANCEL
-                </button>
-                <button
-                  type="submit"
-                  className="px-4 py-1.5 rounded-md text-xs font-mono font-bold bg-amber-500 hover:bg-amber-400 text-black cursor-pointer shadow-md"
-                >
-                  TUNE
-                </button>
-              </div>
-            </form>
+      <TacticalModal
+        isOpen={showKeypad}
+        onClose={() => setShowKeypad(false)}
+        title="DIRECT FREQUENCY ENTRY"
+        maxWidth="sm"
+      >
+        <form onSubmit={handleKeypadSubmit} className="space-y-4">
+          <div>
+            <label className="text-xs font-mono text-zinc-400 block mb-1.5">
+              ENTER FREQUENCY IN MHz (0.100 – 1750.000):
+            </label>
+            <input
+              type="number"
+              step="0.0001"
+              autoFocus
+              placeholder="e.g. 146.520 or 27.185"
+              value={keypadInput}
+              onChange={(e) => setKeypadInput(e.target.value)}
+              className="w-full bg-black border border-zinc-700 text-amber-300 px-3.5 py-2.5 rounded-lg font-mono text-lg font-bold focus:outline-none focus:border-amber-400"
+            />
           </div>
-        </div>
-      )}
+          <div className="grid grid-cols-3 gap-2">
+            {['146.520', '446.000', '27.185', '121.500', '156.800', '14.225'].map((quick) => (
+              <button
+                key={quick}
+                type="button"
+                onClick={() => setKeypadInput(quick)}
+                className="text-xs px-3 py-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 rounded-lg font-mono font-bold cursor-pointer transition-colors border border-zinc-700/60"
+              >
+                {quick}
+              </button>
+            ))}
+          </div>
+          <div className="flex justify-end gap-2 pt-2 border-t border-zinc-800">
+            <button
+              type="button"
+              onClick={() => setShowKeypad(false)}
+              className="px-3.5 py-2 rounded-lg text-xs font-mono text-zinc-400 hover:text-zinc-200 bg-zinc-800/80 hover:bg-zinc-800 cursor-pointer border border-zinc-700"
+            >
+              CANCEL
+            </button>
+            <button
+              type="submit"
+              className="px-4 py-2 rounded-lg text-xs font-mono font-bold bg-amber-500 hover:bg-amber-400 text-black cursor-pointer shadow-md"
+            >
+              TUNE
+            </button>
+          </div>
+        </form>
+      </TacticalModal>
     </section>
   );
 };

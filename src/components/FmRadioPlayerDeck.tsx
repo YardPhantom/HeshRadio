@@ -29,6 +29,7 @@ import {
   RotateCcw,
 } from 'lucide-react';
 import { TacticalModal } from './common/TacticalModal';
+import { DeckHeader } from './common/DeckHeader';
 
 interface FmRadioPlayerDeckProps {
   duckGain: number; // 1.0 normal, 0.125 (-18 dB) when ducked by CB RF/PTT
@@ -304,34 +305,34 @@ export const FmRadioPlayerDeck: React.FC<FmRadioPlayerDeckProps> = ({
       />
 
       {/* 1. Deck Header & Status */}
-      <div className="panel-header">
-        <div className="panel-title-group">
-          <span className={`status-led ${isPlaying ? 'led-emerald' : 'led-amber'}`} />
-          <h2 className="panel-title">FM BROADCAST RADIO PLAYER &amp; ONLINE DIRECTORY</h2>
-          <span className="badge-mono hidden sm:inline-block">87.5 – 108.0 MHz WFM</span>
-        </div>
+      <DeckHeader
+        statusLed={isPlaying ? 'emerald' : 'amber'}
+        title="FM BROADCAST RADIO PLAYER &amp; ONLINE DIRECTORY"
+        badgeText="87.5 – 108.0 MHz WFM"
+        badgeVariant="cyan"
+        actions={
+          <div className="flex items-center gap-2">
+            {onTuneTransceiverVfo && (
+              <button
+                type="button"
+                onClick={() => onTuneTransceiverVfo(currentStation.frequencyMhz)}
+                className="px-3.5 py-2 rounded-lg text-xs font-bold bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 flex items-center gap-1.5 transition-colors cursor-pointer"
+                title="Tune Transceiver VFO A to this exact FM broadcast frequency in WFM mode"
+              >
+                <Compass className="w-3.5 h-3.5 text-amber-400" /> TUNE VFO ({currentStation.frequencyMhz.toFixed(1)} MHz)
+              </button>
+            )}
 
-        <div className="flex items-center gap-2">
-          {onTuneTransceiverVfo && (
             <button
               type="button"
-              onClick={() => onTuneTransceiverVfo(currentStation.frequencyMhz)}
-              className="px-3.5 py-2 rounded-lg text-xs font-bold bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 flex items-center gap-1.5 transition-colors cursor-pointer"
-              title="Tune Transceiver VFO A to this exact FM broadcast frequency in WFM mode"
+              onClick={() => setShowCustomModal(true)}
+              className="px-3.5 py-2 rounded-lg text-xs font-bold bg-zinc-800 hover:bg-zinc-700 text-zinc-300 border border-zinc-700 flex items-center gap-1.5 transition-colors cursor-pointer"
             >
-              <Compass className="w-3.5 h-3.5 text-amber-400" /> TUNE VFO ({currentStation.frequencyMhz.toFixed(1)} MHz)
+              <Plus className="w-3.5 h-3.5" /> ADD STREAM URL
             </button>
-          )}
-
-          <button
-            type="button"
-            onClick={() => setShowCustomModal(true)}
-            className="px-3.5 py-2 rounded-lg text-xs font-bold bg-zinc-800 hover:bg-zinc-700 text-zinc-300 border border-zinc-700 flex items-center gap-1.5 transition-colors cursor-pointer"
-          >
-            <Plus className="w-3.5 h-3.5" /> ADD STREAM URL
-          </button>
-        </div>
-      </div>
+          </div>
+        }
+      />
 
       {/* 2. Main Tactical FM Radio Faceplate (Dial, LED Readout, Visualizer) */}
       <div className="bg-gradient-to-b from-[#0e1624] via-[#090d16] to-[#04070c] p-4 sm:p-5 rounded-2xl border-2 border-amber-500/40 shadow-2xl space-y-4">
@@ -560,7 +561,7 @@ export const FmRadioPlayerDeck: React.FC<FmRadioPlayerDeckProps> = ({
                   setVolume(parseFloat(e.target.value));
                   if (isMuted) setIsMuted(false);
                 }}
-                className="w-24 sm:w-32 accent-amber-500 cursor-pointer"
+                className="tactical-slider w-24 sm:w-32 cursor-pointer"
               />
               <span className="text-amber-300 font-bold w-9 text-right">
                 {isMuted ? '0%' : `${Math.round(volume * 100)}%`}

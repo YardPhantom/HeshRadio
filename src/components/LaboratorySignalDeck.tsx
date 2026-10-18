@@ -6,6 +6,7 @@ import {
 import {
   Play,
 } from 'lucide-react';
+import { DeckHeader } from './common/DeckHeader';
 
 interface LaboratorySignalDeckProps {
   onPlayBuffer: (samples: Float32Array) => void;
@@ -55,15 +56,12 @@ export const LaboratorySignalDeck: React.FC<LaboratorySignalDeckProps> = ({
   return (
     <section className="panel lab-panel font-mono space-y-4" aria-label="RF &amp; Audio Laboratory Calibration Suite">
       {/* Header */}
-      <div className="panel-header">
-        <div className="panel-title-group">
-          <span className="status-led led-cyan" />
-          <h2 className="panel-title">RF &amp; AUDIO LABORATORY CALIBRATION SUITE</h2>
-        </div>
-        <span className="badge-mono hidden sm:inline-block">
-          DETERMINISTIC TEST GENERATORS &bull; IARU &amp; FCC PART 95
-        </span>
-      </div>
+      <DeckHeader
+        statusLed="cyan"
+        title="RF & AUDIO LABORATORY CALIBRATION SUITE"
+        badgeText="DETERMINISTIC TEST GENERATORS • IARU & FCC PART 95"
+        badgeVariant="cyan"
+      />
 
       {/* Signal Generator Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5">

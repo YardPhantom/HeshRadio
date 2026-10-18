@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 import { downloadTextFile } from '../utils/fileExport';
 import { TacticalModal } from './common/TacticalModal';
+import { DeckHeader } from './common/DeckHeader';
 
 interface TacticalScannerDeckProps {
   scanEngine: ScanEngine;
@@ -117,29 +118,29 @@ export const TacticalScannerDeck: React.FC<TacticalScannerDeckProps> = ({
   return (
     <section className="panel scanner-panel font-mono space-y-4" aria-label="Tactical High-Speed Scanner">
       {/* Header */}
-      <div className="panel-header">
-        <div className="panel-title-group">
-          <span className="status-led led-emerald" />
-          <h2 className="panel-title">TACTICAL HIGH-SPEED SCANNER &amp; MEMORY BANKS</h2>
-          <span className="badge-mono hidden sm:inline-block">100 CH/SEC</span>
-        </div>
-
-        <div className="flex items-center gap-2">
-          <button
-            onClick={handleExportJson}
-            className="px-3.5 py-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 rounded-lg text-xs flex items-center gap-1.5 border border-zinc-700 cursor-pointer transition-colors font-bold"
-            title="Export Memory Banks to JSON"
-          >
-            <Download className="w-3.5 h-3.5" /> EXPORT JSON
-          </button>
-          <button
-            onClick={() => setShowAddModal(true)}
-            className="px-3.5 py-2 bg-amber-500 hover:bg-amber-400 text-black font-bold rounded-lg text-xs flex items-center gap-1.5 cursor-pointer transition-colors shadow-sm"
-          >
-            <Plus className="w-3.5 h-3.5" /> ADD CHANNEL
-          </button>
-        </div>
-      </div>
+      <DeckHeader
+        statusLed="emerald"
+        title="TACTICAL HIGH-SPEED SCANNER & MEMORY BANKS"
+        badgeText="100 CH/SEC"
+        badgeVariant="emerald"
+        actions={
+          <>
+            <button
+              onClick={handleExportJson}
+              className="px-3.5 py-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 rounded-lg text-xs flex items-center gap-1.5 border border-zinc-700 cursor-pointer transition-colors font-bold"
+              title="Export Memory Banks to JSON"
+            >
+              <Download className="w-3.5 h-3.5" /> EXPORT JSON
+            </button>
+            <button
+              onClick={() => setShowAddModal(true)}
+              className="px-3.5 py-2 bg-amber-500 hover:bg-amber-400 text-black font-bold rounded-lg text-xs flex items-center gap-1.5 cursor-pointer transition-colors shadow-sm"
+            >
+              <Plus className="w-3.5 h-3.5" /> ADD CHANNEL
+            </button>
+          </>
+        }
+      />
 
       {/* Scanner Control Bar */}
       <div className="grid grid-cols-1 md:grid-cols-12 gap-3 bg-black/40 p-4 rounded-xl border border-zinc-800/80 items-center">
@@ -249,83 +250,91 @@ export const TacticalScannerDeck: React.FC<TacticalScannerDeckProps> = ({
       <div className="overflow-x-auto">
         <table className="w-full text-left text-xs border-collapse">
           <thead>
-            <tr className="border-b border-zinc-800 text-zinc-500 text-[11px]">
-              <th className="py-2.5 px-3.5">CH</th>
-              <th className="py-2.5 px-3.5">LABEL</th>
-              <th className="py-2.5 px-3.5">FREQUENCY</th>
-              <th className="py-2.5 px-3.5">MODE</th>
-              <th className="py-2.5 px-3.5">CTCSS / OFFSET</th>
-              <th className="py-2.5 px-3.5">ALPHA TAG</th>
-              <th className="py-2.5 px-3.5 text-center">LOCKOUT</th>
-              <th className="py-2.5 px-3.5 text-right">ACTION</th>
+            <tr className="bg-black/40 border-b border-zinc-800 text-zinc-400 text-[11px] font-mono font-bold uppercase tracking-wider">
+              <th className="py-3 px-4">CH</th>
+              <th className="py-3 px-4">LABEL</th>
+              <th className="py-3 px-4">FREQUENCY</th>
+              <th className="py-3 px-4">MODE</th>
+              <th className="py-3 px-4">CTCSS / OFFSET</th>
+              <th className="py-3 px-4">ALPHA TAG</th>
+              <th className="py-3 px-4 text-center">LOCKOUT</th>
+              <th className="py-3 px-4 text-right">ACTION</th>
             </tr>
           </thead>
           <tbody>
-            {activeBank.channels.map((chan) => {
-              const isTuned = Math.abs(currentFreqMhz - chan.frequencyMhz) < 0.0005;
-              return (
-                <tr
-                  key={chan.id}
-                  className={`border-b border-zinc-800/40 transition-colors ${
-                    isTuned
-                      ? 'bg-amber-500/10 text-amber-300 font-bold'
-                      : chan.skip
-                      ? 'opacity-40 text-zinc-600'
-                      : 'hover:bg-zinc-900/60 text-zinc-300'
-                  }`}
-                >
-                  <td className="py-2.5 px-3.5 font-mono">{chan.channelNumber}</td>
-                  <td className="py-2.5 px-3.5 font-bold">{chan.label}</td>
-                  <td className="py-2.5 px-3.5 font-mono text-amber-400">
-                    {chan.frequencyMhz.toFixed(4)} MHz
-                  </td>
-                  <td className="py-2.5 px-3.5">
-                    <span className="px-3.5 py-1.5 rounded-lg bg-zinc-800 text-[10px] text-zinc-300 font-bold inline-block border border-zinc-700/60 leading-none">
-                      {chan.mode}
-                    </span>
-                  </td>
-                  <td className="py-2.5 px-3.5 text-zinc-400">
-                    {chan.ctcssToneHz ? `${chan.ctcssToneHz} Hz` : 'CSQ'}
-                    {chan.repeaterOffsetMhz !== 0 && (
-                      <span className="ml-1 text-cyan-400">
-                        ({chan.repeaterOffsetMhz > 0 ? '+' : ''}{chan.repeaterOffsetMhz}M)
+            {activeBank.channels.length === 0 ? (
+              <tr>
+                <td colSpan={8} className="py-8 px-4 text-center text-zinc-500 font-mono text-xs">
+                  No channels in this memory bank. Click &ldquo;ADD CHANNEL&rdquo; above to program.
+                </td>
+              </tr>
+            ) : (
+              activeBank.channels.map((chan) => {
+                const isTuned = Math.abs(currentFreqMhz - chan.frequencyMhz) < 0.0005;
+                return (
+                  <tr
+                    key={chan.id}
+                    className={`border-b border-zinc-800/40 transition-colors ${
+                      isTuned
+                        ? 'bg-amber-500/10 text-amber-300 font-bold'
+                        : chan.skip
+                        ? 'opacity-40 text-zinc-600'
+                        : 'hover:bg-zinc-900/60 text-zinc-300'
+                    }`}
+                  >
+                    <td className="py-3 px-4 font-mono">{chan.channelNumber}</td>
+                    <td className="py-3 px-4 font-bold">{chan.label}</td>
+                    <td className="py-3 px-4 font-mono text-amber-400">
+                      {chan.frequencyMhz.toFixed(4)} MHz
+                    </td>
+                    <td className="py-3 px-4">
+                      <span className="px-3.5 py-1.5 rounded-lg bg-zinc-800 text-[10px] text-zinc-300 font-bold inline-block border border-zinc-700/60 leading-none">
+                        {chan.mode}
                       </span>
-                    )}
-                  </td>
-                  <td className="py-2.5 px-3.5 text-zinc-400 text-[11px] truncate max-w-xs">
-                    {chan.alphaTag}
-                  </td>
-                  <td className="py-2.5 px-3.5 text-center">
-                    <button
-                      onClick={() => handleToggleSkip(chan.id)}
-                      className={`p-1.5 rounded cursor-pointer ${
-                        chan.skip
-                          ? 'text-red-400 hover:text-red-300'
-                          : 'text-zinc-500 hover:text-zinc-300'
-                      }`}
-                      title={chan.skip ? 'Channel Locked Out from Scan' : 'Channel Active in Scan'}
-                    >
-                      {chan.skip ? <Lock className="w-3.5 h-3.5" /> : <Unlock className="w-3.5 h-3.5" />}
-                    </button>
-                  </td>
-                  <td className="py-2.5 px-3.5 text-right space-x-1.5">
-                    <button
-                      onClick={() => onTuneChannel(chan)}
-                      className="px-3.5 py-1.5 rounded-lg bg-amber-500/20 hover:bg-amber-500/40 text-amber-300 border border-amber-500/30 text-[10px] font-bold cursor-pointer transition-colors"
-                    >
-                      TUNE
-                    </button>
-                    <button
-                      onClick={() => handleDeleteChannel(chan.id)}
-                      className="px-3.5 py-1.5 rounded-lg bg-red-950/40 hover:bg-red-900/60 text-red-400 text-[10px] cursor-pointer transition-colors border border-red-800/40"
-                      title="Delete Memory"
-                    >
-                      <Trash2 className="w-3 h-3 inline" />
-                    </button>
-                  </td>
-                </tr>
-              );
-            })}
+                    </td>
+                    <td className="py-3 px-4 text-zinc-400">
+                      {chan.ctcssToneHz ? `${chan.ctcssToneHz} Hz` : 'CSQ'}
+                      {chan.repeaterOffsetMhz !== 0 && (
+                        <span className="ml-1 text-cyan-400">
+                          ({chan.repeaterOffsetMhz > 0 ? '+' : ''}{chan.repeaterOffsetMhz}M)
+                        </span>
+                      )}
+                    </td>
+                    <td className="py-3 px-4 text-zinc-400 text-[11px] truncate max-w-xs">
+                      {chan.alphaTag}
+                    </td>
+                    <td className="py-3 px-4 text-center">
+                      <button
+                        onClick={() => handleToggleSkip(chan.id)}
+                        className={`p-1.5 rounded cursor-pointer ${
+                          chan.skip
+                            ? 'text-red-400 hover:text-red-300'
+                            : 'text-zinc-500 hover:text-zinc-300'
+                        }`}
+                        title={chan.skip ? 'Channel Locked Out from Scan' : 'Channel Active in Scan'}
+                      >
+                        {chan.skip ? <Lock className="w-3.5 h-3.5" /> : <Unlock className="w-3.5 h-3.5" />}
+                      </button>
+                    </td>
+                    <td className="py-3 px-4 text-right space-x-1.5">
+                      <button
+                        onClick={() => onTuneChannel(chan)}
+                        className="px-3.5 py-1.5 rounded-lg bg-amber-500/20 hover:bg-amber-500/40 text-amber-300 border border-amber-500/30 text-[10px] font-bold cursor-pointer transition-colors"
+                      >
+                        TUNE
+                      </button>
+                      <button
+                        onClick={() => handleDeleteChannel(chan.id)}
+                        className="px-3.5 py-1.5 rounded-lg bg-red-950/40 hover:bg-red-900/60 text-red-400 text-[10px] cursor-pointer transition-colors border border-red-800/40"
+                        title="Delete Memory"
+                      >
+                        <Trash2 className="w-3 h-3 inline" />
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })
+            )}
           </tbody>
         </table>
       </div>

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { RtlSdrHardwareBridge, RtlSdrStatus } from '../radio/rtlSdrBridge';
 import { Cpu, Wifi, Sliders, ShieldCheck } from 'lucide-react';
+import { DeckHeader } from './common/DeckHeader';
 
 interface RtlSdrControlPanelProps {
   sdrBridge: RtlSdrHardwareBridge;
@@ -50,33 +51,22 @@ export const RtlSdrControlPanel: React.FC<RtlSdrControlPanelProps> = ({
   return (
     <section className="panel sdr-panel space-y-3 font-mono" aria-label="RTL-SDR V4 Hardware Configuration">
       {/* Header */}
-      <div className="panel-header">
-        <div className="panel-title-group">
-          <span className={`status-led ${sdrStatus.connected ? 'led-emerald' : 'led-amber'}`} />
-          <h2 className="panel-title">RTL-SDR HARDWARE BRIDGE</h2>
-          <span
-            className={`badge-mono font-bold ${
-              sdrStatus.mode === 'WEBUSB'
-                ? 'text-emerald-400'
-                : sdrStatus.mode === 'RTL_TCP'
-                ? 'text-cyan-400'
-                : 'text-amber-400'
-            }`}
-          >
-            {sdrStatus.mode === 'WEBUSB'
-              ? 'HW USB DONGLE'
-              : sdrStatus.mode === 'RTL_TCP'
-              ? 'RTL_TCP NETWORK'
-              : 'SIMULATED / WebSDR'}
-          </span>
-        </div>
-
-        {/* Connection Action Buttons */}
-        <div className="flex items-center gap-2">
-          {sdrStatus.connected ? (
+      <DeckHeader
+        statusLed={sdrStatus.connected ? 'emerald' : 'amber'}
+        title="RTL-SDR HARDWARE BRIDGE"
+        badgeText={
+          sdrStatus.mode === 'WEBUSB'
+            ? 'HW USB DONGLE'
+            : sdrStatus.mode === 'RTL_TCP'
+            ? 'RTL_TCP NETWORK'
+            : 'SIMULATED / WebSDR'
+        }
+        badgeVariant={sdrStatus.connected ? 'emerald' : 'amber'}
+        actions={
+          sdrStatus.connected ? (
             <button
               onClick={handleDisconnect}
-              className="text-xs px-3.5 py-1.5 bg-red-950/80 hover:bg-red-900 text-red-300 rounded-md font-mono font-bold border border-red-800 cursor-pointer"
+              className="text-xs px-3.5 py-1.5 bg-red-950/80 hover:bg-red-900 text-red-300 rounded-lg font-mono font-bold border border-red-800 cursor-pointer"
             >
               DISCONNECT HARDWARE
             </button>
@@ -85,7 +75,7 @@ export const RtlSdrControlPanel: React.FC<RtlSdrControlPanelProps> = ({
               <button
                 onClick={handleConnectWebUsb}
                 disabled={connecting}
-                className="text-xs px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-black rounded-md font-mono font-bold transition-all shadow-md flex items-center gap-1.5 cursor-pointer"
+                className="text-xs px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-black rounded-lg font-mono font-bold transition-all shadow-md flex items-center gap-1.5 cursor-pointer"
                 title="Connect physical RTL-SDR Blog V4/V3 over USB or USB-OTG"
               >
                 <Cpu className="w-3.5 h-3.5" />
@@ -94,15 +84,15 @@ export const RtlSdrControlPanel: React.FC<RtlSdrControlPanelProps> = ({
               <button
                 onClick={handleConnectRtlTcp}
                 disabled={connecting}
-                className="text-xs px-3.5 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-cyan-300 rounded-md font-mono font-bold border border-zinc-700 flex items-center gap-1.5 cursor-pointer"
+                className="text-xs px-3.5 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-cyan-300 rounded-lg font-mono font-bold border border-zinc-700 flex items-center gap-1.5 cursor-pointer"
                 title="Connect to rtl_tcp daemon (127.0.0.1:1234)"
               >
                 <Wifi className="w-3.5 h-3.5" /> RTL_TCP
               </button>
             </div>
-          )}
-        </div>
-      </div>
+          )
+        }
+      />
 
       {/* Hardware Telemetry Grid */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-xs font-mono">

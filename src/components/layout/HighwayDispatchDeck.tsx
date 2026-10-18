@@ -1,6 +1,7 @@
 import React from 'react';
 import { ModulationModeExtended } from '../../radio/bandPlans';
 import { BookOpen } from 'lucide-react';
+import { DeckHeader } from '../common/DeckHeader';
 
 export interface TrafficLogEntry {
   id: string;
@@ -36,13 +37,12 @@ export const HighwayDispatchDeck: React.FC<HighwayDispatchDeckProps> = ({
 }) => {
   return (
     <section className="panel traffic-log-panel" aria-label="Highway Trucker Comms Log">
-      <div className="panel-header">
-        <div className="panel-title-group">
-          <span className="status-led led-emerald" />
-          <h2 className="panel-title">LIVE HIGHWAY, REPEATER &amp; QSO SPOTS LOG</h2>
-        </div>
-        <span className="badge-mono">{trafficLog.length} SPOTS RECORDED</span>
-      </div>
+      <DeckHeader
+        statusLed="emerald"
+        title="LIVE HIGHWAY, REPEATER & QSO SPOTS LOG"
+        badgeText={`${trafficLog.length} SPOTS RECORDED`}
+        badgeVariant="emerald"
+      />
 
       <form className="quick-dispatch-form" onSubmit={onSendSpot}>
         <input

@@ -22,6 +22,7 @@ import {
   Play,
   Clock,
 } from 'lucide-react';
+import { DeckHeader } from './common/DeckHeader';
 
 interface DigitalModesDeckProps {
   myCallsign: string;
@@ -206,49 +207,46 @@ export const DigitalModesDeck: React.FC<DigitalModesDeckProps> = ({
   return (
     <section className="panel digital-panel space-y-4" aria-label="Digital Modes Modem Suite">
       {/* 1. Header & Digital Modes Sub-Nav */}
-      <div className="panel-header">
-        <div className="panel-title-group">
-          <span className="status-led led-purple" />
-          <h2 className="panel-title">DIGITAL MODES MODEM SUITE</h2>
-          <span className="badge-mono hidden sm:inline-block">
-            APRS • FT8 / JS8 • SSTV
-          </span>
-        </div>
-
-        {/* Submode Switcher Tabs */}
-        <div className="flex gap-2 font-mono text-xs font-bold">
-          <button
-            onClick={() => setActiveSubMode('APRS')}
-            className={`px-3.5 py-2 rounded-lg transition-all flex items-center gap-2 cursor-pointer ${
-              activeSubMode === 'APRS'
-                ? 'bg-cyan-500 text-black shadow-lg shadow-cyan-500/20'
-                : 'bg-zinc-800 text-zinc-400 hover:text-zinc-200'
-            }`}
-          >
-            <MapPin className="w-3.5 h-3.5" /> APRS TACTICAL RADAR
-          </button>
-          <button
-            onClick={() => setActiveSubMode('FT8')}
-            className={`px-3.5 py-2 rounded-lg transition-all flex items-center gap-2 cursor-pointer ${
-              activeSubMode === 'FT8'
-                ? 'bg-amber-500 text-black shadow-lg shadow-amber-500/20'
-                : 'bg-zinc-800 text-zinc-400 hover:text-zinc-200'
-            }`}
-          >
-            <Clock className="w-3.5 h-3.5" /> FT8 / JS8 WEAK-SIGNAL
-          </button>
-          <button
-            onClick={() => setActiveSubMode('SSTV')}
-            className={`px-3.5 py-2 rounded-lg transition-all flex items-center gap-2 cursor-pointer ${
-              activeSubMode === 'SSTV'
-                ? 'bg-emerald-500 text-black shadow-lg shadow-emerald-500/20'
-                : 'bg-zinc-800 text-zinc-400 hover:text-zinc-200'
-            }`}
-          >
-            <ImageIcon className="w-3.5 h-3.5" /> SSTV SLOW SCAN TV
-          </button>
-        </div>
-      </div>
+      <DeckHeader
+        statusLed="purple"
+        title="DIGITAL MODES MODEM SUITE"
+        badgeText="APRS • FT8 / JS8 • SSTV"
+        badgeVariant="purple"
+        actions={
+          <div className="flex gap-2 font-mono text-xs font-bold">
+            <button
+              onClick={() => setActiveSubMode('APRS')}
+              className={`px-3.5 py-2 rounded-lg transition-all flex items-center gap-2 cursor-pointer ${
+                activeSubMode === 'APRS'
+                  ? 'bg-cyan-500 text-black shadow-lg shadow-cyan-500/20'
+                  : 'bg-zinc-800 text-zinc-400 hover:text-zinc-200'
+              }`}
+            >
+              <MapPin className="w-3.5 h-3.5" /> APRS TACTICAL RADAR
+            </button>
+            <button
+              onClick={() => setActiveSubMode('FT8')}
+              className={`px-3.5 py-2 rounded-lg transition-all flex items-center gap-2 cursor-pointer ${
+                activeSubMode === 'FT8'
+                  ? 'bg-amber-500 text-black shadow-lg shadow-amber-500/20'
+                  : 'bg-zinc-800 text-zinc-400 hover:text-zinc-200'
+              }`}
+            >
+              <Clock className="w-3.5 h-3.5" /> FT8 / JS8 WEAK-SIGNAL
+            </button>
+            <button
+              onClick={() => setActiveSubMode('SSTV')}
+              className={`px-3.5 py-2 rounded-lg transition-all flex items-center gap-2 cursor-pointer ${
+                activeSubMode === 'SSTV'
+                  ? 'bg-emerald-500 text-black shadow-lg shadow-emerald-500/20'
+                  : 'bg-zinc-800 text-zinc-400 hover:text-zinc-200'
+              }`}
+            >
+              <ImageIcon className="w-3.5 h-3.5" /> SSTV SLOW SCAN TV
+            </button>
+          </div>
+        }
+      />
 
       {/* 2. SUBMODE 1: APRS TACTICAL RADAR & PACKET TRACKER */}
       {activeSubMode === 'APRS' && (
