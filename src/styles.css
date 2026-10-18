@@ -561,7 +561,7 @@ body {
 
 /* FM Station Card (15 chars <= 20 chars max) */
 .fm-station-card {
-  padding: 1.1rem 1.25rem;
+  padding: 1.15rem 1.25rem;
   border-radius: 12px;
   border: 1px solid rgba(63, 63, 70, 0.4);
   display: flex;
@@ -611,14 +611,14 @@ body {
 
 /* Tactical Metric Tile (13 chars <= 20 max) */
 .tactical-tile {
-  padding: 0.95rem 1.1rem;
+  padding: 0.95rem 1.15rem;
   border-radius: 12px;
   border: 1px solid rgba(63, 63, 70, 0.4);
   background: rgba(0, 0, 0, 0.4);
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  gap: 0.35rem;
+  gap: 0.45rem;
 }
 
 /* High-Performance 120Hz List Containment */

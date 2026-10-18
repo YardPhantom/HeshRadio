@@ -828,7 +828,7 @@ export const App: React.FC = () => {
                 </section>
 
                 {/* Tactical PTT Action Deck */}
-                <section className="panel ptt-panel space-y-3" aria-label="Tactical PTT Action Deck">
+                <section className="panel ptt-panel space-y-4" aria-label="Tactical PTT Action Deck">
                   <div className="panel-header">
                     <div className="panel-title-group">
                       <span className={`status-led ${pttActive ? 'led-red' : 'led-emerald'}`} />
@@ -839,7 +839,7 @@ export const App: React.FC = () => {
 
                   <button
                     type="button"
-                    className={`w-full py-4 rounded-xl font-mono font-bold text-sm border-2 transition-all flex flex-col items-center justify-center shadow-lg cursor-pointer ${
+                    className={`w-full py-4 px-4 rounded-xl font-mono font-bold text-sm border-2 transition-all flex flex-col items-center justify-center gap-1.5 shadow-lg cursor-pointer ${
                       pttActive
                         ? 'bg-red-600 border-red-400 text-white shadow-red-600/40 animate-pulse'
                         : 'bg-gradient-to-b from-zinc-800 to-zinc-900 hover:from-amber-500/20 hover:to-zinc-800 text-amber-300 border-zinc-700 hover:border-amber-400'
@@ -858,7 +858,8 @@ export const App: React.FC = () => {
                     </span>
                   </button>
 
-                  <div className="grid grid-cols-2 gap-2 text-xs font-mono">
+                  {/* Clean Visual Space & Uniform Grid After PTT Action Button */}
+                  <div className="mt-3.5 grid grid-cols-2 gap-2.5 text-xs font-mono">
                     <button
                       type="button"
                       onClick={() => setTalkbackEnabled((v) => !v)}

@@ -1,6 +1,6 @@
 [package]
 name = "heshradio"
-version = "0.00.7"
+version = "0.00.8"
 description = "HeshRadio - Tactical 40-Ch CB, SDR Waterfall & Internet Radio Transceiver (Windows & Android S26 Ultra)"
 authors = ["HeshRadio Engineering"]
 license = "MIT"
