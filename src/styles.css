@@ -637,6 +637,27 @@ select:focus-visible,
   outline-offset: 2px !important;
 }
 
+/* Universal SVG and Span Safe Clearance:
+   All SVG elements have padding in front of them so icons never touch borders/elements.
+   All Span elements have right padding so text never touches trailing borders/elements. */
+svg {
+  box-sizing: content-box;
+  padding-left: 0.25rem;
+  padding-right: 0.25rem;
+  padding-inline-start: 0.25rem;
+  padding-inline-end: 0.25rem;
+}
+
+span {
+  padding-right: 0.25rem;
+  padding-inline-end: 0.25rem;
+}
+
+span:empty {
+  padding-right: 0;
+  padding-inline-end: 0;
+}
+
 .net-controls-row {
   display: flex;
   flex-wrap: wrap;
