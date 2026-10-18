@@ -693,7 +693,7 @@ export const FmRadioPlayerDeck: React.FC<FmRadioPlayerDeckProps> = ({
         </div>
 
         {/* Multi-Control Search, Country, Category & Sort Bar */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5 bg-black/40 p-4 sm:p-4.5 rounded-xl border border-zinc-800/90 mb-4 shadow-sm">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5 bg-black/40 p-4 sm:p-4.5 rounded-xl border border-zinc-800/90 my-5 shadow-sm">
           {/* Search Box */}
           <div className="relative px-0.5 py-0.5">
             <Search className="w-4 h-4 text-zinc-500 absolute left-3.5 top-3 pointer-events-none" />
@@ -767,7 +767,7 @@ export const FmRadioPlayerDeck: React.FC<FmRadioPlayerDeckProps> = ({
         </div>
 
         {/* Quick Category / Genre Filter Pills */}
-        <div className="flex flex-wrap gap-1.5 pt-1">
+        <div className="flex flex-wrap gap-1.5 pt-2">
           {FM_CATEGORIES.map((pill) => (
             <button
               key={pill.id}
