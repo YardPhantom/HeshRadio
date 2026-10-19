@@ -1,5 +1,6 @@
 import { defineConfig, type Plugin } from 'vite';
 import react from '@vitejs/plugin-react';
+import { CURATED_FM_STATIONS } from './src/radio/fmRadioService';
 import { WebSocketServer, WebSocket } from 'ws';
 import type { IncomingMessage } from 'http';
 import type { Duplex } from 'stream';
@@ -135,9 +136,53 @@ function heshRadioPttRelayPlugin(): Plugin {
   };
 }
 
+/**
+ * Publishes the curated FM station list as a static manifest (dist/stations.json) so HCloud's
+ * "HeshRadio FM" page can list the same stations HeshRadio plays and deep link back into this
+ * app via `#/fm/<station-id>`. Deterministic output: no timestamps, stable field order.
+ * Custom streams live in the operator's localStorage, so they are not part of the manifest.
+ */
+function fmStationManifestPlugin(): Plugin {
+  const manifest = () =>
+    JSON.stringify(
+      {
+        ok: true,
+        count: CURATED_FM_STATIONS.length,
+        stations: CURATED_FM_STATIONS.map((station) => ({
+          id: station.id,
+          name: station.name,
+          frequencyMhz: station.frequencyMhz,
+          genre: station.genre,
+          country: station.country,
+          countryCode: station.countryCode ?? '',
+          state: station.state ?? '',
+          bitrate: station.bitrate,
+          codec: station.codec,
+          streamUrl: station.streamUrl,
+        })),
+      },
+      null,
+      2,
+    );
+
+  return {
+    name: 'heshradio-station-manifest',
+    generateBundle() {
+      this.emitFile({ type: 'asset', fileName: 'stations.json', source: manifest() });
+    },
+    // Dev server parity so `vite dev` answers the same file the built site serves.
+    configureServer(server) {
+      server.middlewares.use('/stations.json', (_req, res) => {
+        res.setHeader('Content-Type', 'application/json');
+        res.end(manifest());
+      });
+    },
+  };
+}
+
 export default defineConfig({
   base: './',
-  plugins: [react(), heshRadioPttRelayPlugin()],
+  plugins: [react(), heshRadioPttRelayPlugin(), fmStationManifestPlugin()],
   clearScreen: false,
   server: {
     port: 5173,

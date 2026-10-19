@@ -36,19 +36,30 @@ interface FmRadioPlayerDeckProps {
   autoDuckEnabled: boolean;
   onToggleAutoDuck: () => void;
   onTuneTransceiverVfo?: (freqMhz: number) => void;
+  /** Station id from a `#/fm/<id>` deep link (HCloud's HeshRadio FM page); tunes without autoplaying. */
+  initialStationId?: string | null;
 }
+
+/** Resolves a deep-linked station id against the curated dial, or null when it is unknown. */
+const resolveDeepLinkStation = (stationId?: string | null): FmStation | null =>
+  stationId ? CURATED_FM_STATIONS.find((station) => station.id === stationId) ?? null : null;
 
 export const FmRadioPlayerDeck: React.FC<FmRadioPlayerDeckProps> = ({
   duckGain,
   autoDuckEnabled,
   onToggleAutoDuck,
   onTuneTransceiverVfo,
+  initialStationId = null,
 }) => {
   const service = FmRadioService.getInstance();
 
-  // Active Station & Tuner State
-  const [currentStation, setCurrentStation] = useState<FmStation>(CURATED_FM_STATIONS[0]);
-  const [dialFreqMhz, setDialFreqMhz] = useState<number>(CURATED_FM_STATIONS[0].frequencyMhz);
+  // Active Station & Tuner State (a deep-linked station starts tuned, but paused)
+  const [currentStation, setCurrentStation] = useState<FmStation>(
+    () => resolveDeepLinkStation(initialStationId) ?? CURATED_FM_STATIONS[0]
+  );
+  const [dialFreqMhz, setDialFreqMhz] = useState<number>(
+    () => (resolveDeepLinkStation(initialStationId) ?? CURATED_FM_STATIONS[0]).frequencyMhz
+  );
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [volume, setVolume] = useState<number>(0.75);
@@ -129,6 +140,17 @@ export const FmRadioPlayerDeck: React.FC<FmRadioPlayerDeckProps> = ({
     setIsPlaying(false);
     setIsLoading(false);
   }, []);
+
+  // A later `#/fm/<id>` deep link retunes the deck. Tuned, never autostarted: browsers block
+  // un-gestured audio, and the operator presses play themselves.
+  useEffect(() => {
+    const linked = resolveDeepLinkStation(initialStationId);
+    if (!linked || linked.id === currentStation.id) return;
+    handleStop();
+    setStreamError(null);
+    setCurrentStation(linked);
+    setDialFreqMhz(linked.frequencyMhz);
+  }, [initialStationId, currentStation.id, handleStop]);
 
   // Toggle Play / Pause
   const handleTogglePlay = async () => {
