@@ -69,9 +69,35 @@ const DeckLoadingFallback: React.FC = () => (
   </div>
 );
 
+/**
+ * Deep link `#/fm/<station-id>` — HCloud's "HeshRadio FM" station cards open this app already
+ * tuned to a station. Mirrors how HCloud links into HeshGit at `#/repo/<name>`.
+ */
+const readFmStationIdFromHash = (): string | null => {
+  const match = /^#\/fm\/([^/?#]+)/.exec(window.location.hash || '');
+  if (!match) return null;
+  try {
+    return decodeURIComponent(match[1]).trim() || null;
+  } catch {
+    return match[1].trim() || null;
+  }
+};
+
 export const App: React.FC = () => {
-  // Navigation / View Tabs
-  const [activeTab, setActiveTab] = useState<ViewTab>('VFO_SDR');
+  // Navigation / View Tabs (a #/fm/<id> deep link opens straight onto the FM deck)
+  const [fmStationId, setFmStationId] = useState<string | null>(() => readFmStationIdFromHash());
+  const [activeTab, setActiveTab] = useState<ViewTab>(() => (readFmStationIdFromHash() ? 'FM_RADIO' : 'VFO_SDR'));
+
+  useEffect(() => {
+    const applyStationRoute = () => {
+      const id = readFmStationIdFromHash();
+      if (!id) return;
+      setFmStationId(id);
+      setActiveTab('FM_RADIO');
+    };
+    window.addEventListener('hashchange', applyStationRoute);
+    return () => window.removeEventListener('hashchange', applyStationRoute);
+  }, []);
 
   // Multi-Band VFO & Band Plan State (100 kHz - 1.75 GHz)
   const [currentBand, setCurrentBand] = useState<BandPlan>(() => MASTER_BAND_PLANS[0]);
@@ -896,6 +922,7 @@ export const App: React.FC = () => {
             autoDuckEnabled={autoDuckEnabled}
             onToggleAutoDuck={() => setAutoDuckEnabled((v) => !v)}
             onTuneTransceiverVfo={handleTuneFmToVfo}
+            initialStationId={fmStationId}
           />
         )}
 
