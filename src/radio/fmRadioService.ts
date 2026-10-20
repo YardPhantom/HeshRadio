@@ -77,6 +77,26 @@ export const FM_CATEGORIES: CategoryOption[] = [
 ];
 
 /**
+ * Maps free-text category labels (station `genre` fields and pill labels) into a
+ * comparable form so a station's genre "CBC Radio" matches the pill "🍁 CBC Radio".
+ */
+function normalizeCategoryText(text: string): string {
+  return text.replace(/[^\w\s&]/g, ' ').replace(/\s+/g, ' ').trim().toLowerCase();
+}
+
+/**
+ * Resolves a station genre to its FM category pill id — the single source of truth
+ * shared by this app and the published stations.json manifest, so HCloud can filter
+ * the curated dial by exactly the categories HeshRadio itself offers.
+ * Unmatched genres resolve to 'ALL' (no category filter applies).
+ */
+export function categoryIdForGenre(genre: string): string {
+  const needle = normalizeCategoryText(genre);
+  const hit = FM_CATEGORIES.find((c) => c.id !== 'ALL' && normalizeCategoryText(c.label) === needle);
+  return hit ? hit.id : 'ALL';
+}
+
+/**
  * Sorts FM stations deterministically by the chosen criteria.
  */
 export function sortFmStations(stations: FmStation[], sortOption: FmSortOption): FmStation[] {

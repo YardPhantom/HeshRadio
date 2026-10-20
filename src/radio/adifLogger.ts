@@ -4,6 +4,7 @@
  */
 
 import { calculateGeodesy } from './geodesy';
+import { loadSetting, saveSetting } from '../utils/formatters';
 
 export interface AdifQsoRecord {
   id: string;
@@ -157,18 +158,13 @@ export class AdifLogger {
   }
 
   private saveToStorage(): void {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(this.records));
-    } catch {}
+    saveSetting(STORAGE_KEY, this.records);
   }
 
   private loadFromStorage(): void {
-    try {
-      const data = localStorage.getItem(STORAGE_KEY);
-      if (data) {
-        this.records = JSON.parse(data);
-      }
-    } catch {}
+    // Missing/corrupt JSON falls back to defVal; passing the current records keeps
+    // the same keep-what-we-have semantics the local try/catch had.
+    this.records = loadSetting(STORAGE_KEY, this.records);
   }
 
   /**
