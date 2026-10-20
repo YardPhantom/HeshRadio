@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import {
+  AM_STATIONS,
   CURATED_FM_STATIONS,
   FmRadioService,
   FmStation,
@@ -40,9 +41,13 @@ interface FmRadioPlayerDeckProps {
   initialStationId?: string | null;
 }
 
-/** Resolves a deep-linked station id against the curated dial, or null when it is unknown. */
-const resolveDeepLinkStation = (stationId?: string | null): FmStation | null =>
-  stationId ? CURATED_FM_STATIONS.find((station) => station.id === stationId) ?? null : null;
+/** Resolves a deep-linked station id against the curated FM dial or AM list, or null when it is unknown. */
+const resolveDeepLinkStation = (stationId?: string | null): FmStation | null => {
+  if (!stationId) return null;
+  return CURATED_FM_STATIONS.find((station) => station.id === stationId)
+    ?? AM_STATIONS.find((station) => station.id === stationId)
+    ?? null;
+};
 
 export const FmRadioPlayerDeck: React.FC<FmRadioPlayerDeckProps> = ({
   duckGain,
@@ -57,9 +62,11 @@ export const FmRadioPlayerDeck: React.FC<FmRadioPlayerDeckProps> = ({
   const [currentStation, setCurrentStation] = useState<FmStation>(
     () => resolveDeepLinkStation(initialStationId) ?? CURATED_FM_STATIONS[0]
   );
-  const [dialFreqMhz, setDialFreqMhz] = useState<number>(
-    () => (resolveDeepLinkStation(initialStationId) ?? CURATED_FM_STATIONS[0]).frequencyMhz
-  );
+  const [dialFreqMhz, setDialFreqMhz] = useState<number>(() => {
+    const linked = resolveDeepLinkStation(initialStationId);
+    // An AM deep link tunes the station itself; the VFO dial stays on the FM band.
+    return linked && linked.band === 'fm' ? linked.frequencyMhz : CURATED_FM_STATIONS[0].frequencyMhz;
+  });
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [volume, setVolume] = useState<number>(0.75);
@@ -90,6 +97,10 @@ export const FmRadioPlayerDeck: React.FC<FmRadioPlayerDeckProps> = ({
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const animFrameRef = useRef<number | null>(null);
   const visualizerBars = useRef<number[]>(new Array(48).fill(0.1));
+  // Monotonic tune token: only the latest tune/stop may write playback state. Rapid tunes
+  // (seek/dial/list spam) abort the previous play(); its rejection must not clobber the new
+  // stream's "playing" state with a bogus error banner.
+  const playSeqRef = useRef(0);
 
   // Auto-Ducking calculations
   const effectiveVolume = isPlaying && !isMuted ? volume * (autoDuckEnabled ? duckGain : 1.0) : 0;
@@ -107,9 +118,12 @@ export const FmRadioPlayerDeck: React.FC<FmRadioPlayerDeckProps> = ({
 
   // Handle Play Station
   const handlePlayStation = async (station: FmStation) => {
+    const seq = ++playSeqRef.current;
     setStreamError(null);
     setCurrentStation(station);
-    setDialFreqMhz(station.frequencyMhz);
+    // AM stations play by stream URL only — the FM VFO dial must not jump to a
+    // Medium-Wave frequency (outside the 87.5-108 MHz dial range).
+    if (station.band === 'fm') setDialFreqMhz(station.frequencyMhz);
     setIsLoading(true);
 
     if (audioRef.current) {
@@ -119,9 +133,11 @@ export const FmRadioPlayerDeck: React.FC<FmRadioPlayerDeckProps> = ({
 
       try {
         await audioRef.current.play();
+        if (seq !== playSeqRef.current) return; // superseded by a newer tune or stop
         setIsPlaying(true);
         setIsLoading(false);
       } catch (err: unknown) {
+        if (seq !== playSeqRef.current) return; // aborted by a newer tune/stop: not this stream's failure
         setIsLoading(false);
         setIsPlaying(false);
         const errMsg = err instanceof Error ? err.message : 'Playback failed';
@@ -132,6 +148,7 @@ export const FmRadioPlayerDeck: React.FC<FmRadioPlayerDeckProps> = ({
 
   // Cleanly Stop Playback & Terminate Audio Stream Buffer
   const handleStop = useCallback(() => {
+    playSeqRef.current++; // any in-flight play()'s state writes are now stale
     if (audioRef.current) {
       audioRef.current.pause();
       audioRef.current.removeAttribute('src');
@@ -142,15 +159,20 @@ export const FmRadioPlayerDeck: React.FC<FmRadioPlayerDeckProps> = ({
   }, []);
 
   // A later `#/fm/<id>` deep link retunes the deck. Tuned, never autostarted: browsers block
-  // un-gestured audio, and the operator presses play themselves.
+  // un-gestured audio, and the operator presses play themselves. Keyed on the deep-link id
+  // (not currentStation.id): depending on the tuned station made every manual retune look like
+  // "the link changed", stopping audio and snapping the dial back to the linked station.
+  const lastAppliedDeepLinkRef = useRef<string | null>(resolveDeepLinkStation(initialStationId)?.id ?? null);
   useEffect(() => {
     const linked = resolveDeepLinkStation(initialStationId);
-    if (!linked || linked.id === currentStation.id) return;
+    if (!linked || linked.id === lastAppliedDeepLinkRef.current) return;
+    lastAppliedDeepLinkRef.current = linked.id;
     handleStop();
     setStreamError(null);
     setCurrentStation(linked);
-    setDialFreqMhz(linked.frequencyMhz);
-  }, [initialStationId, currentStation.id, handleStop]);
+    // An AM deep link tunes the station itself; the FM VFO dial stays on the FM band.
+    if (linked.band === 'fm') setDialFreqMhz(linked.frequencyMhz);
+  }, [initialStationId, handleStop]);
 
   // Toggle Play / Pause
   const handleTogglePlay = async () => {
@@ -247,6 +269,7 @@ export const FmRadioPlayerDeck: React.FC<FmRadioPlayerDeckProps> = ({
       bitrate: '128 kbps',
       codec: 'MP3',
       streamUrl: customUrl.trim(),
+      band: 'fm',
       isCustom: true,
     };
 
@@ -320,6 +343,9 @@ export const FmRadioPlayerDeck: React.FC<FmRadioPlayerDeckProps> = ({
         }}
         onWaiting={() => setIsLoading(true)}
         onError={() => {
+          // No src = a deliberate stop; some engines still emit an error after the element
+          // is emptied, and a "connection lost" banner there would be wrong.
+          if (!audioRef.current?.getAttribute('src')) return;
           setIsLoading(false);
           setIsPlaying(false);
           setStreamError('Stream connection lost or codec unsupported by browser.');
@@ -395,8 +421,12 @@ export const FmRadioPlayerDeck: React.FC<FmRadioPlayerDeckProps> = ({
               CARRIER FREQUENCY
             </div>
             <div className="font-mono text-4xl sm:text-5xl font-black text-amber-400 tracking-tight flex items-baseline">
-              <span>{currentStation.frequencyMhz.toFixed(1)}</span>
-              <span className="text-xs sm:text-sm text-zinc-400 ml-2 font-sans font-bold">MHz FM</span>
+              <span>
+                {currentStation.band === 'am' ? (currentStation.frequencyMhz * 1000).toFixed(0) : currentStation.frequencyMhz.toFixed(1)}
+              </span>
+              <span className="text-xs sm:text-sm text-zinc-400 ml-2 font-sans font-bold">
+                {currentStation.band === 'am' ? 'kHz AM' : 'MHz FM'}
+              </span>
             </div>
             <div className="text-xs text-emerald-400 font-bold truncate mt-1">
               {currentStation.name}
@@ -626,16 +656,21 @@ export const FmRadioPlayerDeck: React.FC<FmRadioPlayerDeckProps> = ({
               </button>
             </div>
             <div className="grid grid-cols-4 sm:grid-cols-8 gap-2">
-              {presets.map((_, i) => (
-                <button
-                  key={i}
-                  type="button"
-                  onClick={() => handleSaveToPreset(i)}
-                  className="py-2 px-2.5 bg-zinc-800 hover:bg-amber-500 hover:text-black text-zinc-300 rounded-lg font-bold text-xs border border-zinc-700 transition-colors cursor-pointer"
-                >
-                  SET P{i + 1}
-                </button>
-              ))}
+              {presets
+                .map((_, i) => i)
+                // Slots are per band: an AM station stores into the AM bank (P1-P8),
+                // an FM station into the FM bank.
+                .filter((i) => (currentStation.band === 'am' ? i >= 8 : i < 8))
+                .map((i) => (
+                  <button
+                    key={i}
+                    type="button"
+                    onClick={() => handleSaveToPreset(i)}
+                    className="py-2 px-2.5 bg-zinc-800 hover:bg-amber-500 hover:text-black text-zinc-300 rounded-lg font-bold text-xs border border-zinc-700 transition-colors cursor-pointer"
+                  >
+                    SET P{(i % 8) + 1}
+                  </button>
+                ))}
             </div>
           </div>
         )}
@@ -645,7 +680,7 @@ export const FmRadioPlayerDeck: React.FC<FmRadioPlayerDeckProps> = ({
       <div className="space-y-2">
         <div className="flex justify-between items-center text-xs font-mono text-zinc-400">
           <span className="font-bold flex items-center gap-1.5 text-zinc-300">
-            <Star className="w-3.5 h-3.5 text-amber-400" /> QUICK CAR MEMORY PRESETS (P1 - P8)
+            <Star className="w-3.5 h-3.5 text-amber-400" /> QUICK CAR MEMORY PRESETS (P1-P8 FM / P1-P8 AM)
           </span>
           <span className="text-[11px] text-zinc-500">1-Click Recall</span>
         </div>
@@ -668,10 +703,10 @@ export const FmRadioPlayerDeck: React.FC<FmRadioPlayerDeckProps> = ({
               >
                 <div className="flex justify-between items-center w-full">
                   <span className={`text-[10px] font-bold ${isCurrent ? 'text-black' : 'text-zinc-500'}`}>
-                    P{idx + 1}
+                    P{(idx % 8) + 1}
                   </span>
                   <span className={`text-[10px] font-bold ${isCurrent ? 'text-black' : 'text-amber-400'}`}>
-                    {station.frequencyMhz.toFixed(1)}
+                    {station.band === 'am' ? (station.frequencyMhz * 1000).toFixed(0) : station.frequencyMhz.toFixed(1)}
                   </span>
                 </div>
                 <div className="font-bold text-xs truncate w-full mt-1 text-center">{station.name}</div>
@@ -918,6 +953,45 @@ export const FmRadioPlayerDeck: React.FC<FmRadioPlayerDeckProps> = ({
               );
             })
           )}
+        </div>
+      </div>
+
+      {/* 4b. Curated AM Broadcast Stations */}
+      <div className="space-y-4 pt-4 border-t border-zinc-800/80">
+        <div className="space-y-1">
+          <h3 className="text-sm font-bold text-zinc-200 flex items-center gap-2">
+            <Radio className="w-4 h-4 text-amber-400" /> CURATED AM BROADCAST STATIONS
+          </h3>
+          <p className="text-xs text-zinc-400">
+            English-language AM/MW broadcasters with free public streams. AM recall tunes the stream; the FM VFO dial stays put.
+          </p>
+        </div>
+        <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-5 gap-2">
+          {AM_STATIONS.map((station) => {
+            const isCurrent = station.id === currentStation.id;
+            return (
+              <button
+                key={station.id}
+                type="button"
+                onClick={() => (isCurrent && isPlaying ? handleStop() : handlePlayStation(station))}
+                className={`p-3 rounded-xl border text-center flex flex-col justify-between transition-all cursor-pointer min-h-[64px] ${
+                  isCurrent && isPlaying
+                    ? 'bg-amber-500 text-black border-amber-400 font-bold shadow-md shadow-amber-500/20'
+                    : isCurrent
+                    ? 'bg-amber-500/20 text-amber-300 border-amber-500/40'
+                    : 'bg-zinc-900/80 text-zinc-300 border-zinc-800 hover:border-zinc-600 hover:bg-zinc-800'
+                }`}
+              >
+                <div className="flex justify-between items-center w-full">
+                  <span className={`text-[10px] font-bold ${isCurrent ? 'text-black' : 'text-zinc-500'}`}>
+                    {(station.frequencyMhz * 1000).toFixed(0)}
+                  </span>
+                  <span className={`text-[10px] font-bold ${isCurrent ? 'text-black' : 'text-amber-400'}`}>AM</span>
+                </div>
+                <div className="font-bold text-xs truncate w-full mt-1 text-center">{station.name}</div>
+              </button>
+            );
+          })}
         </div>
       </div>
 

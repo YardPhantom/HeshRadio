@@ -4,10 +4,13 @@
  * and provides curated, high-uptime online FM stations across standard 87.5 - 108.0 MHz.
  */
 
+import { loadSetting, saveSetting } from '../utils/formatters';
+
 export interface FmStation {
   id: string;
   name: string;
   frequencyMhz: number; // e.g. 90.3, 101.5, 93.9
+  band: 'fm' | 'am'; // for AM: frequencyMhz carries the dial position in MHz (1090 kHz -> 1.09)
   genre: string;
   country: string;
   countryCode?: string; // e.g. 'US', 'GB', 'CA', 'DE', 'FR', 'JP', 'AU', etc.
@@ -128,7 +131,7 @@ export function sortFmStations(stations: FmStation[], sortOption: FmSortOption):
  * mapped to authentic FM broadcast frequencies (87.5 - 108.0 MHz)
  * across 13+ countries and 13 distinct musical & broadcast formats.
  */
-export const CURATED_FM_STATIONS: FmStation[] = [
+const RAW_CURATED_FM: Omit<FmStation, 'band'>[] = [
   // --- UNITED STATES ---
   {
     id: 'kexp-903',
@@ -185,6 +188,34 @@ export const CURATED_FM_STATIONS: FmStation[] = [
     streamUrl: 'https://ice2.somafm.com/groovesalad-128-mp3',
     homepageUrl: 'https://somafm.com/groovesalad/',
     votes: 12500,
+  },
+  {
+    id: 'somafm-metal-detector-893',
+    name: 'SomaFM 89.3 Metal Detector',
+    frequencyMhz: 89.3,
+    genre: 'Metal & Hard Rock',
+    country: 'United States',
+    countryCode: 'US',
+    state: 'California',
+    bitrate: '128 kbps',
+    codec: 'MP3',
+    streamUrl: 'https://ice2.somafm.com/metal-128-mp3',
+    homepageUrl: 'https://somafm.com/metal/',
+    votes: 7730,
+  },
+  {
+    id: 'somafm-thistle-909',
+    name: 'SomaFM 90.9 ThistleRadio',
+    frequencyMhz: 90.9,
+    genre: 'World & Latin',
+    country: 'United States',
+    countryCode: 'US',
+    state: 'California',
+    bitrate: '128 kbps',
+    codec: 'MP3',
+    streamUrl: 'https://ice6.somafm.com/thistle-128-mp3',
+    homepageUrl: 'https://somafm.com/thistle/',
+    votes: 668,
   },
   {
     id: 'knkx-885',
@@ -462,7 +493,7 @@ export const CURATED_FM_STATIONS: FmStation[] = [
     state: 'California',
     bitrate: '128 kbps',
     codec: 'MP3',
-    streamUrl: 'http://east-mp3-128.streamthejazzgroove.com/stream',
+    streamUrl: 'https://east-mp3-128.streamthejazzgroove.com/stream',
     homepageUrl: 'https://jazzgroove.org',
     votes: 9100,
   },
@@ -677,7 +708,7 @@ export const CURATED_FM_STATIONS: FmStation[] = [
     state: 'British Columbia',
     bitrate: '128 kbps',
     codec: 'AAC',
-    streamUrl: 'http://stream.jpbgdigital.com/CJZN/HEAAC/48k/playlist.m3u8',
+    streamUrl: 'https://stream.jpbgdigital.com/CJZN/HEAAC/48k/playlist.m3u8',
     homepageUrl: 'https://www.thezone.fm/',
     votes: 8600,
   },
@@ -747,7 +778,7 @@ export const CURATED_FM_STATIONS: FmStation[] = [
     state: 'British Columbia',
     bitrate: '128 kbps',
     codec: 'MP3',
-    streamUrl: 'http://live.citr.ca:8000/live.mp3',
+    streamUrl: 'https://live.citr.ca/live.mp3',
     homepageUrl: 'https://www.citr.ca',
     votes: 6800,
   },
@@ -761,7 +792,7 @@ export const CURATED_FM_STATIONS: FmStation[] = [
     state: 'British Columbia',
     bitrate: '128 kbps',
     codec: 'AAC',
-    streamUrl: 'http://cfuv.streamon.fm:8000/CFUV-64k.aac',
+    streamUrl: 'https://cfuv.streamon.fm/CFUV-64k.aac',
     homepageUrl: 'https://cfuv.ca/',
     votes: 6500,
   },
@@ -889,7 +920,7 @@ export const CURATED_FM_STATIONS: FmStation[] = [
     state: 'Alberta',
     bitrate: '128 kbps',
     codec: 'AAC',
-    streamUrl: 'http://newcap.leanstream.co/CIRKFM',
+    streamUrl: 'https://newcap.leanstream.co/CIRKFM',
     homepageUrl: 'https://www.k97.ca/',
     votes: 8700,
   },
@@ -931,7 +962,7 @@ export const CURATED_FM_STATIONS: FmStation[] = [
     state: 'Alberta',
     bitrate: '128 kbps',
     codec: 'MP3',
-    streamUrl: 'http://rawlco.leanstream.co/CHUPFM-MP3',
+    streamUrl: 'https://rawlco.leanstream.co/CHUPFM-MP3',
     homepageUrl: 'https://www.softrock977.com/',
     votes: 7600,
   },
@@ -973,7 +1004,7 @@ export const CURATED_FM_STATIONS: FmStation[] = [
     state: 'Alberta',
     bitrate: '128 kbps',
     codec: 'AAC',
-    streamUrl: 'http://newcap.leanstream.co/CIZZFM',
+    streamUrl: 'https://newcap.leanstream.co/CIZZFM',
     homepageUrl: 'https://www.zed989.com/',
     votes: 6700,
   },
@@ -987,7 +1018,7 @@ export const CURATED_FM_STATIONS: FmStation[] = [
     state: 'Saskatchewan',
     bitrate: '128 kbps',
     codec: 'MP3',
-    streamUrl: 'http://rawlco.leanstream.co/CJDJFM-MP3',
+    streamUrl: 'https://rawlco.leanstream.co/CJDJFM-MP3',
     homepageUrl: 'https://www.rock102rocks.com/',
     votes: 7900,
   },
@@ -1029,7 +1060,7 @@ export const CURATED_FM_STATIONS: FmStation[] = [
     state: 'Manitoba',
     bitrate: '128 kbps',
     codec: 'MP3',
-    streamUrl: 'http://178.obj.netromedia.com:8000/5',
+    streamUrl: 'https://201.netromedia.com/NCIFM2/NCIFM2/playlist.m3u8',
     homepageUrl: 'https://nowcountry.fm/',
     votes: 6200,
   },
@@ -1157,7 +1188,7 @@ export const CURATED_FM_STATIONS: FmStation[] = [
     state: 'Ontario',
     bitrate: '128 kbps',
     codec: 'AAC',
-    streamUrl: 'http://newcap.leanstream.co/CHBMFM',
+    streamUrl: 'https://newcap.leanstream.co/CHBMFM',
     homepageUrl: 'https://www.boom973.com/',
     votes: 8100,
   },
@@ -1227,7 +1258,7 @@ export const CURATED_FM_STATIONS: FmStation[] = [
     state: 'New Brunswick',
     bitrate: '128 kbps',
     codec: 'MP3',
-    streamUrl: 'http://149.56.234.138:8173/stream',
+    streamUrl: 'https://centova.radioservers.biz/proxy/cktpradi/stream',
     homepageUrl: 'http://www.957thewolf.ca/',
     votes: 6800,
   },
@@ -1241,7 +1272,7 @@ export const CURATED_FM_STATIONS: FmStation[] = [
     state: 'New Brunswick',
     bitrate: '128 kbps',
     codec: 'AAC',
-    streamUrl: 'http://newcap.leanstream.co/CJMOFM',
+    streamUrl: 'https://newcap.leanstream.co/CJMOFM',
     homepageUrl: 'https://q103.ca/',
     votes: 6400,
   },
@@ -1274,18 +1305,18 @@ export const CURATED_FM_STATIONS: FmStation[] = [
     votes: 7500,
   },
   {
-    id: 'choi-radiox-981',
-    name: 'CHOI 98.1 Radio X Quebec City Talk & Rock',
+    id: 'cbve-981-quebec-city',
+    name: 'CBC Radio One 98.1 FM Quebec City',
     frequencyMhz: 98.1,
     genre: 'News & NPR Talk',
     country: 'Canada',
     countryCode: 'CA',
     state: 'Quebec',
-    bitrate: '64 kbps',
+    bitrate: '128 kbps',
     codec: 'MP3',
-    streamUrl: 'http://icecast-choi.rncm.ca/choi.mp3',
-    homepageUrl: 'https://radiox.com/',
-    votes: 6100,
+    streamUrl: 'https://22983.live.streamtheworld.com/CBVEFM_CBC_SC',
+    homepageUrl: 'https://www.cbc.ca/mediacentre/program/cbc-radio-one-quebec-city',
+    votes: 58,
   },
   {
     id: 'cfyx-933-rimouski',
@@ -1297,23 +1328,9 @@ export const CURATED_FM_STATIONS: FmStation[] = [
     state: 'Quebec',
     bitrate: '160 kbps',
     codec: 'MP3',
-    streamUrl: 'http://stream.statsradio.com:8048/stream',
+    streamUrl: 'https://stream.statsradio.com:8048/stream',
     homepageUrl: 'https://www.cfyxrimouski.com/',
     votes: 5400,
-  },
-  {
-    id: 'chronix-metalcore-997',
-    name: 'ChroniX Radio Metalcore 99.7 FM',
-    frequencyMhz: 99.7,
-    genre: 'Metal & Hard Rock',
-    country: 'Canada',
-    countryCode: 'CA',
-    state: 'Quebec',
-    bitrate: '320 kbps',
-    codec: 'MP3',
-    streamUrl: 'http://usa17.fastcast4u.com:5508/stream',
-    homepageUrl: 'http://chronixradio.net/',
-    votes: 8800,
   },
   {
     id: 'crucial-velocity-977',
@@ -1325,7 +1342,7 @@ export const CURATED_FM_STATIONS: FmStation[] = [
     state: 'Ontario',
     bitrate: '192 kbps',
     codec: 'MP3',
-    streamUrl: 'http://ais-sa2.cdnstream1.com/1369_128',
+    streamUrl: 'https://ais-sa2.cdnstream1.com/1369_128',
     homepageUrl: 'http://crucialvelocity.ca/',
     votes: 7300,
   },
@@ -1381,7 +1398,7 @@ export const CURATED_FM_STATIONS: FmStation[] = [
     state: 'Ontario',
     bitrate: '320 kbps',
     codec: 'MP3',
-    streamUrl: 'http://70s-lynxradio.radioca.st/stream',
+    streamUrl: 'https://70s-lynxradio.radioca.st/stream',
     homepageUrl: 'https://www.lynxradionetwork.com/',
     votes: 6200,
   },
@@ -1395,7 +1412,7 @@ export const CURATED_FM_STATIONS: FmStation[] = [
     state: 'Ontario',
     bitrate: '128 kbps',
     codec: 'MP3',
-    streamUrl: 'http://streams.calmradio.com:1228/',
+    streamUrl: 'https://streams.calmradio.com:1228/',
     homepageUrl: 'https://www.calmradio.com/',
     votes: 6100,
   },
@@ -1409,7 +1426,7 @@ export const CURATED_FM_STATIONS: FmStation[] = [
     state: 'Ontario',
     bitrate: '128 kbps',
     codec: 'MP3',
-    streamUrl: 'http://streams.calmradio.com:6828/stream',
+    streamUrl: 'https://streams.calmradio.com:6828/stream',
     homepageUrl: 'https://www.calmradio.com/',
     votes: 5900,
   },
@@ -1465,7 +1482,7 @@ export const CURATED_FM_STATIONS: FmStation[] = [
     state: 'Ontario',
     bitrate: '128 kbps',
     codec: 'MP3',
-    streamUrl: 'http://mux.mtl.djfmradio.com/djfm',
+    streamUrl: 'https://mux.mtl.djfmradio.com/djfm',
     homepageUrl: 'http://djfm.ca/',
     votes: 5100,
   },
@@ -1496,20 +1513,6 @@ export const CURATED_FM_STATIONS: FmStation[] = [
     streamUrl: 'https://maggie.torontocast.com:2020/stream/reggaechillcafe',
     homepageUrl: 'https://radiosuitenetwork.torontocast.stream/',
     votes: 4800,
-  },
-  {
-    id: 'forestgreen-1051',
-    name: 'Forest Green Celtic 105.1 FM',
-    frequencyMhz: 105.1,
-    genre: 'World & Latin',
-    country: 'Canada',
-    countryCode: 'CA',
-    state: 'New Brunswick',
-    bitrate: '128 kbps',
-    codec: 'MP3',
-    streamUrl: 'http://s1.streamaudio.de:8000/forest-green',
-    homepageUrl: 'http://www.forestgreenradio.ca/',
-    votes: 4500,
   },
 
   // --- GERMANY ---
@@ -1783,6 +1786,33 @@ export const CURATED_FM_STATIONS: FmStation[] = [
   },
 ];
 
+export const CURATED_FM_STATIONS: FmStation[] = RAW_CURATED_FM.map((s) => ({ ...s, band: 'fm' as const }));
+
+// ---------------------------------------------------------------------------
+// CURATED AM BROADCAST STATIONS (Medium Wave)
+// ---------------------------------------------------------------------------
+// English-language AM/MW broadcasters with free public streams. Every entry
+// was live-verified against its radio-browser url_resolved endpoint: HTTP 200,
+// audio/* content type, and Access-Control-Allow-Origin present (the deck's
+// <audio crossOrigin="anonymous"> refuses media without it). frequencyMhz
+// carries the AM dial position converted to MHz (1100 kHz -> 1.1) so the
+// existing MHz-based plumbing keeps working; the band field drives the
+// "xxxx kHz AM" display and keeps AM presets from syncing the FM VFO dial.
+export const AM_STATIONS: FmStation[] = [
+  { id: 'am_kogo600', name: 'KOGO AM 600', frequencyMhz: 0.6, genre: 'News/Talk (San Diego CA)', country: 'United States', countryCode: 'US', state: 'California', bitrate: '128 kbps', codec: 'AAC', streamUrl: 'https://ample.revma.ihrhls.com/zc257', homepageUrl: 'https://www.iheart.com/live/am-600-257/', band: 'am' },
+  { id: 'am_wjr760', name: 'WJR 760', frequencyMhz: 0.76, genre: 'News/Talk (Detroit MI)', country: 'United States', countryCode: 'US', state: 'Michigan', bitrate: '128 kbps', codec: 'AAC', streamUrl: 'http://26383.live.streamtheworld.com:3690/WJRAMAAC_SC', homepageUrl: 'http://www.760wjr.com/', band: 'am' },
+  { id: 'am_klvz810', name: 'KLVZ 810 Legends', frequencyMhz: 0.81, genre: 'Classic Hits (Denver CO)', country: 'United States', countryCode: 'US', state: 'Colorado', bitrate: '128 kbps', codec: 'MP3', streamUrl: 'https://ais-sa8.cdnstream1.com/p1w7r97sb0k/c2g93fu0iqz', homepageUrl: 'https://www.legends953.com/', band: 'am' },
+  { id: 'am_whas840', name: 'NewsRadio 840 WHAS', frequencyMhz: 0.84, genre: 'News/Talk (Louisville KY)', country: 'United States', countryCode: 'US', state: 'Kentucky', bitrate: '128 kbps', codec: 'AAC', streamUrl: 'https://stream.revma.ihrhls.com/zc969', homepageUrl: 'https://whas.iheart.com/', band: 'am' },
+  { id: 'am_wmvp1000', name: 'WMVP 1000 ESPN', frequencyMhz: 1.0, genre: 'Sports Talk (Chicago IL)', country: 'United States', countryCode: 'US', state: 'Illinois', bitrate: '128 kbps', codec: 'MP3', streamUrl: 'https://live.amperwave.net/direct/goodkarma-wmvpammp3-ibc1', homepageUrl: 'https://goodkarmabrands.com/espn-chicago/', band: 'am' },
+  { id: 'am_cfrb1010', name: 'CFRB News/Talk 1010', frequencyMhz: 1.01, genre: 'News/Talk (Toronto ON)', country: 'Canada', countryCode: 'CA', state: 'Ontario', bitrate: '128 kbps', codec: 'AAC', streamUrl: 'http://18213.live.streamtheworld.com:3690/CFRBAMAAC_SC', homepageUrl: 'https://www.iheartradio.ca/newstalk-1010', band: 'am' },
+  { id: 'am_wtam1100', name: 'WTAM 1100', frequencyMhz: 1.1, genre: 'News/Talk (Cleveland OH)', country: 'United States', countryCode: 'US', state: 'Ohio', bitrate: '128 kbps', codec: 'AAC', streamUrl: 'https://stream.revma.ihrhls.com/zc1749', homepageUrl: 'https://wtam.iheart.com/', band: 'am' },
+  { id: 'am_kfab1110', name: '1110 KFAB', frequencyMhz: 1.11, genre: 'News/Talk (Omaha NE)', country: 'United States', countryCode: 'US', state: 'Nebraska', bitrate: '128 kbps', codec: 'AAC', streamUrl: 'https://stream.revma.ihrhls.com/zc1325', homepageUrl: 'https://kfab.iheart.com/', band: 'am' },
+  { id: 'am_wbb1130', name: 'WBBR 1130 Bloomberg', frequencyMhz: 1.13, genre: 'Business News (New York NY)', country: 'United States', countryCode: 'US', state: 'New York', bitrate: '128 kbps', codec: 'AAC', streamUrl: 'http://29308.live.streamtheworld.com:3690/WBBRAMAAC_SC', homepageUrl: 'https://www.bloombergradio.com/', band: 'am' },
+  { id: 'am_kknw1150', name: 'KKNW 1150 Alternative Talk', frequencyMhz: 1.15, genre: 'Alternative Talk (Seattle WA)', country: 'United States', countryCode: 'US', state: 'Washington', bitrate: '128 kbps', codec: 'AAC', streamUrl: 'http://18193.live.streamtheworld.com/KKNWAMAAC_SC', homepageUrl: 'https://1150kknw.com/', band: 'am' },
+  { id: 'am_kfbk1530', name: 'KFBK 1530 News Radio', frequencyMhz: 1.53, genre: 'News/Talk (Sacramento CA)', country: 'United States', countryCode: 'US', state: 'California', bitrate: '128 kbps', codec: 'AAC', streamUrl: 'http://stream.revma.ihrhls.com/zc217', homepageUrl: 'https://kfbk.iheart.com/', band: 'am' },
+  { id: 'am_ched630', name: '630 CHED', frequencyMhz: 0.63, genre: 'News/Talk (Edmonton AB)', country: 'Canada', countryCode: 'CA', state: 'Alberta', bitrate: '128 kbps', codec: 'MP3', streamUrl: 'https://corus.leanstream.co/CHEDAM-MP3', homepageUrl: 'https://globalnews.ca/radio/630ched/player/', band: 'am' },
+];
+
 const RADIO_BROWSER_MIRRORS = [
   'https://de1.api.radio-browser.info',
   'https://at1.api.radio-browser.info',
@@ -1925,6 +1955,8 @@ export class FmRadioService {
             homepageUrl: st.homepage || undefined,
             favicon: st.favicon || undefined,
             votes: st.votes || 0,
+            // Radio Browser results are filtered to the FM broadcast band.
+            band: 'fm',
           }));
       }
     } catch {
@@ -1973,33 +2005,73 @@ export class FmRadioService {
   }
 
   /**
-   * Retrieves default or saved FM Memory Presets (P1 - P8) from LocalStorage.
+   * Retrieves default or saved Memory Presets from LocalStorage: up to 8 FM
+   * slots (indices 0-7) and 8 AM slots (8-15), each band topped up independently.
    */
   public loadMemoryPresets(): FmStation[] {
-    try {
-      const saved = localStorage.getItem('heshradio_fm_presets');
-      if (saved) {
-        const parsed = JSON.parse(saved) as FmStation[];
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          return parsed.slice(0, 8);
+    const fmDefaults = CURATED_FM_STATIONS.slice(0, 8);
+    const amDefaults = AM_STATIONS.slice(0, 8);
+    // loadSetting swallows missing/corrupt JSON (returns null); everything below still
+    // validates whatever parsed: a restored/hand-edited array must not put half-shaped
+    // presets (missing streamUrl/frequency) into the deck, where recall would tune
+    // the player to "undefined" or crash the render.
+    const parsed: unknown = loadSetting<unknown>('heshradio_fm_presets', null);
+    if (Array.isArray(parsed)) {
+      const usable = parsed
+        .map((p): FmStation | null => {
+          if (!p || typeof p !== 'object') return null;
+          const s = p as Partial<FmStation>;
+          if (typeof s.id !== 'string' || typeof s.name !== 'string') return null;
+          if (typeof s.streamUrl !== 'string' || s.streamUrl === '') return null;
+          if (typeof s.frequencyMhz !== 'number' || !Number.isFinite(s.frequencyMhz)) return null;
+          // Saves predating the band field (and hand edits missing it) are FM: every
+          // preset then was FM, so defaulting keeps the user's custom stations.
+          return {
+            id: s.id,
+            name: s.name,
+            frequencyMhz: s.frequencyMhz,
+            genre: typeof s.genre === 'string' ? s.genre : '',
+            country: typeof s.country === 'string' ? s.country : '',
+            countryCode: typeof s.countryCode === 'string' ? s.countryCode : undefined,
+            state: typeof s.state === 'string' ? s.state : undefined,
+            bitrate: typeof s.bitrate === 'string' ? s.bitrate : '',
+            codec: typeof s.codec === 'string' ? s.codec : '',
+            streamUrl: s.streamUrl,
+            homepageUrl: typeof s.homepageUrl === 'string' ? s.homepageUrl : undefined,
+            band: s.band === 'am' ? 'am' : 'fm',
+          };
+        })
+        .filter((s): s is FmStation => s !== null);
+      if (usable.length > 0) {
+        const fm = usable.filter((s) => s.band === 'fm').slice(0, 8);
+        const am = usable.filter((s) => s.band === 'am').slice(0, 8);
+        // Keep the 8-slot-per-band invariant the deck's UI and save flow assume: refill
+        // lost slots from that band's curated defaults, exactly like a fresh install,
+        // so corrupt data cannot shrink (and permanently lock) the user's preset slots.
+        for (const st of fmDefaults) {
+          if (fm.length >= 8) break;
+          if (!fm.some((f) => f.id === st.id)) fm.push(st);
         }
+        for (const st of amDefaults) {
+          if (am.length >= 8) break;
+          if (!am.some((f) => f.id === st.id)) am.push(st);
+        }
+        return [...fm, ...am];
       }
-    } catch {
-      // Fallback
     }
 
-    // Default to the first 8 curated stations
-    return CURATED_FM_STATIONS.slice(0, 8);
+    // Fresh install (or nothing usable survived): 8 FM + 8 AM default slots.
+    return [...fmDefaults, ...amDefaults];
   }
 
   /**
-   * Saves 8 FM station memory presets to LocalStorage.
+   * Saves the preset bank to LocalStorage: up to 8 FM slots and 8 AM slots,
+   * the per-band cap mirroring what loadMemoryPresets hands back.
    */
   public saveMemoryPresets(presets: FmStation[]): void {
-    try {
-      localStorage.setItem('heshradio_fm_presets', JSON.stringify(presets.slice(0, 8)));
-    } catch {
-      // Ignore
-    }
+    saveSetting('heshradio_fm_presets', [
+      ...presets.filter((p) => p.band === 'fm').slice(0, 8),
+      ...presets.filter((p) => p.band === 'am').slice(0, 8),
+    ]);
   }
 }
