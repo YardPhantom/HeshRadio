@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
+import Hls from 'hls.js';
 import {
   AM_STATIONS,
   CURATED_FM_STATIONS,
@@ -101,6 +102,13 @@ export const FmRadioPlayerDeck: React.FC<FmRadioPlayerDeckProps> = ({
   // (seek/dial/list spam) abort the previous play(); its rejection must not clobber the new
   // stream's "playing" state with a bogus error banner.
   const playSeqRef = useRef(0);
+  // Active HLS session for .m3u8 streams; destroyed on every retune, stop, and
+  // unmount so its worker/MediaSource cannot outlive the station it feeds.
+  const hlsRef = useRef<Hls | null>(null);
+  useEffect(() => () => {
+    hlsRef.current?.destroy();
+    hlsRef.current = null;
+  }, []);
 
   // Auto-Ducking calculations
   const effectiveVolume = isPlaying && !isMuted ? volume * (autoDuckEnabled ? duckGain : 1.0) : 0;
@@ -127,9 +135,34 @@ export const FmRadioPlayerDeck: React.FC<FmRadioPlayerDeckProps> = ({
     setIsLoading(true);
 
     if (audioRef.current) {
-      audioRef.current.pause();
-      audioRef.current.src = station.streamUrl;
-      audioRef.current.load();
+      const audio = audioRef.current;
+      audio.pause();
+      hlsRef.current?.destroy();
+      hlsRef.current = null;
+      const isHls = /\.m3u8(\?|#|$)/i.test(station.streamUrl);
+      if (isHls && Hls.isSupported()) {
+        // MSE path: hls.js pulls manifest + segments (CORS-checked XHR) and feeds
+        // the element through MediaSource; fatal failures surface here since the
+        // element-level onError cannot see a regular src.
+        const hls = new Hls({ enableWorker: true });
+        hlsRef.current = hls;
+        hls.on(Hls.Events.ERROR, (_event, data) => {
+          if (!data.fatal || seq !== playSeqRef.current) return;
+          setIsLoading(false);
+          setIsPlaying(false);
+          setStreamError(`HLS stream failed: ${data.details}`);
+        });
+        hls.loadSource(station.streamUrl);
+        hls.attachMedia(audio);
+      } else if (isHls && !audio.canPlayType('application/vnd.apple.mpegurl')) {
+        setIsLoading(false);
+        setIsPlaying(false);
+        setStreamError('HLS is not supported in this browser');
+        return;
+      } else {
+        audio.src = station.streamUrl;
+        audio.load();
+      }
 
       try {
         await audioRef.current.play();
@@ -149,6 +182,8 @@ export const FmRadioPlayerDeck: React.FC<FmRadioPlayerDeckProps> = ({
   // Cleanly Stop Playback & Terminate Audio Stream Buffer
   const handleStop = useCallback(() => {
     playSeqRef.current++; // any in-flight play()'s state writes are now stale
+    hlsRef.current?.destroy();
+    hlsRef.current = null;
     if (audioRef.current) {
       audioRef.current.pause();
       audioRef.current.removeAttribute('src');
