@@ -6,6 +6,7 @@ Also copies files to local D:\\projects\\TrevorHeshka\\heshradio for local parit
 """
 import os
 import shutil
+import subprocess
 import sys
 from pathlib import Path
 import paramiko
@@ -107,6 +108,18 @@ def main():
 
     sftp.close()
     transport.close()
+
+    # Post-deploy: verify the live security headers via HCloud's checker so a
+    # header regression fails this deploy loudly instead of shipping silently.
+    verifier = Path(r"d:\projects\HCloud\scripts\verify-live-headers.py")
+    if not verifier.exists():
+        print(f"Deploy uploaded, but the header verifier is MISSING at {verifier} - failing loudly.")
+        sys.exit(1)
+    print(f"Verifying live security headers ({verifier.name})...")
+    code = subprocess.run([sys.executable, str(verifier)]).returncode
+    if code != 0:
+        print("Deploy uploaded, but live header verification FAILED (see checks above).")
+        sys.exit(code)
     print("\nSuccessfully deployed HeshRadio to https://trevorheshka.com/heshradio/")
 
 if __name__ == "__main__":

@@ -10,6 +10,7 @@
  */
 
 import { ModulationModeExtended } from './bandPlans';
+import { saveSetting } from '../utils/formatters';
 
 export interface MemoryChannel {
   id: string;
@@ -404,11 +405,7 @@ export class ScanEngine {
   }
 
   public saveBanks(): void {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(this.banks));
-    } catch (e) {
-      console.error('[ScanEngine] Failed to save memory banks:', e);
-    }
+    saveSetting(STORAGE_KEY, this.banks);
   }
 
   public getBanks(): MemoryBank[] {
