@@ -100,6 +100,27 @@ export function categoryIdForGenre(genre: string): string {
 }
 
 /**
+ * Category pills for the AM band (each AM station's genre resolves to one through
+ * amCategoryIdForGenre). Labels must normalize to the same text as the genre minus
+ * its location parenthetical — "News/Talk (Cleveland OH)" matches "News/Talk".
+ */
+export const AM_CATEGORIES: CategoryOption[] = [
+  { id: 'ALL', label: 'All Categories' },
+  { id: 'NEWS_TALK', label: 'News/Talk' },
+  { id: 'SPORTS_TALK', label: 'Sports Talk' },
+  { id: 'BUSINESS', label: 'Business News' },
+  { id: 'CLASSIC_HITS', label: 'Classic Hits' },
+  { id: 'ALT_TALK', label: 'Alternative Talk' },
+];
+
+/** Resolves an AM station genre (city parenthetical stripped) to its AM category pill id. */
+export function amCategoryIdForGenre(genre: string): string {
+  const base = normalizeCategoryText(genre.replace(/\([^)]*\)/g, ' '));
+  const hit = AM_CATEGORIES.find((c) => c.id !== 'ALL' && normalizeCategoryText(c.label) === base);
+  return hit ? hit.id : 'ALL';
+}
+
+/**
  * Sorts FM stations deterministically by the chosen criteria.
  */
 export function sortFmStations(stations: FmStation[], sortOption: FmSortOption): FmStation[] {

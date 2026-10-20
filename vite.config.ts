@@ -1,6 +1,6 @@
 import { defineConfig, type Plugin } from 'vite';
 import react from '@vitejs/plugin-react';
-import { CURATED_FM_STATIONS, FM_CATEGORIES, categoryIdForGenre } from './src/radio/fmRadioService';
+import { CURATED_FM_STATIONS, FM_CATEGORIES, categoryIdForGenre, AM_STATIONS, AM_CATEGORIES, amCategoryIdForGenre } from './src/radio/fmRadioService';
 import { WebSocketServer, WebSocket } from 'ws';
 import type { IncomingMessage } from 'http';
 import type { Duplex } from 'stream';
@@ -137,12 +137,14 @@ function heshRadioPttRelayPlugin(): Plugin {
 }
 
 /**
- * Publishes the curated FM station list as a static manifest (dist/stations.json) so HCloud's
- * "HeshRadio FM" page can list the same stations HeshRadio plays and deep link back into this
- * app via `#/fm/<station-id>`. Deterministic output: no timestamps, stable field order.
- * `categories` is HeshRadio's full pill taxonomy (the "ALL" control is a UI decision, so
- * HCloud renders its own "All" pill); each station carries the resolved `category` id so
- * HCloud filters by exactly the categories this app has.
+ * Publishes the curated dial as a static manifest (dist/stations.json) so HCloud's
+ * "HeshRadio" page can list the same stations HeshRadio plays and deep link back into this
+ * app via `#/fm/<station-id>` (that route carries `am_*` ids too). Deterministic output:
+ * no timestamps, stable field order.
+ * `categories`/`amCategories` are the per-band pill taxonomies (the "ALL" control is a UI
+ * decision, so HCloud renders its own "All" pill); each station carries its `band` and the
+ * resolved `category` id so HCloud filters by exactly the categories this app has. The
+ * top-level fields stay the FM band for legacy consumers; AM arrives as amCategories/amStations.
  * Custom streams live in the operator's localStorage, so they are not part of the manifest.
  */
 function fmStationManifestPlugin(): Plugin {
@@ -164,6 +166,22 @@ function fmStationManifestPlugin(): Plugin {
           bitrate: station.bitrate,
           codec: station.codec,
           streamUrl: station.streamUrl,
+          band: 'fm',
+        })),
+        amCategories: AM_CATEGORIES.filter((c) => c.id !== 'ALL').map((c) => ({ id: c.id, label: c.label })),
+        amStations: AM_STATIONS.map((station) => ({
+          id: station.id,
+          name: station.name,
+          frequencyMhz: station.frequencyMhz,
+          genre: station.genre,
+          category: amCategoryIdForGenre(station.genre),
+          country: station.country,
+          countryCode: station.countryCode ?? '',
+          state: station.state ?? '',
+          bitrate: station.bitrate,
+          codec: station.codec,
+          streamUrl: station.streamUrl,
+          band: 'am',
         })),
       },
       null,
