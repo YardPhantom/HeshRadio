@@ -1,4 +1,5 @@
 import { CB_CHANNELS } from './cbChannels';
+import { AM_STATIONS } from './fmRadioService';
 
 export type ModulationModeExtended = 'AM' | 'NFM' | 'WFM' | 'USB' | 'LSB' | 'CW' | 'WX';
 
@@ -15,7 +16,7 @@ export interface ChannelPreset {
 export interface BandPlan {
   id: string;
   name: string;
-  category: 'CB' | 'GMRS' | 'AIR' | 'MARINE' | 'FM_BROADCAST' | 'HAM_HF' | 'HAM_VHF_UHF' | 'WX';
+  category: 'CB' | 'GMRS' | 'AIR' | 'MARINE' | 'FM_BROADCAST' | 'MW_AM' | 'HAM_HF' | 'HAM_VHF_UHF' | 'WX';
   frequencyMinMhz: number;
   frequencyMaxMhz: number;
   centerFrequencyMhz: number;
@@ -238,6 +239,29 @@ export const MASTER_BAND_PLANS: BandPlan[] = [
     standardRepeaterOffsetMhz: 0,
     description: 'Commercial Wideband FM stereo broadcast with RDS station name and RadioText.',
     presets: FM_BROADCAST_PRESETS,
+  },
+  {
+    id: 'mw-am',
+    name: 'Medium Wave AM Broadcast',
+    category: 'MW_AM',
+    frequencyMinMhz: 0.535,
+    frequencyMaxMhz: 1.705,
+    centerFrequencyMhz: 1.000,
+    defaultMode: 'AM',
+    allowedModes: ['AM'],
+    defaultStepHz: 10_000,
+    allowedStepsHz: [1000, 5000, 9000, 10_000],
+    standardRepeaterOffsetMhz: 0,
+    description: '535 - 1705 kHz medium wave AM broadcast band with 9 / 10 kHz tuning steps.',
+    presets: AM_STATIONS.map(
+      (st): ChannelPreset => ({
+        name: st.name,
+        frequencyMhz: st.frequencyMhz,
+        frequencyHz: Math.round(st.frequencyMhz * 1_000_000),
+        mode: 'AM',
+        description: st.genre,
+      })
+    ),
   },
   {
     id: 'ham-160m',

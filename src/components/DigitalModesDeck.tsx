@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { bandForFrequency } from '../radio/adifLogger';
 import {
   AprsPacket,
   Bell202AfskModulator,
@@ -170,7 +171,7 @@ export const DigitalModesDeck: React.FC<DigitalModesDeckProps> = ({
     if (onLogQso && ft8SelectedTarget) {
       onLogQso({
         call: ft8SelectedTarget,
-        band: currentFreqMhz < 30 ? '20m' : '2m',
+        band: bandForFrequency(currentFreqMhz),
         freq: currentFreqMhz.toFixed(5),
         mode: 'FT8',
         rst: '-08',

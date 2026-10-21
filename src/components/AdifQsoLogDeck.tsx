@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { AdifLogger, AdifQsoRecord } from '../radio/adifLogger';
+import { AdifLogger, AdifQsoRecord, bandForFrequency } from '../radio/adifLogger';
 import { QslCardEngine } from '../radio/qslCardEngine';
 import { calculateGeodesy } from '../radio/geodesy';
 import { WrlSyncService } from '../radio/wrlSyncService';
@@ -127,22 +127,7 @@ export const AdifQsoLogDeck: React.FC<AdifQsoLogDeckProps> = ({
     const dateStr = now.toISOString().slice(0, 10).replace(/-/g, '');
     const timeStr = now.toISOString().slice(11, 19).replace(/:/g, '');
 
-    const bandStr =
-      currentFreqMhz < 2.0
-        ? '160m'
-        : currentFreqMhz < 4.0
-        ? '80m'
-        : currentFreqMhz < 8.0
-        ? '40m'
-        : currentFreqMhz < 15.0
-        ? '20m'
-        : currentFreqMhz < 28.0
-        ? '11m'
-        : currentFreqMhz < 30.0
-        ? '10m'
-        : currentFreqMhz < 150.0
-        ? '2m'
-        : '70cm';
+    const bandStr = bandForFrequency(currentFreqMhz);
 
     logger.addRecord({
       call: newCall.trim().toUpperCase(),

@@ -6,6 +6,40 @@
 import { calculateGeodesy } from './geodesy';
 import { loadSetting, saveSetting } from '../utils/formatters';
 
+/**
+ * Maps a frequency in MHz to the matching ADIF BAND value ("20m", "11m",
+ * "70cm", ...). Exact band allocations are checked first so 15m, 17m,
+ * 12m, 30m and 6m contacts are not mislabeled by the broad legacy ladder,
+ * which remains as the fallback for out-of-band frequencies.
+ */
+export function bandForFrequency(mhz: number): string {
+  if (!Number.isFinite(mhz) || mhz <= 0) return '160m';
+  // Exact allocations
+  if (mhz >= 1.8 && mhz <= 2.0) return '160m';
+  if (mhz >= 3.5 && mhz < 4.0) return '80m';
+  if (mhz >= 5.3 && mhz < 5.4) return '60m';
+  if (mhz >= 7.0 && mhz < 7.3) return '40m';
+  if (mhz >= 10.1 && mhz < 10.15) return '30m';
+  if (mhz >= 14.0 && mhz < 14.35) return '20m';
+  if (mhz >= 18.068 && mhz < 18.168) return '17m';
+  if (mhz >= 21.0 && mhz < 21.45) return '15m';
+  if (mhz >= 24.89 && mhz < 24.99) return '12m';
+  if (mhz >= 26.9 && mhz < 28.0) return '11m';
+  if (mhz >= 28.0 && mhz < 29.7) return '10m';
+  if (mhz >= 50.0 && mhz < 54.0) return '6m';
+  if (mhz >= 144.0 && mhz < 148.0) return '2m';
+  if (mhz >= 420.0 && mhz <= 450.0) return '70cm';
+  // Legacy broad-range fallback ladder
+  if (mhz < 2.0) return '160m';
+  if (mhz < 4.0) return '80m';
+  if (mhz < 8.0) return '40m';
+  if (mhz < 15.0) return '20m';
+  if (mhz < 28.0) return '11m';
+  if (mhz < 30.0) return '10m';
+  if (mhz < 150.0) return '2m';
+  return '70cm';
+}
+
 export interface AdifQsoRecord {
   id: string;
   call: string;

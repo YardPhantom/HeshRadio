@@ -38,18 +38,20 @@ export function calculateSolarTerminator(date: Date = new Date()): {
     -23.44 * (Math.PI / 180.0) * Math.cos(((2 * Math.PI) / 365.25) * (dayOfYear + 10));
   const solarDeclinationDeg = declinationRad * (180.0 / Math.PI);
 
-  // Greenwich Hour Angle (GHA) in degrees
+  // Sun's Greenwich Hour Angle (GHA): 0° when the sun is over Greenwich
+  // (≈12:00 UT), 180° at 00:00 UT — i.e. GHA = 15°/hr * UT + 180° (mod 360),
+  // east longitude complemented by adding GHA (not subtracting it).
   const utcHours =
     date.getUTCHours() + date.getUTCMinutes() / 60.0 + date.getUTCSeconds() / 3600.0;
-  const greenwichHourAngleDeg = (utcHours * 15.0) % 360.0;
+  const greenwichHourAngleDeg = (utcHours * 15.0 + 180.0) % 360.0;
 
-  // Generate 72 terminator points across longitude -180 to +180
-  // Formula: tan(lat) = -cos(lon - GHA) / tan(declination)
+  // Generate 73 terminator points across longitude -180 to +180
+  // Formula: tan(lat) = -cos(hourAngle) / tan(declination), hourAngle = lon + GHA
   const points: GreylinePoint[] = [];
   const tanDec = Math.tan(declinationRad);
 
   for (let lon = -180; lon <= 180; lon += 5) {
-    const hourAngleRad = ((lon - greenwichHourAngleDeg) * Math.PI) / 180.0;
+    const hourAngleRad = ((lon + greenwichHourAngleDeg) * Math.PI) / 180.0;
     let latRad = 0;
     if (Math.abs(tanDec) > 1e-4) {
       latRad = Math.atan(-Math.cos(hourAngleRad) / tanDec);

@@ -52,8 +52,9 @@ interface MultiBandVfoDeckProps {
   onCwBfoPitchChange: (pitchHz: number) => void;
 }
 
-// Popular quick bands for 1-click access
-const POPULAR_BAND_IDS = ['11M_CB', '2M_HAM', '70CM_HAM', 'GMRS_FRS', 'NOAA_WEATHER', 'AIRBAND_VHF'];
+// Popular quick bands for 1-click access (must match BandPlan ids exactly,
+// otherwise the quick-pill row renders empty)
+const POPULAR_BAND_IDS = ['11m-cb', 'ham-2m', 'ham-70cm', 'gmrs-frs', 'fm-broadcast', 'airband'];
 
 export const MultiBandVfoDeck: React.FC<MultiBandVfoDeckProps> = ({
   currentBand,
@@ -119,7 +120,8 @@ export const MultiBandVfoDeck: React.FC<MultiBandVfoDeckProps> = ({
             <div className="flex flex-wrap items-center gap-1.5">
               {MASTER_BAND_PLANS.filter((b) => POPULAR_BAND_IDS.includes(b.id)).map((b) => {
                 const isSelected = b.id === currentBand.id;
-                const shortName = b.name.split(' ')[0];
+                const nameParts = b.name.split(' ');
+                const shortName = nameParts[0] === 'Amateur' ? nameParts[1] : nameParts[0];
                 return (
                   <button
                     key={b.id}

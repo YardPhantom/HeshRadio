@@ -1846,10 +1846,13 @@ const RADIO_BROWSER_MIRRORS = [
  */
 export function extractFmFrequency(name: string, tags?: string): number {
   const combined = `${name} ${tags || ''}`;
-  // Match e.g. "90.3", "101.5", "88.5 FM", "99.9MHz"
-  const freqMatch = combined.match(/\b(8[7-9]\.\d|9\d\.\d|10[0-7]\.\d)\b/);
+  // Match e.g. "90.3", "101.55", "88.5 FM", "99.9MHz", "108.0".
+  // Lookbehind rejects digits inside a longer number ("198.1"), and no
+  // trailing word boundary is used so "99.9MHz" (digit followed by a
+  // letter) still matches. The MHz range check below validates the value.
+  const freqMatch = combined.match(/(?<![\d.])(8[7-9]|9\d|10[0-8])\.\d{1,2}/);
   if (freqMatch) {
-    const parsed = parseFloat(freqMatch[1]);
+    const parsed = parseFloat(freqMatch[0]);
     if (parsed >= 87.5 && parsed <= 108.0) {
       return Math.round(parsed * 10) / 10;
     }
