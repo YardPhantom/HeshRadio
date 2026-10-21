@@ -38,13 +38,13 @@ export function maidenheadToLatLon(grid: string): LatLon | null {
   let lon = -180 + fLon * 20 + sLon * 2;
   let lat = -90 + fLat * 10 + sLat * 1;
 
-  // Subsquare (2.5' lon by 1.25' lat = 5/120° by 2.5/120°)
+  // Subsquare (5.0' lon by 2.5' lat = 1/12° by 1/24°), centered in the cell
   if (clean.length >= 6) {
     const subLon = clean.charCodeAt(4) - 65;
     const subLat = clean.charCodeAt(5) - 65;
     if (subLon >= 0 && subLon <= 23 && subLat >= 0 && subLat <= 23) {
-      lon += (subLon * (5 / 120)) + (2.5 / 120);
-      lat += (subLat * (2.5 / 120)) + (1.25 / 120);
+      lon += (subLon + 0.5) * (1 / 12);
+      lat += (subLat + 0.5) * (1 / 24);
       return { lat, lon };
     }
   }

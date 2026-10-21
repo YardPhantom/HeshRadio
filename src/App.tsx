@@ -25,7 +25,7 @@ import { WaterfallDisplay } from './components/WaterfallDisplay';
 import { MultiBandVfoDeck } from './components/MultiBandVfoDeck';
 import { MobileTacticalCockpit } from './components/MobileTacticalCockpit';
 import { FmRadioPlayerDeck } from './components/FmRadioPlayerDeck';
-import { AdifLogger } from './radio/adifLogger';
+import { AdifLogger, bandForFrequency } from './radio/adifLogger';
 import { ScanEngine, MemoryChannel } from './radio/scanEngine';
 import { BlackBoxRecorder } from './radio/blackBoxRecorder';
 import { TacticalHeader } from './components/layout/TacticalHeader';
@@ -177,6 +177,7 @@ export const App: React.FC = () => {
   const [rigStatus, setRigStatus] = useState<RigStatus>(() => rigControllerRef.current!.getStatus());
 
   const wsRef = useRef<WebSocket | null>(null);
+  const wsSettingsRef = useRef({ masterVolume, anlEnabled, rogerBeep });
   const pttStartTimestampRef = useRef<number>(0);
 
   // Tactical Scanner & Cockpit Black Box Recorder Instances
@@ -230,6 +231,12 @@ export const App: React.FC = () => {
     }
   }, [frequencyMhz]);
 
+  // Keep the latest RX settings for the WebSocket relay handler so the socket
+  // is not torn down and reconnected on every volume/ANL change.
+  useEffect(() => {
+    wsSettingsRef.current = { masterVolume, anlEnabled, rogerBeep };
+  }, [masterVolume, anlEnabled, rogerBeep]);
+
   // Connect to LAN / Embedded Vite WebSocket CB Relay (Local Dev or Configured Relay Only)
   useEffect(() => {
     const isLocalhost =
@@ -281,14 +288,15 @@ export const App: React.FC = () => {
             if (dspRef.current) {
               await dspRef.current.initAudioContext();
               setActiveRxHandle(entry.handle);
+              const rxSettings = wsSettingsRef.current;
               dspRef.current.triggerIncomingTransmission(
                 parseFloat(entry.freqMhz),
                 -53,
                 msg.text,
                 108,
-                masterVolume,
-                anlEnabled,
-                rogerBeep,
+                rxSettings.masterVolume,
+                rxSettings.anlEnabled,
+                rxSettings.rogerBeep,
                 null,
                 () => setActiveRxHandle(null)
               );
@@ -305,7 +313,7 @@ export const App: React.FC = () => {
         ws.close();
       }
     };
-  }, [masterVolume, anlEnabled, rogerBeep]);
+  }, []);
 
   // 60-120Hz Real-Time DSP Step Loop
   useEffect(() => {
@@ -453,23 +461,27 @@ export const App: React.FC = () => {
     }
   }, [activeVfo, vfoAFreqMhz, vfoBFreqMhz]);
 
-  // Direct Tune from FM Directory to VFO
+  // Direct Tune from FM Directory (or AM station header) to VFO
   const handleTuneFmToVfo = useCallback((targetFreqMhz: number) => {
-    const fmBand =
-      findBandPlanForFrequency(targetFreqMhz) ||
+    const matchedBand = findBandPlanForFrequency(targetFreqMhz);
+    const targetBand =
+      matchedBand ||
       MASTER_BAND_PLANS.find((b) => b.id === 'fm-broadcast') ||
       MASTER_BAND_PLANS[0];
-    setCurrentBand(fmBand);
+    // Follow the matched plan's default mode (AM for 535-1705 kHz MW,
+    // WFM for FM broadcast, ...) instead of forcing WFM everywhere.
+    const targetMode: ModulationModeExtended = matchedBand ? matchedBand.defaultMode : 'WFM';
+    setCurrentBand(targetBand);
     setFrequencyMhz(targetFreqMhz);
     setVfoAFreqMhz(targetFreqMhz);
-    setMode('WFM');
+    setMode(targetMode);
     setActiveTab('VFO_SDR');
     if (sdrBridgeRef.current) {
       sdrBridgeRef.current.setFrequency(Math.round(targetFreqMhz * 1e6));
     }
     if (rigControllerRef.current) {
       rigControllerRef.current.setFrequency(Math.round(targetFreqMhz * 1e6));
-      rigControllerRef.current.setMode('WFM');
+      rigControllerRef.current.setMode(targetMode);
     }
   }, []);
 
@@ -600,6 +612,10 @@ export const App: React.FC = () => {
       if (rigControllerRef.current) {
         rigControllerRef.current.setTransmit(true, 'Digital Mode Modem');
       }
+      // Reset the hardware TOT watchdog clock so a stale voice-PTT timestamp
+      // (or page uptime) does not instantly unkey the digital transmission.
+      pttStartTimestampRef.current = performance.now();
+      setTotRemainingSec(180);
       setPttActive(true);
 
       dspRef.current.playPcmBuffer(samples, 48000, 0.85);
@@ -644,7 +660,10 @@ export const App: React.FC = () => {
 
   // One-click Promote Highway Dispatch Spot to ADIF
   const handlePromoteSpotToAdif = useCallback((spot: TrafficLogEntry) => {
-    const band = frequencyMhz < 30 ? (frequencyMhz < 28 ? '11m' : '10m') : frequencyMhz < 150 ? '2m' : '70cm';
+    // Derive the band from the spot's own frequency, not the current VFO,
+    // so a spot logged while tuned elsewhere gets a consistent BAND/FREQ pair.
+    const spotFreqMhz = parseFloat(spot.freqMhz) || frequencyMhz;
+    const band = bandForFrequency(spotFreqMhz);
     handleLogDigitalQso({
       call: spot.handle,
       band,
