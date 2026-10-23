@@ -133,3 +133,7 @@ npm run bump:major   # e.g., v0.00.1 -> v1.00.0 (capped at v9.99.9)
 
 ## 📜 License
 Distributed under the MIT License. See `LICENSE` for details.
+
+---
+
+Built by [Trevor Heshka](https://trevorheshka.com).
